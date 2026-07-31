@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cổng Quản Trị Admin - WebCraft Store</title>
-  <link rel="stylesheet" href="../styles.css">
+  
+  <script>
+    // Dynamically set CSS path relative to host
+    const cssPath = window.location.pathname.includes('/webcraft-store') ? '/webcraft-store/styles.css' : '/styles.css';
+    document.write('<link rel="stylesheet" href="' + cssPath + '">');
+  </script>
   
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
@@ -166,7 +171,7 @@
             </div>
 
             <div class="form-group" style="margin-top:0.5rem;">
-              <label>Tải Lên Cả Dự Án (Nhiều File / ZIP / Folder)</label>
+              <label>Tải Lên Cả Dự Án (Nhiều File / ZIP / FOLDER)</label>
               
               <div class="upload-options-grid">
                 <div class="file-upload-box zip-upload-box">
@@ -236,15 +241,21 @@
 
       <div class="admin-footer">
         <button class="cancel-btn" onclick="AdminManager.closeModal()">Hủy Bỏ</button>
-        <button class="save-tpl-btn" onclick="AdminManager.saveTemplateFromForm()">✨ Lưu & Xuất Bản Lên Firebase</button>
+        <button class="save-tpl-btn" onclick="AdminManager.saveTemplateFromForm()">✨ Lưu & Xuất Bản Bài Đăng</button>
       </div>
     </div>
   </div>
 
-  <script src="../js/firebase-config.js"></script>
-  <script src="../js/templates.js"></script>
-  <script src="../js/sandbox.js"></script>
-  <script src="../js/admin.js"></script>
+  <!-- Bulletproof Dynamic Script Loader -->
+  <script>
+    (function() {
+      const basePath = window.location.pathname.includes('/webcraft-store') ? '/webcraft-store/' : '/';
+      const scripts = ['js/firebase-config.js', 'js/templates.js', 'js/sandbox.js', 'js/admin.js'];
+      scripts.forEach(src => {
+        document.write('<script src="' + basePath + src + '"><\/script>');
+      });
+    })();
+  </script>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {

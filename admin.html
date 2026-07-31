@@ -4,8 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Cổng Quản Trị Admin - WebCraft Store</title>
-  <link rel="stylesheet" href="styles.css">
+  
+  <script>
+    const cssPath = window.location.pathname.includes('/webcraft-store') ? '/webcraft-store/styles.css' : '/styles.css';
+    document.write('<link rel="stylesheet" href="' + cssPath + '">');
+  </script>
+  
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- Firebase SDK Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
+  
   <style>
     body {
       background-color: #07090E;
@@ -47,7 +58,6 @@
   <!-- Background Ambient Glow -->
   <div class="hero-bg-glow"></div>
 
-  <!-- Header for Admin Portal -->
   <header class="admin-page-header">
     <a href="index.html" class="brand-logo">
       <div class="brand-icon">⚡</div>
@@ -61,12 +71,11 @@
     </div>
   </header>
 
-  <!-- Login Section -->
   <div id="admin-login-section" class="admin-login-card">
     <div style="text-align: center; margin-bottom: 2rem;">
       <div style="width:54px; height:54px; border-radius:14px; background:linear-gradient(135deg, #38BDF8, #818CF8); display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin:0 auto 1rem; box-shadow:0 4px 20px rgba(56,189,248,0.4);">🔐</div>
       <h1 style="font-size:1.75rem; font-weight:800; margin-bottom:0.4rem;">Đăng Nhập Quản Trị</h1>
-      <p style="font-size:0.9rem; color:#94A3B8;">Nhập tài khoản Admin để vào giao diện đăng & quản lý bài bán trang web</p>
+      <p style="font-size:0.9rem; color:#94A3B8;">Nhập tài khoản Admin để vào giao diện đăng bài bán trang web lên Firebase Cloud</p>
     </div>
 
     <form id="admin-portal-login-form" style="display:flex; flex-direction:column; gap:1.25rem;">
@@ -88,12 +97,11 @@
     </div>
   </div>
 
-  <!-- Full Admin Management Workspace -->
   <div id="admin-workspace-section" class="admin-page-container" style="display:none;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
       <div>
-        <h1 style="font-size:1.8rem; font-weight:800;">⚙️ Bảng Quản Lý & Đăng Bài Web Store</h1>
-        <p style="color:#94A3B8; font-size:0.95rem;">Đăng sản phẩm mới, upload dự án (ZIP/Folder) hoặc quản lý bài viết hiện có</p>
+        <h1 style="font-size:1.8rem; font-weight:800;">⚙️ Bảng Quản Lý & Đăng Bài Web Store (Firebase)</h1>
+        <p style="color:#94A3B8; font-size:0.95rem;">Đăng sản phẩm mới, upload dự án (ZIP/Folder) tự động đồng bộ lên Firebase Cloud Database</p>
       </div>
       <div style="display:flex; gap:1rem;">
         <button class="save-tpl-btn" onclick="AdminManager.openModal()">➕ Đăng Dự Án Web Mới</button>
@@ -106,7 +114,6 @@
     </div>
   </div>
 
-  <!-- Admin Upload & Template Editor Modal -->
   <div class="modal-overlay" id="admin-modal">
     <div class="admin-modal-container">
       <div class="admin-header">
@@ -163,7 +170,7 @@
             </div>
 
             <div class="form-group" style="margin-top:0.5rem;">
-              <label>Tải Lên Cả Dự Án (Nhiều File / ZIP / Folder)</label>
+              <label>Tải Lên Cả Dự Án (Nhiều File / ZIP / FOLDER)</label>
               
               <div class="upload-options-grid">
                 <div class="file-upload-box zip-upload-box">
@@ -238,9 +245,16 @@
     </div>
   </div>
 
-  <script src="js/templates.js"></script>
-  <script src="js/sandbox.js"></script>
-  <script src="js/admin.js"></script>
+  <!-- Bulletproof Dynamic Script Loader -->
+  <script>
+    (function() {
+      const basePath = window.location.pathname.includes('/webcraft-store') ? '/webcraft-store/' : '/';
+      const scripts = ['js/firebase-config.js', 'js/templates.js', 'js/sandbox.js', 'js/admin.js'];
+      scripts.forEach(src => {
+        document.write('<script src="' + basePath + src + '"><\/script>');
+      });
+    })();
+  </script>
 
   <script>
     document.addEventListener('DOMContentLoaded', async () => {
@@ -251,25 +265,6 @@
         e.preventDefault();
         const user = document.getElementById('portal-user-input').value.trim();
         const pass = document.getElementById('portal-pass-input').value.trim();
-
-        try {
-          const res = await fetch(`${window.API_BASE_URL}/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: user, password: pass })
-          });
-          if (res.ok) {
-            const json = await res.json();
-            if (json.success && json.token) {
-              localStorage.setItem('adminToken', json.token);
-              localStorage.setItem('adminUser', user);
-              checkAdminPortalState();
-              return;
-            }
-          }
-        } catch (err) {
-          console.warn("API login fallback", err);
-        }
 
         if (user === 'admin' && pass === 'admin123') {
           localStorage.setItem('adminToken', 'adm_token_' + Date.now());
