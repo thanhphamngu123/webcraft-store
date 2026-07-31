@@ -1,28 +1,30 @@
 /**
- * Templates Data & Firebase Cloud Sync Engine - Ultimate Reliable Edition
+ * Templates & Categories Data Manager
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V10";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V11";
+const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V11";
+
+const DEFAULT_CATEGORIES = [
+  { id: "All", name: "🔥 Tất cả" },
+  { id: "SaaS", name: "🚀 SaaS & AI" },
+  { id: "Restaurant", name: "🍽️ Nhà Hàng" },
+  { id: "Portfolio", name: "👨‍💻 Portfolio" },
+  { id: "E-Commerce", name: "🛒 Thương Mại" }
+];
 
 const DEFAULT_TEMPLATES = [
   {
     id: "tpl-quantum-ai-agency",
     title: "Quantum AI Agency - Futuristic Design Studio",
-    tagline: "Trang web công ty thiết kế giao diện AI & 3D WebGL với hiệu ứng chuyển trang mượt mà",
     category: "SaaS",
-    price: 79,
-    rating: 5.0,
-    sales: 112,
-    badge: "Mới tạo (Multi-Page)",
-    author: "Quantum Lab",
     updatedAt: "2026-07-31",
-    description: "Template dành cho Agency thiết kế, công ty công nghệ AI và Studio sáng tạo. Tích hợp cấu trúc đa trang (Home, About Us, Services), hiệu ứng đếm số động và bộ dịch vụ tải từ JSON.",
+    description: "Template dành cho Agency thiết kế, công ty công nghệ AI và Studio sáng tạo. Tích hợp cấu trúc đa trang (Home, About Us, Services), hiệu ứng đếm số động.",
     thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
-    tags: ["Multi-page", "AI Agency", "HTML5", "CSS3", "JS", "JSON"],
     filesMap: {
       "index.html": `
 <header class="q-navbar">
@@ -130,20 +132,13 @@ function openContactModal() {
   {
     id: "tpl-cyberstore-ecommerce",
     title: "CyberStore - Future Fashion E-Commerce",
-    tagline: "Trang web thương mại điện tử thời trang Cyberpunk với Giỏ Hàng realtime",
     category: "E-Commerce",
-    price: 69,
-    rating: 5.0,
-    sales: 88,
-    badge: "Mới tạo (Multi-Page)",
-    author: "CyberDesign Studio",
     updatedAt: "2026-07-31",
-    description: "Template thương mại điện tử phong cách Cyberpunk hiện đại dành cho thương hiệu thời trang, phụ kiện công nghệ. Tích hợp giỏ hàng tự động, bộ lọc sản phẩm và trải nghiệm mua sắm siêu mượt.",
+    description: "Template thương mại điện tử phong cách Cyberpunk hiện đại dành cho thương hiệu thời trang, phụ kiện công nghệ.",
     thumbnail: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80",
-    tags: ["Multi-page", "E-Commerce", "HTML5", "CSS3", "JS", "JSON"],
     filesMap: {
       "index.html": `<!DOCTYPE html><html><head><style>body { background:#080B10; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>🛍️ CYBERSTORE E-Commerce</h1><p>Trang web mẫu bán sắm thời trang Cyberpunk.</p><nav><a href="products.html">Xem Sản Phẩm</a></nav></body></html>`,
-      "products.html": `<!DOCTYPE html><html><head><style>body { background:#080B10; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>Tất Cả Sản Phẩm</h1><p>Cyber Neon Jacket - $120</p><a href="index.html"><- Trang Chủ</a></body></html>`
+      "products.html": `<!DOCTYPE html><html><head><style>body { background:#080B10; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>Tất Cả Sản Phẩm</h1><p>Cyber Neon Jacket</p><a href="index.html"><- Trang Chủ</a></body></html>`
     }
   }
 ];
@@ -162,10 +157,71 @@ function sanitizeForFirestore(obj) {
   return clean;
 }
 
-function getAdminToken() {
-  return localStorage.getItem('adminToken') || '';
+// ----------------------------------------------------
+// Dynamic Category Management System
+// ----------------------------------------------------
+function getCategories() {
+  const data = localStorage.getItem(CATEGORIES_KEY);
+  if (!data) {
+    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(DEFAULT_CATEGORIES));
+    return DEFAULT_CATEGORIES;
+  }
+  try {
+    const parsed = JSON.parse(data);
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      return DEFAULT_CATEGORIES;
+    }
+    return parsed;
+  } catch (e) {
+    return DEFAULT_CATEGORIES;
+  }
 }
 
+function saveCategories(cats) {
+  if (Array.isArray(cats) && cats.length > 0) {
+    localStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
+    window.cachedCategories = cats;
+
+    // Sync to Firebase if connected
+    const db = window.getDb ? window.getDb() : null;
+    if (db) {
+      db.collection('web_config').doc('categories').set({ items: cats }).catch(e => console.warn(e));
+    }
+  }
+}
+
+window.cachedCategories = getCategories();
+
+async function apiAddCategory(name, emoji = '📁') {
+  const cats = getCategories();
+  const id = 'cat-' + Date.now();
+  const newCat = { id: id, name: `${emoji} ${name}` };
+  cats.push(newCat);
+  saveCategories(cats);
+  return cats;
+}
+
+async function apiUpdateCategory(id, name) {
+  const cats = getCategories();
+  const idx = cats.findIndex(c => c.id === id);
+  if (idx !== -1) {
+    cats[idx].name = name;
+    saveCategories(cats);
+  }
+  return cats;
+}
+
+async function apiDeleteCategory(id) {
+  if (id === 'All') return getCategories();
+  let cats = getCategories();
+  cats = cats.filter(c => c.id !== id);
+  saveCategories(cats);
+  return cats;
+}
+
+// ----------------------------------------------------
+// Templates Persistence System
+// ----------------------------------------------------
 function getLocalTemplates() {
   const data = localStorage.getItem(STORAGE_KEY);
   if (!data) {
@@ -193,13 +249,18 @@ function saveLocalTemplates(templates) {
 
 window.cachedTemplates = getLocalTemplates();
 
-/**
- * Fetch templates from Firebase Firestore Database first, with bulletproof fallback
- */
 async function fetchTemplatesFromAPI() {
   const db = window.getDb ? window.getDb() : null;
   if (db) {
     try {
+      // Sync categories from Firebase
+      const catDoc = await db.collection('web_config').doc('categories').get();
+      if (catDoc.exists && catDoc.data().items) {
+        window.cachedCategories = catDoc.data().items;
+        saveCategories(catDoc.data().items);
+      }
+
+      // Sync templates from Firebase
       const snapshot = await db.collection('web_templates').get();
       if (!snapshot.empty) {
         const fbTemplates = [];
@@ -207,7 +268,6 @@ async function fetchTemplatesFromAPI() {
           fbTemplates.push({ id: doc.id, ...doc.data() });
         });
         if (fbTemplates.length > 0) {
-          console.log(`⚡ Fetched ${fbTemplates.length} template projects from Firebase Cloud Database!`);
           window.cachedTemplates = fbTemplates;
           saveLocalTemplates(fbTemplates);
           return fbTemplates;
@@ -222,9 +282,6 @@ async function fetchTemplatesFromAPI() {
   return window.cachedTemplates;
 }
 
-/**
- * Save new template project to Firebase Firestore Cloud & Local Storage
- */
 async function apiAddTemplate(templateData) {
   const id = templateData.id || ('tpl-' + Date.now());
   templateData.id = id;
@@ -241,8 +298,6 @@ async function apiAddTemplate(templateData) {
       console.error("Firebase Firestore Save Error:", err);
       alert(`⚠️ Lỗi Firebase (${err.code || 'Firestore'}): ${err.message}`);
     }
-  } else {
-    alert("⚠️ Lỗi: Chưa kết nối được Firebase SDK. Đã lưu tạm vào máy Local.");
   }
 
   window.cachedTemplates.unshift(sanitized);
@@ -261,7 +316,6 @@ async function apiUpdateTemplate(id, templateData) {
       alert(`🎉 Đã cập nhật bài đăng trên Firebase Cloud Database!`);
     } catch (err) {
       console.error("Firebase update error", err);
-      alert(`⚠️ Lỗi Firebase Update: ${err.message}`);
     }
   }
 

@@ -1,5 +1,5 @@
 /**
- * Admin Panel Manager - Multi-File & Auth Protection Edition
+ * Admin Panel Manager - Dynamic Categories Edition
  */
 
 window.AdminManager = {
@@ -9,144 +9,66 @@ window.AdminManager = {
   isPreviewing: false,
 
   init: function() {
-    this.renderAuthNavbar();
     this.bindEvents();
   },
 
   isLoggedIn: function() {
     const token = localStorage.getItem('adminToken');
-    return !!token && token.length > 5;
-  },
-
-  renderAuthNavbar: function() {
-    const container = document.getElementById('nav-auth-container');
-    if (!container) return;
-
-    if (this.isLoggedIn()) {
-      const username = localStorage.getItem('adminUser') || 'admin';
-      container.innerHTML = `
-        <span style="color:var(--accent-emerald); font-size:0.85rem; font-weight:700; background:rgba(16,185,129,0.1); padding:0.4rem 0.8rem; border-radius:99px; border:1px solid rgba(16,185,129,0.3);">
-          🟢 Admin: ${username}
-        </span>
-        <button class="admin-btn" onclick="AdminManager.openModal()">
-          <span>➕ Đăng Bài Mới</span>
-        </button>
-        <button class="cancel-btn" style="padding:0.5rem 0.9rem; font-size:0.85rem;" onclick="AdminManager.logoutAdmin()">
-          🚪 Đăng Xuất
-        </button>
-      `;
-    } else {
-      container.innerHTML = `
-        <a href="admin-login.html" class="admin-btn">
-          <span>🔐 Đăng Nhập Admin</span>
-        </a>
-      `;
-    }
-  },
-
-  logoutAdmin: function() {
-    localStorage.removeItem('adminToken');
-    localStorage.removeItem('adminUser');
-    alert("Đã đăng xuất tài khoản Admin.");
-    window.location.href = 'index.html';
+    return !!token;
   },
 
   bindEvents: function() {
-    // 1. ZIP File Upload Handler (unpack using JSZip)
     const zipInput = document.getElementById('admin-file-zip');
     if (zipInput) {
       zipInput.addEventListener('change', async (e) => {
         const file = e.target.files[0];
-        if (!file) return;
-        try {
-          if (!window.JSZip) {
-            this.showNotification("Đang tải thư viện JSZip...", "info");
-            return;
-          }
-          const zip = await JSZip.loadAsync(file);
-          const newMap = {};
-          
-          for (const filename of Object.keys(zip.files)) {
-            const zipEntry = zip.files[filename];
-            if (!zipEntry.dir) {
-              const text = await zipEntry.async("string");
-              newMap[filename] = text;
-            }
-          }
+        if (file && window.JSZip) {
+          try {
+            const zip = await window.JSZip.loadAsync(file);
+            const newFilesMap = {};
 
-          if (Object.keys(newMap).length > 0) {
-            this.currentFilesMap = newMap;
-            this.activeFilePath = Object.keys(newMap).includes('index.html') ? 'index.html' : Object.keys(newMap)[0];
-            this.renderFileTree();
-            this.loadActiveFileToEditor();
-            this.showNotification(`Đã giải nén file ZIP với ${Object.keys(newMap).length} file!`, "success");
+            for (const filename of Object.keys(zip.files)) {
+              const zipEntry = zip.files[filename];
+              if (!zipEntry.dir) {
+                const content = await zipEntry.async('string');
+                newFilesMap[filename] = content;
+              }
+            }
+
+            if (Object.keys(newFilesMap).length > 0) {
+              this.currentFilesMap = newFilesMap;
+              this.activeFilePath = Object.keys(newFilesMap).includes('index.html') ? 'index.html' : Object.keys(newFilesMap)[0];
+              this.renderFileTree();
+              this.loadActiveFileToEditor();
+              this.showNotification("Đã giải nén dự án ZIP thành công!", "success");
+            }
+          } catch (err) {
+            alert("Lỗi đọc file ZIP!");
           }
-        } catch (err) {
-          console.error("ZIP extract error", err);
-          this.showNotification("Lỗi khi đọc file ZIP!", "rose");
         }
       });
     }
 
-    // 2. Folder Upload Handler
     const folderInput = document.getElementById('admin-folder-upload');
     if (folderInput) {
       folderInput.addEventListener('change', async (e) => {
-        const files = e.target.files;
-        if (!files || files.length === 0) return;
-
-        const newMap = {};
-        for (let i = 0; i < files.length; i++) {
-          const f = files[i];
-          const path = f.webkitRelativePath || f.name;
-          const cleanPath = path.includes('/') ? path.substring(path.indexOf('/') + 1) : path;
-          
-          if (cleanPath) {
-            const text = await f.text();
-            newMap[cleanPath] = text;
+        const files = Array.from(e.target.files);
+        if (files.length > 0) {
+          const newFilesMap = {};
+          for (const file of files) {
+            const path = file.webkitRelativePath ? file.webkitRelativePath.split('/').slice(1).join('/') : file.name;
+            if (path) {
+              const content = await file.text();
+              newFilesMap[path] = content;
+            }
           }
-        }
-
-        if (Object.keys(newMap).length > 0) {
-          this.currentFilesMap = newMap;
-          this.activeFilePath = Object.keys(newMap).includes('index.html') ? 'index.html' : Object.keys(newMap)[0];
-          this.renderFileTree();
-          this.loadActiveFileToEditor();
-          this.showNotification(`Đã tải lên thư mục với ${Object.keys(newMap).length} file!`, "success");
-        }
-      });
-    }
-
-    // 3. Single / Multiple File Upload Inputs
-    const bindSingleFiles = (inputId, ext) => {
-      const el = document.getElementById(inputId);
-      if (!el) return;
-      el.addEventListener('change', async (e) => {
-        const files = e.target.files;
-        if (!files || files.length === 0) return;
-
-        for (let i = 0; i < files.length; i++) {
-          const f = files[i];
-          const text = await f.text();
-          this.currentFilesMap[f.name] = text;
-        }
-
-        this.renderFileTree();
-        this.showNotification(`Đã thêm ${files.length} file vào dự án!`, "success");
-      });
-    };
-
-    bindSingleFiles('admin-file-html', 'html');
-    bindSingleFiles('admin-file-css', 'css');
-    bindSingleFiles('admin-file-js', 'js');
-    bindSingleFiles('admin-file-json', 'json');
-
-    // 4. Code Editor Input Listener
-    const textarea = document.getElementById('active-code-editor');
-    if (textarea) {
-      textarea.addEventListener('input', (e) => {
-        if (this.activeFilePath) {
-          this.currentFilesMap[this.activeFilePath] = e.target.value;
+          if (Object.keys(newFilesMap).length > 0) {
+            this.currentFilesMap = newFilesMap;
+            this.activeFilePath = Object.keys(newFilesMap).includes('index.html') ? 'index.html' : Object.keys(newFilesMap)[0];
+            this.renderFileTree();
+            this.loadActiveFileToEditor();
+            this.showNotification("Đã nạp thư mục dự án thành công!", "success");
+          }
         }
       });
     }
@@ -168,7 +90,6 @@ window.AdminManager = {
       if (filepath.endsWith('.css')) icon = '🎨';
       else if (filepath.endsWith('.js')) icon = '⚡';
       else if (filepath.endsWith('.json')) icon = '📊';
-      else if (filepath.endsWith('.png') || filepath.endsWith('.jpg') || filepath.endsWith('.svg')) icon = '🖼️';
 
       const isActive = filepath === this.activeFilePath ? 'active' : '';
 
@@ -268,17 +189,25 @@ window.AdminManager = {
     }
   },
 
+  populateCategorySelect: function() {
+    const select = document.getElementById('tpl-input-category');
+    if (!select) return;
+
+    const categories = getCategories();
+    select.innerHTML = categories.map(cat => `<option value="${cat.name}">${cat.name}</option>`).join('');
+  },
+
   openModal: function(templateIdToEdit = null) {
-    // ENFORCE AUTHENTICATION CHECK BEFORE OPENING ADMIN MODAL
     if (!this.isLoggedIn()) {
-      alert("🔒 BẠN CẦN ĐĂNG NHẬP ADMIN!\nVui lòng đăng nhập qua cổng Admin riêng để có quyền đăng bài hoặc sửa sản phẩm.");
-      window.location.href = 'admin-login.html';
+      alert("🔒 BẠN CẦN ĐĂNG NHẬP ADMIN!\nVui lòng đăng nhập qua cổng Admin.");
+      window.location.href = 'admin.html';
       return;
     }
 
     const modal = document.getElementById('admin-modal');
     if (!modal) return;
 
+    this.populateCategorySelect();
     this.editingId = templateIdToEdit;
     const formTitle = document.getElementById('admin-form-title');
 
@@ -286,32 +215,20 @@ window.AdminManager = {
       const templates = getStoredTemplates();
       const tpl = templates.find(t => t.id === templateIdToEdit);
       if (tpl) {
-        if (formTitle) formTitle.textContent = "Chỉnh Sửa Dự Án Template Website";
+        if (formTitle) formTitle.textContent = "Chỉnh Sửa Dự Án Website";
         document.getElementById('tpl-input-title').value = tpl.title;
-        document.getElementById('tpl-input-tagline').value = tpl.tagline || '';
         document.getElementById('tpl-input-category').value = tpl.category;
-        document.getElementById('tpl-input-price').value = tpl.price;
-        document.getElementById('tpl-input-author').value = tpl.author || 'Admin';
         document.getElementById('tpl-input-desc').value = tpl.description || '';
-        document.getElementById('tpl-input-tags').value = (tpl.tags || []).join(', ');
         document.getElementById('tpl-input-thumb').value = tpl.thumbnail || '';
 
-        if (tpl.files && (tpl.files.html || tpl.files.css)) {
-          this.currentFilesMap = {
-            'index.html': tpl.files.html || '',
-            'styles.css': tpl.files.css || '',
-            'script.js': tpl.files.js || '',
-            'data.json': tpl.files.json || '{}'
-          };
-        } else {
-          this.currentFilesMap = { ...tpl.filesMap };
-        }
-
+        this.currentFilesMap = { ...tpl.filesMap };
         this.activeFilePath = Object.keys(this.currentFilesMap).includes('index.html') ? 'index.html' : Object.keys(this.currentFilesMap)[0];
       }
     } else {
-      if (formTitle) formTitle.textContent = "Thêm Dự Án Web Bán Mới (Multi-File / API)";
+      if (formTitle) formTitle.textContent = "Thêm Dự Án Web Mới (Multi-File)";
       document.getElementById('admin-template-form').reset();
+      this.populateCategorySelect();
+
       this.currentFilesMap = {
         'index.html': '<h1>Trang Chủ - Multi Page Web</h1>\n<p>Chào mừng bạn! Hãy bấm vào các trang dưới đây:</p>\n<nav><a href="about.html">Về Chúng Tôi</a> | <a href="contact.html">Liên Hệ</a></nav>',
         'about.html': '<h1>Trang Giới Thiệu (About)</h1>\n<p>Chúng tôi là đội ngũ lập trình viên hàng đầu.</p>\n<a href="index.html"><- Quay về Trang Chủ</a>',
@@ -336,18 +253,13 @@ window.AdminManager = {
   saveTemplateFromForm: async function() {
     if (!this.isLoggedIn()) {
       alert("Bạn chưa đăng nhập Admin!");
-      window.location.href = 'admin-login.html';
+      window.location.href = 'admin.html';
       return;
     }
 
     const title = document.getElementById('tpl-input-title').value.trim();
-    const tagline = document.getElementById('tpl-input-tagline').value.trim();
     const category = document.getElementById('tpl-input-category').value;
-    const price = parseFloat(document.getElementById('tpl-input-price').value) || 0;
-    const author = document.getElementById('tpl-input-author').value.trim() || 'Admin';
     const description = document.getElementById('tpl-input-desc').value.trim();
-    const tagsStr = document.getElementById('tpl-input-tags').value.trim();
-    const tags = tagsStr ? tagsStr.split(',').map(t => t.trim()) : ["Multi-page", "HTML5", "CSS3", "JS"];
     let thumbnail = document.getElementById('tpl-input-thumb').value.trim();
 
     if (!thumbnail) {
@@ -361,17 +273,10 @@ window.AdminManager = {
 
     const templateData = {
       title: title || 'Trang web mới',
-      tagline: tagline || '',
       category: category || 'SaaS',
-      price: price || 0,
-      rating: 5.0,
-      sales: 0,
-      badge: 'Mới tạo',
-      author: author || 'Admin',
       updatedAt: new Date().toISOString().split('T')[0],
       description: description || 'Mô tả dự án trang web',
-      thumbnail: thumbnail || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80",
-      tags: tags || ["Multi-page", "HTML5", "CSS3", "JS"],
+      thumbnail: thumbnail,
       filesMap: { ...this.currentFilesMap }
     };
 
@@ -382,7 +287,12 @@ window.AdminManager = {
     }
 
     this.closeModal();
-    window.App.renderMarketplace();
+    if (window.App && typeof window.App.renderMarketplace === 'function') {
+      window.App.renderMarketplace();
+    }
+    if (typeof renderAdminTable === 'function') {
+      renderAdminTable();
+    }
   },
 
   showNotification: function(msg, type = 'info') {

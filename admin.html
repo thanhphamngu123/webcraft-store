@@ -51,6 +51,33 @@
       backdrop-filter: blur(20px);
       box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(56, 189, 248, 0.15);
     }
+
+    .cat-mgmt-card {
+      background: #0E131F;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 16px;
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .cat-chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 0.4rem 0.8rem;
+      border-radius: 99px;
+      font-size: 0.85rem;
+      margin-right: 0.5rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .cat-del-btn {
+      color: #EF4444;
+      cursor: pointer;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -100,12 +127,21 @@
   <div id="admin-workspace-section" class="admin-page-container" style="display:none;">
     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
       <div>
-        <h1 style="font-size:1.8rem; font-weight:800;">⚙️ Bảng Quản Lý & Đăng Bài Web Store (Firebase)</h1>
-        <p style="color:#94A3B8; font-size:0.95rem;">Đăng sản phẩm mới, upload dự án (ZIP/Folder) tự động đồng bộ lên Firebase Cloud Database</p>
+        <h1 style="font-size:1.8rem; font-weight:800;">⚙️ Bảng Quản Lý & Đăng Bài Web Store</h1>
+        <p style="color:#94A3B8; font-size:0.95rem;">Đăng sản phẩm mới, upload dự án (ZIP/Folder) và quản lý danh mục</p>
       </div>
       <div style="display:flex; gap:1rem;">
         <button class="save-tpl-btn" onclick="AdminManager.openModal()">➕ Đăng Dự Án Web Mới</button>
       </div>
+    </div>
+
+    <!-- Category Manager Section -->
+    <div class="cat-mgmt-card">
+      <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3 style="font-size:1.2rem; color:#38BDF8;">📂 Quản Lý Danh Mục</h3>
+        <button class="add-file-btn" onclick="promptAddCategory()">+ Thêm Danh Mục Mới</button>
+      </div>
+      <div id="admin-category-list"></div>
     </div>
 
     <div style="background:#0E131F; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:1.5rem; margin-bottom:2rem;">
@@ -130,28 +166,10 @@
             </div>
 
             <div class="form-group">
-              <label>Khẩu hiệu / Subtitle</label>
-              <input type="text" id="tpl-input-tagline" class="form-input" placeholder="VD: Giao diện đa trang gồm Home, About...">
-            </div>
-
-            <div class="form-group">
               <label>Danh mục</label>
               <select id="tpl-input-category" class="form-select">
-                <option value="SaaS">SaaS & AI</option>
-                <option value="Restaurant">Nhà Hàng & F&B</option>
-                <option value="Portfolio">Portfolio & Cá nhân</option>
-                <option value="E-Commerce">Thương Mại Điện Tử</option>
+                <!-- Dynamically populated -->
               </select>
-            </div>
-
-            <div class="form-group">
-              <label>Giá bán ($ USD)</label>
-              <input type="number" id="tpl-input-price" class="form-input" value="49" min="0" required>
-            </div>
-
-            <div class="form-group">
-              <label>Tác giả / Nguồn</label>
-              <input type="text" id="tpl-input-author" class="form-input" placeholder="VD: WebCraft Studio">
             </div>
 
             <div class="form-group">
@@ -160,13 +178,8 @@
             </div>
 
             <div class="form-group">
-              <label>Thẻ Kỹ thuật (Tags)</label>
-              <input type="text" id="tpl-input-tags" class="form-input" placeholder="Multi-page, HTML5, CSS3, JS, JSON">
-            </div>
-
-            <div class="form-group">
               <label>Mô tả chi tiết</label>
-              <textarea id="tpl-input-desc" class="form-textarea" rows="3" placeholder="Mô tả cấu trúc file dự án..."></textarea>
+              <textarea id="tpl-input-desc" class="form-textarea" rows="4" placeholder="Mô tả dự án trang web..."></textarea>
             </div>
 
             <div class="form-group" style="margin-top:0.5rem;">
@@ -293,6 +306,7 @@
           <button class="cancel-btn" style="padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="logoutPortal()">🚪 Đăng Xuất</button>
         `;
 
+        renderAdminCategoryManager();
         renderAdminTable();
       } else {
         loginSection.style.display = 'block';
@@ -300,6 +314,34 @@
         navActions.innerHTML = `
           <a href="index.html" class="newtab-btn" style="text-decoration:none;">👁️ Xem Trang Web Store</a>
         `;
+      }
+    }
+
+    function renderAdminCategoryManager() {
+      const container = document.getElementById('admin-category-list');
+      if (!container) return;
+
+      const categories = getCategories();
+      container.innerHTML = categories.map(cat => `
+        <span class="cat-chip">
+          <span>${cat.name}</span>
+          ${cat.id !== 'All' ? `<span class="cat-del-btn" title="Xóa danh mục" onclick="deleteCategoryFromAdmin('${cat.id}')">&times;</span>` : ''}
+        </span>
+      `).join('');
+    }
+
+    async function promptAddCategory() {
+      const name = prompt("Nhập tên danh mục mới (VD: Bất Động Sản, Giáo Dục, Game...):");
+      if (!name) return;
+      await apiAddCategory(name.trim());
+      renderAdminCategoryManager();
+      alert(`🎉 Đã thêm danh mục mới "${name}"!`);
+    }
+
+    async function deleteCategoryFromAdmin(id) {
+      if (confirm("Bạn có chắc chắn muốn xóa danh mục này không?")) {
+        await apiDeleteCategory(id);
+        renderAdminCategoryManager();
       }
     }
 
@@ -326,7 +368,6 @@
             <tr style="border-bottom:1px solid rgba(255,255,255,0.1); color:#94A3B8;">
               <th style="padding:0.75rem;">Tên Dự Án Web</th>
               <th style="padding:0.75rem;">Danh Mục</th>
-              <th style="padding:0.75rem;">Giá Bán</th>
               <th style="padding:0.75rem;">Số File</th>
               <th style="padding:0.75rem; text-align:right;">Thao Tác</th>
             </tr>
@@ -338,7 +379,6 @@
                 <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
                   <td style="padding:0.8rem; font-weight:700; color:#FFF;">${t.title}</td>
                   <td style="padding:0.8rem; color:#38BDF8;">${t.category}</td>
-                  <td style="padding:0.8rem; font-weight:bold; color:#10B981;">$${t.price}</td>
                   <td style="padding:0.8rem; font-family:monospace; color:#94A3B8;">${fileCount} files</td>
                   <td style="padding:0.8rem; text-align:right;">
                     <button class="action-icon-btn" style="display:inline-flex;" onclick="AdminManager.openModal('${t.id}')">✏️ Sửa</button>

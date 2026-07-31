@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebCraft Store - Chợ Mua Bán & Trải Nghiệm Template Website Multi-File</title>
-  <meta name="description" content="Nền tảng mua bán giao diện trang web chất lượng cao. Trải nghiệm Live Demo mượt mà các dự án website HTML, CSS, JS, JSON tích hợp Firebase Cloud Storage.">
+  <meta name="description" content="Nền tảng trải nghiệm và xem trước các trang web chất lượng cao.">
   <link rel="stylesheet" href="styles.css">
   
   <!-- JSZip Library -->
@@ -27,7 +27,7 @@
     <!-- Clean Customer Nav Actions -->
     <div class="nav-actions">
       <span style="font-size:0.85rem; color:var(--text-secondary); font-weight:600;">
-        🛍️ Chợ Giao Diện Website Chất Lượng Cao
+        🌐 Khám Phá & Trải Nghiệm Giao Diện Website
       </span>
     </div>
   </header>
@@ -37,9 +37,9 @@
     <div class="hero-bg-glow"></div>
     <div class="hero-content">
       <div class="hero-pill">✨ Powered by Firebase Cloud Database</div>
-      <h1 class="hero-title">Sở Hữu Trang Web Đẳng Cấp Chỉ Với 1 Click</h1>
+      <h1 class="hero-title">Khám Phá Các Mẫu Website Đẳng Cấp</h1>
       <p class="hero-subtitle">
-        Khám phá bộ sưu tập template website đa dạng (SaaS, Nhà Hàng, Portfolio, Thương Mại...). Trải nghiệm Live Demo trực tiếp các dự án website đa trang trước khi đưa ra quyết định mua hàng.
+        Trải nghiệm Live Demo trực tiếp các dự án website đa trang đa dạng (SaaS, Nhà Hàng, Portfolio, Thương Mại...).
       </p>
     </div>
   </section>
@@ -48,16 +48,12 @@
   <div class="controls-bar">
     <div class="search-box-wrap">
       <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-      <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm trang web theo tên, công nghệ (Multi-page, HTML, CSS, JS, SaaS, Portfolio...)...">
+      <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm trang web theo tên hoặc danh mục...">
     </div>
 
     <div class="filter-row">
-      <div class="category-pills">
-        <button class="cat-pill active" data-cat="All">🔥 Tất cả</button>
-        <button class="cat-pill" data-cat="SaaS">🚀 SaaS & AI</button>
-        <button class="cat-pill" data-cat="Restaurant">🍽️ Nhà Hàng</button>
-        <button class="cat-pill" data-cat="Portfolio">👨‍💻 Portfolio</button>
-        <button class="cat-pill" data-cat="E-Commerce">🛒 Thương Mại</button>
+      <div class="category-pills" id="category-pills-container">
+        <!-- Rendered dynamically by app.js -->
       </div>
 
       <span class="catalog-counter" id="template-count">0 Giao Diện Mẫu</span>
@@ -98,9 +94,6 @@
           <button class="newtab-btn" onclick="App.openInNewTab()">
             ↗️ Mở Tab Mới
           </button>
-          <button class="buy-btn" onclick="App.downloadTemplateZip(App.activeDemoTemplate?.id)">
-            Tải Mã Nguồn (.ZIP) (<span id="demo-price">$0</span>)
-          </button>
         </div>
       </div>
 
@@ -114,23 +107,17 @@
 
   <!-- Detail Info Drawer Modal -->
   <div class="modal-overlay" id="detail-modal">
-    <div class="admin-modal-container" style="max-width: 750px; height: auto; max-height: 85vh;">
+    <div class="admin-modal-container" style="max-width: 650px; height: auto; max-height: 85vh;">
       <div class="admin-header">
         <h2 id="detail-title">Detail Title</h2>
         <button class="close-btn" onclick="App.closeDetailModal()">&times;</button>
       </div>
       <div style="padding: 2rem; overflow-y: auto;">
-        <img id="detail-img" src="" alt="Preview" style="width:100%; height:280px; object-fit:cover; border-radius:12px; margin-bottom:1.5rem;">
-        <p id="detail-author" style="color:var(--accent-cyan); font-weight:600; margin-bottom:0.5rem;"></p>
-        <p id="detail-desc" style="color:var(--text-secondary); line-height:1.6; margin-bottom:1.5rem;"></p>
-        <div id="detail-tags" class="tech-tags" style="margin-bottom:2rem;"></div>
+        <img id="detail-img" src="" alt="Preview" style="width:100%; height:260px; object-fit:cover; border-radius:12px; margin-bottom:1.5rem;">
+        <p id="detail-desc" style="color:var(--text-secondary); line-height:1.6; margin-bottom:2rem;"></p>
         
-        <div style="display:flex; justify-content:space-between; align-items:center;">
-          <span id="detail-price" style="font-size:2rem; font-weight:800; color:var(--text-primary);"></span>
-          <div style="display:flex; gap:1rem;">
-            <button class="demo-btn-primary" id="detail-demo-btn">👁️ Xem Live Demo</button>
-            <button class="buy-btn" id="detail-buy-btn" style="padding:0.75rem 1.8rem;">Tải Mã Nguồn (.ZIP)</button>
-          </div>
+        <div style="display:flex; justify-content:flex-end;">
+          <button class="demo-btn-primary" id="detail-demo-btn" style="padding:0.75rem 2rem;">👁️ Xem Live Demo</button>
         </div>
       </div>
     </div>
