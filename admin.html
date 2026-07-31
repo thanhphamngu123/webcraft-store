@@ -300,12 +300,15 @@
   </script>
 
   <script>
-    document.addEventListener('DOMContentLoaded', async () => {
-      await fetchTemplatesFromAPI();
+    document.addEventListener('DOMContentLoaded', () => {
       checkAdminPortalState();
-      updateFirebaseConnectionMonitor();
 
-      document.getElementById('admin-portal-login-form').addEventListener('submit', async (e) => {
+      fetchTemplatesFromAPI().then(() => {
+        if (typeof renderAdminTable === 'function') renderAdminTable();
+        updateFirebaseConnectionMonitor();
+      });
+
+      document.getElementById('admin-portal-login-form').addEventListener('submit', (e) => {
         e.preventDefault();
         const user = document.getElementById('portal-user-input').value.trim();
         const pass = document.getElementById('portal-pass-input').value.trim();
@@ -314,6 +317,7 @@
           localStorage.setItem('adminToken', 'adm_token_' + Date.now());
           localStorage.setItem('adminUser', 'admin');
           checkAdminPortalState();
+          AdminManager.showNotification("Đăng nhập Console thành công!", "success");
         } else {
           AdminManager.showNotification("Sai tài khoản hoặc mật khẩu Admin!", "error");
         }
