@@ -1,12 +1,12 @@
 /**
- * Templates Data & Firebase Cloud Sync Engine - Guaranteed Render Edition
+ * Templates Data & Firebase Cloud Sync Engine - Sanitized & Reliable Edition
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V7";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V8";
 
 const DEFAULT_TEMPLATES = [
   {
@@ -148,6 +148,20 @@ function openContactModal() {
   }
 ];
 
+function sanitizeForFirestore(obj) {
+  const clean = {};
+  for (const key in obj) {
+    if (obj[key] !== undefined && obj[key] !== null) {
+      if (typeof obj[key] === 'object' && !Array.isArray(obj[key])) {
+        clean[key] = sanitizeForFirestore(obj[key]);
+      } else {
+        clean[key] = obj[key];
+      }
+    }
+  }
+  return clean;
+}
+
 function getAdminToken() {
   return localStorage.getItem('adminToken') || '';
 }
@@ -214,35 +228,44 @@ async function apiAddTemplate(templateData) {
   const id = templateData.id || ('tpl-' + Date.now());
   templateData.id = id;
 
+  const sanitized = sanitizeForFirestore(templateData);
+
   if (window.db) {
     try {
-      await window.db.collection('web_templates').doc(id).set(templateData);
+      await window.db.collection('web_templates').doc(id).set(sanitized);
       console.log(`✅ Saved template to Firebase Firestore: "${templateData.title}"`);
+      alert(`🎉 Đã đăng bài "${templateData.title}" thành công lên Firebase Cloud Database!`);
     } catch (err) {
       console.error("Firebase Firestore Save Error:", err);
+      alert(`⚠️ Lỗi Firebase (${err.code}): ${err.message}`);
     }
+  } else {
+    alert("⚠️ Thông báo: Đã lưu ở máy Local (Chưa kết nối Firebase).");
   }
 
-  window.cachedTemplates.unshift(templateData);
+  window.cachedTemplates.unshift(sanitized);
   saveLocalTemplates(window.cachedTemplates);
-  return templateData;
+  return sanitized;
 }
 
 async function apiUpdateTemplate(id, templateData) {
   templateData.id = id;
+  const sanitized = sanitizeForFirestore(templateData);
 
   if (window.db) {
     try {
-      await window.db.collection('web_templates').doc(id).set(templateData, { merge: true });
+      await window.db.collection('web_templates').doc(id).set(sanitized, { merge: true });
+      alert(`🎉 Đã cập nhật bài đăng trên Firebase Cloud Database!`);
     } catch (err) {
       console.error("Firebase update error", err);
+      alert(`⚠️ Lỗi Firebase Update: ${err.message}`);
     }
   }
 
   const idx = window.cachedTemplates.findIndex(t => t.id === id);
-  if (idx !== -1) window.cachedTemplates[idx] = templateData;
+  if (idx !== -1) window.cachedTemplates[idx] = sanitized;
   saveLocalTemplates(window.cachedTemplates);
-  return templateData;
+  return sanitized;
 }
 
 async function apiDeleteTemplate(id) {

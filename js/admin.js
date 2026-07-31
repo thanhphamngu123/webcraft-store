@@ -360,23 +360,25 @@ window.AdminManager = {
     }
 
     const templateData = {
-      title,
-      tagline,
-      category,
-      price,
-      author,
-      description,
-      thumbnail,
-      tags,
+      title: title || 'Trang web mới',
+      tagline: tagline || '',
+      category: category || 'SaaS',
+      price: price || 0,
+      rating: 5.0,
+      sales: 0,
+      badge: 'Mới tạo',
+      author: author || 'Admin',
+      updatedAt: new Date().toISOString().split('T')[0],
+      description: description || 'Mô tả dự án trang web',
+      thumbnail: thumbnail || "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80",
+      tags: tags || ["Multi-page", "HTML5", "CSS3", "JS"],
       filesMap: { ...this.currentFilesMap }
     };
 
     if (this.editingId) {
       await apiUpdateTemplate(this.editingId, templateData);
-      this.showNotification("Đã cập nhật bài đăng thành công!", "success");
     } else {
       await apiAddTemplate(templateData);
-      this.showNotification("Đã đăng bài & xuất bản trang web bán thành công!", "success");
     }
 
     this.closeModal();
