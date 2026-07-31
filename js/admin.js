@@ -1,10 +1,9 @@
 /**
- * Admin Panel Manager - Multi-File Project Edition
- * Handles multi-file tree, ZIP unpacking, folder uploads, code editor switching, and live sandbox testing.
+ * Admin Panel Manager - Multi-File & Backend API Edition
+ * Handles multi-file tree, ZIP unpacking, folder uploads, code editing, and API syncing.
  */
 
 window.AdminManager = {
-  // Current multi-file dictionary: { "index.html": "...", "about.html": "...", "css/style.css": "..." }
   currentFilesMap: {},
   activeFilePath: 'index.html',
   editingId: null,
@@ -62,7 +61,6 @@ window.AdminManager = {
         for (let i = 0; i < files.length; i++) {
           const f = files[i];
           const path = f.webkitRelativePath || f.name;
-          // Strip top folder name if present
           const cleanPath = path.includes('/') ? path.substring(path.indexOf('/') + 1) : path;
           
           if (cleanPath) {
@@ -149,7 +147,6 @@ window.AdminManager = {
   },
 
   selectFile: function(filepath) {
-    // Save current textarea changes first
     const textarea = document.getElementById('active-code-editor');
     if (this.activeFilePath && textarea) {
       this.currentFilesMap[this.activeFilePath] = textarea.value;
@@ -215,7 +212,6 @@ window.AdminManager = {
     const btn = document.getElementById('btn-test-preview');
 
     if (showPreview) {
-      // Save current textarea content
       const textarea = document.getElementById('active-code-editor');
       if (this.activeFilePath && textarea) {
         this.currentFilesMap[this.activeFilePath] = textarea.value;
@@ -255,7 +251,6 @@ window.AdminManager = {
         document.getElementById('tpl-input-tags').value = (tpl.tags || []).join(', ');
         document.getElementById('tpl-input-thumb').value = tpl.thumbnail || '';
 
-        // Convert legacy single-files object to multi-files map if needed
         if (tpl.files && (tpl.files.html || tpl.files.css)) {
           this.currentFilesMap = {
             'index.html': tpl.files.html || '',
@@ -270,7 +265,7 @@ window.AdminManager = {
         this.activeFilePath = Object.keys(this.currentFilesMap).includes('index.html') ? 'index.html' : Object.keys(this.currentFilesMap)[0];
       }
     } else {
-      if (formTitle) formTitle.textContent = "Thêm Dự Án Web Bán Mới (Multi-File)";
+      if (formTitle) formTitle.textContent = "Thêm Dự Án Web Bán Mới (Multi-File / API)";
       document.getElementById('admin-template-form').reset();
       this.currentFilesMap = {
         'index.html': '<h1>Trang Chủ - Multi Page Web</h1>\n<p>Chào mừng bạn! Hãy bấm vào các trang dưới đây:</p>\n<nav><a href="about.html">Về Chúng Tôi</a> | <a href="contact.html">Liên Hệ</a></nav>',
@@ -293,7 +288,7 @@ window.AdminManager = {
     if (modal) modal.classList.remove('open');
   },
 
-  saveTemplateFromForm: function() {
+  saveTemplateFromForm: async function() {
     const title = document.getElementById('tpl-input-title').value.trim();
     const tagline = document.getElementById('tpl-input-tagline').value.trim();
     const category = document.getElementById('tpl-input-category').value;
@@ -308,38 +303,29 @@ window.AdminManager = {
       thumbnail = "https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=800&q=80";
     }
 
-    // Save active editor changes to filesMap
     const textarea = document.getElementById('active-code-editor');
     if (this.activeFilePath && textarea) {
       this.currentFilesMap[this.activeFilePath] = textarea.value;
     }
 
     const templateData = {
-      id: this.editingId || ('tpl-' + Date.now()),
       title,
       tagline,
       category,
       price,
-      rating: 5.0,
-      sales: Math.floor(Math.random() * 25) + 1,
-      badge: "Multi-Page",
       author,
-      updatedAt: new Date().toISOString().split('T')[0],
       description,
       thumbnail,
       tags,
       filesMap: { ...this.currentFilesMap }
     };
 
-    let templates = getStoredTemplates();
     if (this.editingId) {
-      const idx = templates.findIndex(t => t.id === this.editingId);
-      if (idx !== -1) templates[idx] = templateData;
-      saveStoredTemplates(templates);
-      this.showNotification("Đã cập nhật dự án web thành công!", "success");
+      await apiUpdateTemplate(this.editingId, templateData);
+      this.showNotification("Đã cập nhật dự án web trên Backend Server!", "success");
     } else {
-      addTemplate(templateData);
-      this.showNotification("Đã xuất bản dự án web mới thành công!", "success");
+      await apiAddTemplate(templateData);
+      this.showNotification("Đã đăng bài & tải trang web mới lên Backend Server!", "success");
     }
 
     this.closeModal();

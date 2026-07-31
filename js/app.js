@@ -1,6 +1,6 @@
 /**
- * Main Application Logic - Multi-File Edition
- * Marketplace catalog, category filters, multi-page live demo navigation, and postMessage event handling.
+ * Main Application Logic - Multi-File & Backend API Edition
+ * Catalog renderer, backend API sync, live demo navigation, and postMessage event handling.
  */
 
 window.App = {
@@ -10,10 +10,13 @@ window.App = {
   activeDemoPage: 'index.html',
   activeDeviceView: 'desktop',
 
-  init: function() {
-    this.renderMarketplace();
+  init: async function() {
     this.bindEvents();
     window.AdminManager.init();
+
+    // Fetch initial templates from Backend API
+    await fetchTemplatesFromAPI();
+    this.renderMarketplace();
   },
 
   bindEvents: function() {
@@ -94,7 +97,7 @@ window.App = {
     }
 
     container.innerHTML = templates.map(t => {
-      const filesCount = t.filesMap ? Object.keys(t.filesMap).length : 1;
+      const filesCount = t.filesMap ? Object.keys(t.filesMap).length : (t.files ? Object.keys(t.files).length : 1);
 
       return `
         <div class="product-card" data-id="${t.id}">
@@ -147,9 +150,6 @@ window.App = {
     }).join('');
   },
 
-  /**
-   * Opens the Live Demo fullscreen preview mode
-   */
   openLiveDemo: function(templateId) {
     const templates = getStoredTemplates();
     const tpl = templates.find(t => t.id === templateId);
@@ -167,7 +167,6 @@ window.App = {
     const pageBadge = document.getElementById('demo-page-indicator');
     if (pageBadge) pageBadge.textContent = 'index.html';
 
-    // Render files in Sandbox iframe
     const iframe = document.getElementById('demo-iframe');
     const files = tpl.filesMap || { 'index.html': tpl.files?.html || '' };
 
@@ -246,10 +245,10 @@ window.App = {
     if (modal) modal.classList.remove('open');
   },
 
-  confirmDelete: function(id) {
-    if (confirm("Bạn có chắc chắn muốn xóa template dự án trang web này không?")) {
-      deleteTemplate(id);
-      AdminManager.showNotification("Đã xóa template dự án!", "info");
+  confirmDelete: async function(id) {
+    if (confirm("Bạn có chắc chắn muốn xóa template dự án trang web này khỏi Backend Server không?")) {
+      await apiDeleteTemplate(id);
+      AdminManager.showNotification("Đã xóa template khỏi Backend!", "info");
       this.renderMarketplace();
     }
   },
