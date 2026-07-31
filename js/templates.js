@@ -6,7 +6,7 @@ window.API_BASE_URL = window.location.origin.includes('localhost') || window.loc
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V80";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V100";
 const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V16";
 
 const DEFAULT_CATEGORIES = [
@@ -638,7 +638,8 @@ async function apiDeleteTemplate(id) {
 }
 
 function getStoredTemplates() {
-  const t = window.cachedTemplates;
-  if (Array.isArray(t) && t.length > 0) return sortTemplatesNewestFirst(t);
-  return getLocalTemplates();
+  if (!window.cachedTemplates || !Array.isArray(window.cachedTemplates) || window.cachedTemplates.length === 0) {
+    window.cachedTemplates = getLocalTemplates();
+  }
+  return sortTemplatesNewestFirst(window.cachedTemplates);
 }
