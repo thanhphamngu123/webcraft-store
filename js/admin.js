@@ -1,6 +1,87 @@
 /**
- * Admin Panel Manager - Dynamic Categories Edition
+ * Admin Panel Manager - Dynamic Categories & Custom Overlay Dialogs Edition
  */
+
+window.ModalDialog = {
+  showPrompt: function(title, label, defaultValue = '') {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('custom-prompt-modal');
+      const titleEl = document.getElementById('prompt-modal-title');
+      const labelEl = document.getElementById('prompt-modal-label');
+      const inputEl = document.getElementById('prompt-modal-input');
+      const cancelBtn = document.getElementById('prompt-cancel-btn');
+      const confirmBtn = document.getElementById('prompt-confirm-btn');
+
+      if (!modal) {
+        const res = prompt(`${title}\n${label}`, defaultValue);
+        return resolve(res);
+      }
+
+      titleEl.textContent = title;
+      labelEl.textContent = label;
+      inputEl.value = defaultValue;
+      modal.classList.add('open');
+
+      setTimeout(() => inputEl.focus(), 100);
+
+      const cleanup = () => {
+        modal.classList.remove('open');
+        confirmBtn.onclick = null;
+        cancelBtn.onclick = null;
+      };
+
+      confirmBtn.onclick = (e) => {
+        e.preventDefault();
+        const val = inputEl.value.trim();
+        cleanup();
+        resolve(val);
+      };
+
+      cancelBtn.onclick = (e) => {
+        e.preventDefault();
+        cleanup();
+        resolve(null);
+      };
+    });
+  },
+
+  showConfirm: function(title, message) {
+    return new Promise((resolve) => {
+      const modal = document.getElementById('custom-confirm-modal');
+      const titleEl = document.getElementById('confirm-modal-title');
+      const msgEl = document.getElementById('confirm-modal-message');
+      const cancelBtn = document.getElementById('confirm-cancel-btn');
+      const okBtn = document.getElementById('confirm-ok-btn');
+
+      if (!modal) {
+        const res = confirm(`${title}\n${message}`);
+        return resolve(res);
+      }
+
+      titleEl.textContent = title;
+      msgEl.textContent = message;
+      modal.classList.add('open');
+
+      const cleanup = () => {
+        modal.classList.remove('open');
+        okBtn.onclick = null;
+        cancelBtn.onclick = null;
+      };
+
+      okBtn.onclick = (e) => {
+        e.preventDefault();
+        cleanup();
+        resolve(true);
+      };
+
+      cancelBtn.onclick = (e) => {
+        e.preventDefault();
+        cleanup();
+        resolve(false);
+      };
+    });
+  }
+};
 
 window.AdminManager = {
   currentFilesMap: {},
@@ -43,7 +124,7 @@ window.AdminManager = {
               this.showNotification("Đã giải nén dự án ZIP thành công!", "success");
             }
           } catch (err) {
-            alert("Lỗi đọc file ZIP!");
+            this.showNotification("Lỗi đọc file ZIP!", "error");
           }
         }
       });
@@ -127,13 +208,13 @@ window.AdminManager = {
     }
   },
 
-  promptNewFile: function() {
-    const filename = prompt("Nhập tên file mới (VD: about.html, css/custom.css, js/modal.js):", "page2.html");
+  promptNewFile: async function() {
+    const filename = await ModalDialog.showPrompt("Tạo File Mới", "Nhập tên file mới (VD: page2.html, css/custom.css, js/modal.js):", "page2.html");
     if (!filename) return;
 
     const clean = filename.trim();
     if (this.currentFilesMap[clean]) {
-      alert("File này đã tồn tại trong dự án!");
+      this.showNotification("File này đã tồn tại trong dự án!", "error");
       return;
     }
 
@@ -148,8 +229,9 @@ window.AdminManager = {
     this.showNotification(`Đã tạo file mới: ${clean}`, "success");
   },
 
-  deleteFileFromTree: function(filepath) {
-    if (confirm(`Bạn có chắc muốn xóa file "${filepath}" khỏi dự án không?`)) {
+  deleteFileFromTree: async function(filepath) {
+    const confirmDelete = await ModalDialog.showConfirm("Xóa File Dự Án", `Bạn có chắc muốn xóa file "${filepath}" khỏi dự án không?`);
+    if (confirmDelete) {
       delete this.currentFilesMap[filepath];
       const remaining = Object.keys(this.currentFilesMap);
       if (remaining.length > 0) {
@@ -199,7 +281,6 @@ window.AdminManager = {
 
   openModal: function(templateIdToEdit = null) {
     if (!this.isLoggedIn()) {
-      alert("🔒 BẠN CẦN ĐĂNG NHẬP ADMIN!\nVui lòng đăng nhập qua cổng Admin.");
       window.location.href = 'admin.html';
       return;
     }
@@ -252,7 +333,6 @@ window.AdminManager = {
 
   saveTemplateFromForm: async function() {
     if (!this.isLoggedIn()) {
-      alert("Bạn chưa đăng nhập Admin!");
       window.location.href = 'admin.html';
       return;
     }
@@ -304,7 +384,7 @@ window.AdminManager = {
     setTimeout(() => toast.classList.add('show'), 10);
     setTimeout(() => {
       toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 300);
+      setTimeout(() => toast.remove(), 3500);
     }, 3500);
   }
 };

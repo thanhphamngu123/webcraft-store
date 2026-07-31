@@ -147,6 +147,41 @@
 
   </div>
 
+  <!-- Custom Prompt Input Modal -->
+  <div class="modal-overlay" id="custom-prompt-modal">
+    <div class="dialog-modal-box">
+      <div class="dialog-header">
+        <span class="dialog-icon">✏️</span>
+        <h3 id="prompt-modal-title">Nhập Thông Tin</h3>
+      </div>
+      <div class="dialog-body">
+        <label id="prompt-modal-label">Nội dung:</label>
+        <input type="text" id="prompt-modal-input" class="form-input">
+      </div>
+      <div class="dialog-footer">
+        <button class="cancel-btn" id="prompt-cancel-btn">Hủy Bỏ</button>
+        <button class="save-tpl-btn" id="prompt-confirm-btn">Xác Nhận</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Custom Confirm Modal -->
+  <div class="modal-overlay" id="custom-confirm-modal">
+    <div class="dialog-modal-box">
+      <div class="dialog-header">
+        <span class="dialog-icon" style="color:var(--accent-rose);">⚠️</span>
+        <h3 id="confirm-modal-title">Xác Nhận Thao Tác</h3>
+      </div>
+      <div class="dialog-body">
+        <p id="confirm-modal-message" style="color:var(--text-secondary); font-size:0.95rem; line-height:1.5;"></p>
+      </div>
+      <div class="dialog-footer">
+        <button class="cancel-btn" id="confirm-cancel-btn">Hủy Bỏ</button>
+        <button class="save-tpl-btn" id="confirm-ok-btn" style="background:var(--accent-rose);">Xóa Vĩnh Viễn</button>
+      </div>
+    </div>
+  </div>
+
   <!-- Multi-File Editor Modal -->
   <div class="modal-overlay" id="admin-modal">
     <div class="admin-modal-container">
@@ -281,7 +316,7 @@
           localStorage.setItem('adminUser', 'admin');
           checkAdminPortalState();
         } else {
-          alert("❌ Sai tài khoản hoặc mật khẩu Admin!");
+          AdminManager.showNotification("❌ Sai tài khoản hoặc mật khẩu Admin!", "error");
         }
       });
     });
@@ -343,27 +378,29 @@
     }
 
     async function promptAddCategory() {
-      const name = prompt("Nhập tên danh mục mới (VD: Bất Động Sản, Giáo Dục, Game...):");
+      const name = await ModalDialog.showPrompt("Thêm Danh Mục Mới", "Nhập tên danh mục mới (VD: Bất Động Sản, Giáo Dục...):", "");
       if (!name) return;
       await apiAddCategory(name.trim());
       renderAdminCategoryManager();
       updateFirebaseConnectionMonitor();
-      alert(`🎉 Đã thêm danh mục mới "${name}"!`);
+      AdminManager.showNotification(`🎉 Đã thêm danh mục mới "${name}"!`, "success");
     }
 
     async function promptEditCategory(id, oldName) {
-      const newName = prompt("Nhập tên danh mục mới:", oldName);
+      const newName = await ModalDialog.showPrompt("Chỉnh Sửa Danh Mục", "Nhập tên danh mục mới:", oldName);
       if (!newName || newName.trim() === oldName) return;
       await apiUpdateCategory(id, newName.trim());
       renderAdminCategoryManager();
-      alert(`🎉 Đã cập nhật danh mục!`);
+      AdminManager.showNotification(`🎉 Đã cập nhật tên danh mục!`, "success");
     }
 
     async function deleteCategoryFromAdmin(id) {
-      if (confirm("Bạn có chắc chắn muốn xóa danh mục này không?")) {
+      const confirmDel = await ModalDialog.showConfirm("Xóa Danh Mục", "Bạn có chắc chắn muốn xóa danh mục này khỏi hệ thống không?");
+      if (confirmDel) {
         await apiDeleteCategory(id);
         renderAdminCategoryManager();
         updateFirebaseConnectionMonitor();
+        AdminManager.showNotification("Đã xóa danh mục!", "info");
       }
     }
 
@@ -417,9 +454,11 @@
     }
 
     async function deleteFromPortal(id) {
-      if (confirm("Bạn có chắc chắn muốn xóa bài bán trang web này không?")) {
+      const confirmDel = await ModalDialog.showConfirm("Xóa Dự Án Web", "Bạn có chắc chắn muốn xóa bài bán trang web này khỏi hệ thống?");
+      if (confirmDel) {
         await apiDeleteTemplate(id);
         renderAdminTable();
+        AdminManager.showNotification("Đã xóa bài bán trang web!", "info");
       }
     }
 
@@ -440,7 +479,6 @@
 
       if (db) {
         try {
-          // Heartbeat check directly against web_templates collection
           await db.collection('web_templates').limit(1).get();
 
           dot.className = "status-dot-pulse pulse-green";
