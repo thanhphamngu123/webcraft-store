@@ -1,12 +1,12 @@
 /**
- * Templates Data & API Manager with Admin Session Token Support
+ * Templates Data & API Manager with Bulletproof Local & API Fallback
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V2";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V3";
 
 const DEFAULT_TEMPLATES = [
   {
@@ -208,19 +208,21 @@ function getLocalTemplates() {
   }
   try {
     const parsed = JSON.parse(data);
-    // Ensure CyberStore is present
-    if (!parsed.some(t => t.id === 'tpl-cyberstore-ecommerce')) {
-      parsed.unshift(DEFAULT_TEMPLATES[0]);
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_TEMPLATES));
+      return DEFAULT_TEMPLATES;
     }
     return parsed;
   } catch (e) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_TEMPLATES));
     return DEFAULT_TEMPLATES;
   }
 }
 
 function saveLocalTemplates(templates) {
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
+  if (Array.isArray(templates) && templates.length > 0) {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
+  }
 }
 
 window.cachedTemplates = getLocalTemplates();
@@ -228,9 +230,9 @@ window.cachedTemplates = getLocalTemplates();
 async function fetchTemplatesFromAPI() {
   try {
     const response = await fetch(`${window.API_BASE_URL}/templates`);
-    if (response.ok) {
+    if (response && response.ok) {
       const json = await response.json();
-      if (json.success && json.data) {
+      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
         window.cachedTemplates = json.data;
         saveLocalTemplates(json.data);
         return json.data;
@@ -239,6 +241,8 @@ async function fetchTemplatesFromAPI() {
   } catch (err) {
     console.warn("Backend API offline or unreachable, using LocalStorage fallback.", err);
   }
+
+  // Bulletproof fallback to default templates
   window.cachedTemplates = getLocalTemplates();
   return window.cachedTemplates;
 }
@@ -318,5 +322,7 @@ async function apiDeleteTemplate(id) {
 }
 
 function getStoredTemplates() {
-  return window.cachedTemplates || getLocalTemplates();
+  const t = window.cachedTemplates || getLocalTemplates();
+  if (!t || t.length === 0) return DEFAULT_TEMPLATES;
+  return t;
 }
