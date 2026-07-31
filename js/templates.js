@@ -1,5 +1,5 @@
 /**
- * Templates & Categories Data Manager - Direct Firebase Sync Edition
+ * Templates & Categories Data Manager - Direct Firebase Sync & Clean Slug ID Edition
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
@@ -264,10 +264,34 @@ function saveCategories(cats) {
 
 window.cachedCategories = getCategories();
 
+/**
+ * Converts category name to human-readable clean slug string ID
+ * Example: "Bất Động Sản" -> "Bat-Dong-San"
+ */
+function generateCleanSlugId(text) {
+  return text
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/đ/g, 'd').replace(/Đ/g, 'D')
+    .replace(/[^a-zA-Z0-9\s-]/g, '')
+    .trim()
+    .replace(/\s+/g, '-');
+}
+
 async function apiAddCategory(name) {
   const cats = getCategories();
-  const id = 'cat-' + Date.now();
-  const newCat = { id: id, name: name.trim() };
+  const cleanName = name.trim();
+  let slugId = generateCleanSlugId(cleanName) || ('cat-' + Date.now());
+
+  // Ensure unique ID if category with same slug exists
+  let uniqueId = slugId;
+  let counter = 1;
+  while (cats.some(c => c.id === uniqueId)) {
+    uniqueId = `${slugId}-${counter}`;
+    counter++;
+  }
+
+  const newCat = { id: uniqueId, name: cleanName };
   cats.push(newCat);
   saveCategories(cats);
   return cats;
