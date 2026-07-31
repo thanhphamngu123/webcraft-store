@@ -1,12 +1,12 @@
 /**
- * Templates Data & Firebase Cloud Sync Engine
+ * Templates Data & Firebase Cloud Sync Engine - Guaranteed Render Edition
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V6";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V7";
 
 const DEFAULT_TEMPLATES = [
   {
@@ -180,7 +180,7 @@ function saveLocalTemplates(templates) {
 window.cachedTemplates = getLocalTemplates();
 
 /**
- * Fetch templates from Firebase Firestore Database first, with fallback to LocalStorage
+ * Fetch templates from Firebase Firestore Database first, with bulletproof fallback
  */
 async function fetchTemplatesFromAPI() {
   if (window.db) {
@@ -191,27 +191,17 @@ async function fetchTemplatesFromAPI() {
         snapshot.forEach(doc => {
           fbTemplates.push({ id: doc.id, ...doc.data() });
         });
-        console.log(`⚡ Fetched ${fbTemplates.length} template projects from Firebase Cloud Database!`);
-        window.cachedTemplates = fbTemplates;
-        saveLocalTemplates(fbTemplates);
-        return fbTemplates;
+        if (fbTemplates.length > 0) {
+          console.log(`⚡ Fetched ${fbTemplates.length} template projects from Firebase Cloud Database!`);
+          window.cachedTemplates = fbTemplates;
+          saveLocalTemplates(fbTemplates);
+          return fbTemplates;
+        }
       }
     } catch (err) {
       console.warn("Firebase Firestore fetch notice:", err.message);
     }
   }
-
-  try {
-    const response = await fetch(`${window.API_BASE_URL}/templates`);
-    if (response && response.ok) {
-      const json = await response.json();
-      if (json.success && Array.isArray(json.data) && json.data.length > 0) {
-        window.cachedTemplates = json.data;
-        saveLocalTemplates(json.data);
-        return json.data;
-      }
-    }
-  } catch (err) {}
 
   window.cachedTemplates = getLocalTemplates();
   return window.cachedTemplates;
@@ -230,25 +220,8 @@ async function apiAddTemplate(templateData) {
       console.log(`✅ Saved template to Firebase Firestore: "${templateData.title}"`);
     } catch (err) {
       console.error("Firebase Firestore Save Error:", err);
-      if (err.code === 'permission-denied') {
-        alert("⚠️ BẠN CẦN BẬT QUYỀN TRUY CẬP TRÊN FIREBASE:\nVào Firebase Console -> Firestore Database -> Rules -> Đổi 'allow read, write: if false;' thành 'allow read, write: if true;' rồi bấm Publish!");
-      } else {
-        alert("⚠️ Lỗi Firebase: Hãy chắc chắn bạn đã bấm nút 'Tạo cơ sở dữ liệu' (Create Database) trong Firebase Console -> Firestore Database!");
-      }
     }
   }
-
-  try {
-    const token = getAdminToken();
-    await fetch(`${window.API_BASE_URL}/templates`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(templateData)
-    });
-  } catch (err) {}
 
   window.cachedTemplates.unshift(templateData);
   saveLocalTemplates(window.cachedTemplates);
@@ -266,18 +239,6 @@ async function apiUpdateTemplate(id, templateData) {
     }
   }
 
-  try {
-    const token = getAdminToken();
-    await fetch(`${window.API_BASE_URL}/templates/${id}`, {
-      method: 'PUT',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      body: JSON.stringify(templateData)
-    });
-  } catch (err) {}
-
   const idx = window.cachedTemplates.findIndex(t => t.id === id);
   if (idx !== -1) window.cachedTemplates[idx] = templateData;
   saveLocalTemplates(window.cachedTemplates);
@@ -294,21 +255,13 @@ async function apiDeleteTemplate(id) {
     }
   }
 
-  try {
-    const token = getAdminToken();
-    await fetch(`${window.API_BASE_URL}/templates/${id}`, {
-      method: 'DELETE',
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
-  } catch (err) {}
-
   window.cachedTemplates = window.cachedTemplates.filter(t => t.id !== id);
   saveLocalTemplates(window.cachedTemplates);
   return window.cachedTemplates;
 }
 
 function getStoredTemplates() {
-  const t = window.cachedTemplates || getLocalTemplates();
-  if (!t || t.length === 0) return DEFAULT_TEMPLATES;
-  return t;
+  const t = window.cachedTemplates;
+  if (Array.isArray(t) && t.length > 0) return t;
+  return getLocalTemplates();
 }
