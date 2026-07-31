@@ -6,7 +6,7 @@ window.API_BASE_URL = window.location.origin.includes('localhost') || window.loc
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V16";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V17";
 const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V16";
 
 const DEFAULT_CATEGORIES = [
@@ -416,6 +416,19 @@ async function fetchTemplatesFromAPI() {
         snapshot.forEach(doc => {
           fbTemplates.push({ id: doc.id, ...doc.data() });
         });
+        // Auto-seed MelodyFlow Studio to Firebase Cloud if not already present
+        const hasMelodyFlow = fbTemplates.some(t => t.id === 'tpl-melodyflow-studio');
+        if (!hasMelodyFlow) {
+          const melodyTpl = DEFAULT_TEMPLATES.find(t => t.id === 'tpl-melodyflow-studio');
+          if (melodyTpl) {
+            try {
+              const sanitized = sanitizeForFirestore(melodyTpl);
+              await db.collection('web_templates').doc('tpl-melodyflow-studio').set(sanitized);
+              fbTemplates.unshift(sanitized);
+            } catch(e) { console.warn("Auto-seed melodyflow error:", e); }
+          }
+        }
+
         if (fbTemplates.length > 0) {
           const sortedFB = sortTemplatesNewestFirst(fbTemplates);
           window.cachedTemplates = sortedFB;
