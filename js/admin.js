@@ -1,5 +1,5 @@
 /**
- * Admin Panel Manager - Multi-File, Images & Videos Support Edition
+ * Admin Panel Manager - Multi-File, Images & Videos Support Edition with Auto Image Compression
  */
 
 window.ModalDialog = {
@@ -99,6 +99,50 @@ window.AdminManager = {
     return !!token;
   },
 
+  compressImageFile: function(file) {
+    return new Promise((resolve) => {
+      if (!file.type || !file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = e => resolve(e.target.result);
+        reader.readAsDataURL(file);
+        return;
+      }
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const img = new Image();
+        img.onload = () => {
+          const maxDim = 1000;
+          let width = img.width;
+          let height = img.height;
+
+          if (width > maxDim || height > maxDim) {
+            if (width > height) {
+              height = Math.round((height * maxDim) / width);
+              width = maxDim;
+            } else {
+              width = Math.round((width * maxDim) / height);
+              height = maxDim;
+            }
+          }
+
+          const canvas = document.createElement('canvas');
+          canvas.width = width;
+          canvas.height = height;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, width, height);
+
+          // Convert to WebP DataURL with 0.72 quality for ultra light file size
+          const webpDataUrl = canvas.toDataURL('image/webp', 0.72);
+          resolve(webpDataUrl);
+        };
+        img.onerror = () => resolve(e.target.result);
+        img.src = e.target.result;
+      };
+      reader.onerror = () => resolve(null);
+      reader.readAsDataURL(file);
+    });
+  },
+
   readFileAsDataURL: function(file) {
     return new Promise((resolve, reject) => {
       const reader = new FileReader();
@@ -134,7 +178,7 @@ window.AdminManager = {
     if (this.eventsBound) return;
     this.eventsBound = true;
 
-    // 1. ZIP File Upload (Supports text + images & videos)
+    // 1. ZIP File Upload
     const zipInput = document.getElementById('admin-file-zip');
     if (zipInput) {
       zipInput.addEventListener('change', async (e) => {
@@ -172,7 +216,7 @@ window.AdminManager = {
       });
     }
 
-    // 2. Folder Upload (Supports subfolders, images, videos)
+    // 2. Folder Upload
     const folderInput = document.getElementById('admin-folder-upload');
     if (folderInput) {
       folderInput.addEventListener('change', async (e) => {
@@ -182,7 +226,10 @@ window.AdminManager = {
           for (const file of files) {
             const path = file.webkitRelativePath ? file.webkitRelativePath.split('/').slice(1).join('/') : file.name;
             if (path) {
-              if (this.isMediaFile(path)) {
+              if (this.isImageFile(path)) {
+                const dataUrl = await this.compressImageFile(file);
+                newFilesMap[path] = dataUrl;
+              } else if (this.isMediaFile(path)) {
                 const dataUrl = await this.readFileAsDataURL(file);
                 newFilesMap[path] = dataUrl;
               } else {
@@ -208,8 +255,8 @@ window.AdminManager = {
       { id: 'admin-file-css', isMedia: false },
       { id: 'admin-file-js', isMedia: false },
       { id: 'admin-file-json', isMedia: false },
-      { id: 'admin-file-img', isMedia: true, defaultFolder: 'assets/' },
-      { id: 'admin-file-video', isMedia: true, defaultFolder: 'videos/' }
+      { id: 'admin-file-img', isMedia: true, isImage: true, defaultFolder: 'assets/' },
+      { id: 'admin-file-video', isMedia: true, isImage: false, defaultFolder: 'videos/' }
     ];
 
     fileInputs.forEach(item => {
@@ -224,7 +271,10 @@ window.AdminManager = {
             if (item.isMedia && item.defaultFolder && !path.includes('/')) {
               path = item.defaultFolder + path;
             }
-            if (item.isMedia) {
+            if (item.isImage) {
+              const dataUrl = await this.compressImageFile(file);
+              this.currentFilesMap[path] = dataUrl;
+            } else if (item.isMedia) {
               const dataUrl = await this.readFileAsDataURL(file);
               this.currentFilesMap[path] = dataUrl;
             } else {
@@ -236,7 +286,7 @@ window.AdminManager = {
 
           this.renderFileTree();
           this.loadActiveFileToEditor();
-          this.showNotification(`Đã tải lên ${files.length} file vào dự án!`, "success");
+          this.showNotification(`Đã tải lên và tối ưu ${files.length} file thành công!`, "success");
           inputEl.value = '';
         });
       }
@@ -441,11 +491,6 @@ window.AdminManager = {
   },
 
   saveTemplateFromForm: async function() {
-    if (!this.isLoggedIn()) {
-      window.location.href = 'admin.html';
-      return;
-    }
-
     const title = document.getElementById('tpl-input-title').value.trim();
     const category = document.getElementById('tpl-input-category').value;
     const description = document.getElementById('tpl-input-desc').value.trim();
