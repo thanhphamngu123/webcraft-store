@@ -6,7 +6,7 @@ window.API_BASE_URL = window.location.origin.includes('localhost') || window.loc
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V40";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V50";
 const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V16";
 
 const DEFAULT_CATEGORIES = [
@@ -512,30 +512,42 @@ async function fetchTemplatesFromAPI() {
 
     try {
       const snapshot = await db.collection('web_templates').get();
+      const fbTemplates = [];
       if (!snapshot.empty) {
-        const fbTemplates = [];
         snapshot.forEach(doc => {
           fbTemplates.push({ id: doc.id, ...doc.data() });
         });
-        // Force overwrite MelodyFlow Studio with latest room.html in Firebase Cloud Database
-        const melodyTpl = DEFAULT_TEMPLATES.find(t => t.id === 'tpl-melodyflow-studio');
-        if (melodyTpl) {
-          try {
-            const sanitized = sanitizeForFirestore(melodyTpl);
-            db.collection('web_templates').doc('tpl-melodyflow-studio').set(sanitized).catch(() => {});
-            const idx = fbTemplates.findIndex(t => t.id === 'tpl-melodyflow-studio');
-            if (idx !== -1) fbTemplates[idx] = sanitized;
-            else fbTemplates.unshift(sanitized);
-          } catch(e) {}
-        }
+      }
 
-        if (fbTemplates.length > 0) {
-          const sortedFB = sortTemplatesNewestFirst(fbTemplates);
-          window.cachedTemplates = sortedFB;
-          saveLocalTemplates(sortedFB);
-          console.log(`🔥 Synchronized ${sortedFB.length} live products (Strict Creation Time Order) directly from Firebase Cloud Database!`);
-          return sortedFB;
-        }
+      // Ensure MelodyFlow Studio and DEFAULT_TEMPLATES exist
+      const melodyTpl = DEFAULT_TEMPLATES.find(t => t.id === 'tpl-melodyflow-studio');
+      if (melodyTpl) {
+        try {
+          const sanitized = sanitizeForFirestore(melodyTpl);
+          db.collection('web_templates').doc('tpl-melodyflow-studio').set(sanitized).catch(() => {});
+          const idx = fbTemplates.findIndex(t => t.id === 'tpl-melodyflow-studio');
+          if (idx !== -1) fbTemplates[idx] = sanitized;
+          else fbTemplates.unshift(sanitized);
+        } catch(e) {}
+      }
+
+      // If Firebase Firestore is empty, seed default templates
+      if (fbTemplates.length === 0) {
+        DEFAULT_TEMPLATES.forEach(tpl => {
+          try {
+            const s = sanitizeForFirestore(tpl);
+            db.collection('web_templates').doc(tpl.id).set(s).catch(() => {});
+            fbTemplates.push(s);
+          } catch(e) {}
+        });
+      }
+
+      if (fbTemplates.length > 0) {
+        const sortedFB = sortTemplatesNewestFirst(fbTemplates);
+        window.cachedTemplates = sortedFB;
+        saveLocalTemplates(sortedFB);
+        console.log(`🔥 Synchronized ${sortedFB.length} live products directly from Firebase Cloud Database!`);
+        return sortedFB;
       }
     } catch (err) {
       console.warn("Firebase Firestore fetch templates notice:", err.message);

@@ -9,14 +9,18 @@ window.App = {
   activeDemoPage: 'index.html',
   activeDeviceView: 'desktop',
 
-  init: async function() {
+  init: function() {
     this.renderCategoryPills();
     this.bindEvents();
-    window.AdminManager.init();
-
-    await fetchTemplatesFromAPI();
-    this.renderCategoryPills();
     this.renderMarketplace();
+    if (window.AdminManager && typeof window.AdminManager.init === 'function') {
+      window.AdminManager.init();
+    }
+
+    fetchTemplatesFromAPI().then(() => {
+      this.renderCategoryPills();
+      this.renderMarketplace();
+    });
   },
 
   renderCategoryPills: function() {
