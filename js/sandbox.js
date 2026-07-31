@@ -1,30 +1,23 @@
 /**
- * Multi-File Live Sandbox Engine - Guaranteed CSS & Asset Renderer
+ * Multi-File Live Sandbox Engine - Precise HTML-to-CSS Linking Edition
  * Compiles and renders complex multi-file projects (HTML, CSS, JS, JSON, assets) inside an iframe.
- * Guarantees 100% CSS styling injection and relative path resolution.
+ * Parses explicit <link rel="stylesheet" href="..."> tags per HTML file to match exact CSS usage.
  */
 
 window.SandboxEngine = {
-  // Store created Blob URLs for cleanup
   activeBlobUrls: [],
 
-  /**
-   * Cleans up previously created Blob URLs to prevent memory leaks
-   */
   clearBlobUrls: function() {
     this.activeBlobUrls.forEach(url => URL.revokeObjectURL(url));
     this.activeBlobUrls = [];
   },
 
-  /**
-   * Helper to normalize path separators (forward slashes)
-   */
   normalizePath: function(path) {
     return path.replace(/\\/g, '/').replace(/^\.\//, '').replace(/^\//, '').trim();
   },
 
   /**
-   * Creates a Virtual Blob Dictionary for JS, JSON, and media assets
+   * Creates Virtual Blob URLs for all asset files (JS, JSON, Images)
    */
   createVirtualAssetsMap: function(filesMap) {
     const assetBlobs = {};
@@ -53,44 +46,83 @@ window.SandboxEngine = {
   },
 
   /**
-   * Builds an HTML document with guaranteed injected CSS, JS, and relative link handlers
+   * Parses explicit <link rel="stylesheet"> tags from the HTML content
+   */
+  extractLinkedCssPaths: function(htmlContent) {
+    const cssPaths = [];
+    const linkRegex = /<link[^>]+rel=["']stylesheet["'][^>]+href=["']([^"']+)["']/gi;
+    let match;
+    while ((match = linkRegex.exec(htmlContent)) !== null) {
+      if (match[1]) {
+        cssPaths.push(this.normalizePath(match[1]));
+      }
+    }
+    // Also check href before rel order: <link href="..." rel="stylesheet">
+    const altRegex = /<link[^>]+href=["']([^"']+)["'][^>]+rel=["']stylesheet["']/gi;
+    while ((match = altRegex.exec(htmlContent)) !== null) {
+      if (match[1]) {
+        const norm = this.normalizePath(match[1]);
+        if (!cssPaths.includes(norm)) cssPaths.push(norm);
+      }
+    }
+    return cssPaths;
+  },
+
+  /**
+   * Builds an HTML document with resolved relative links and page-specific CSS
    */
   buildPageDocument: function(filesMap, currentPage = 'index.html') {
     const normCurrent = this.normalizePath(currentPage);
     
-    // Find matching HTML file in filesMap
+    // 1. Obtain HTML content for the target page
     let htmlContent = filesMap[normCurrent] || filesMap['index.html'];
     if (!htmlContent) {
       const firstHtmlKey = Object.keys(filesMap).find(k => k.endsWith('.html'));
       htmlContent = firstHtmlKey ? filesMap[firstHtmlKey] : '<h1>404 - Page Not Found</h1>';
     }
 
-    // Collect all CSS content from filesMap for guaranteed injection
-    let injectedStyles = '';
-    for (const filepath in filesMap) {
-      const norm = this.normalizePath(filepath);
-      if (norm.endsWith('.css')) {
-        injectedStyles += `\n/* Embedded from ${norm} */\n${filesMap[filepath]}\n`;
+    // 2. Extract which CSS files are explicitly linked in this HTML file
+    const linkedCssFiles = this.extractLinkedCssPaths(htmlContent);
+
+    // 3. Build CSS styles string specifically for this HTML page
+    let pageCssContent = '';
+
+    if (linkedCssFiles.length > 0) {
+      // Load ONLY the CSS files explicitly linked in this HTML page
+      linkedCssFiles.forEach(cssPath => {
+        // Try exact match or partial match in filesMap
+        const matchedKey = Object.keys(filesMap).find(k => this.normalizePath(k) === cssPath || k.endsWith(cssPath));
+        if (matchedKey && filesMap[matchedKey]) {
+          pageCssContent += `\n/* Explicitly Linked CSS: ${matchedKey} */\n${filesMap[matchedKey]}\n`;
+        }
+      });
+    }
+
+    // If no explicit linked CSS was found or resolved, include all project CSS files as smart fallback
+    if (!pageCssContent.trim()) {
+      for (const filepath in filesMap) {
+        const norm = this.normalizePath(filepath);
+        if (norm.endsWith('.css')) {
+          pageCssContent += `\n/* Project CSS Fallback: ${norm} */\n${filesMap[filepath]}\n`;
+        }
       }
     }
 
-    // Create Virtual Asset Blob URLs for JS, images, etc.
+    // 4. Create Virtual Asset Blobs for JS, Images, etc.
     const assetBlobs = this.createVirtualAssetsMap(filesMap);
 
-    // Replace relative CSS, JS, and image paths with Blob URLs in HTML
+    // 5. Replace relative JS, JSON, and Image paths with Blob URLs
     for (const relativePath in assetBlobs) {
       const blobUrl = assetBlobs[relativePath];
       const escapedPath = relativePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       
-      // Match href="path", href="./path", href="/path", src="path", etc.
       const pathRegex = new RegExp(`(href|src)=["'](?:\\./|/)?${escapedPath}["']`, 'gi');
       htmlContent = htmlContent.replace(pathRegex, `$1="${blobUrl}"`);
     }
 
-    // Wrap injected CSS styles into <style> block
-    const styleBlock = injectedStyles ? `\n<style id="injected-virtual-styles">\n${injectedStyles}\n</style>\n` : '';
+    // 6. Inject the page-specific CSS into <head>
+    const styleBlock = pageCssContent ? `\n<style id="page-virtual-styles">\n${pageCssContent}\n</style>\n` : '';
 
-    // Inject styles into <head> or at top
     if (htmlContent.includes('</head>')) {
       htmlContent = htmlContent.replace('</head>', styleBlock + '</head>');
     } else if (htmlContent.includes('<body')) {
@@ -99,7 +131,7 @@ window.SandboxEngine = {
       htmlContent = styleBlock + htmlContent;
     }
 
-    // Inject navigation interceptor script for multi-page linking (<a href="about.html">)
+    // 7. Inject navigation interceptor script for multi-page linking (<a href="about.html">)
     const navScript = `
       <script>
         (function() {
@@ -126,9 +158,6 @@ window.SandboxEngine = {
     return htmlContent;
   },
 
-  /**
-   * Renders the project to an iframe
-   */
   renderToIframe: function(iframeElement, filesMap, currentPage = 'index.html') {
     if (!iframeElement || !filesMap) return;
     this.clearBlobUrls();
@@ -144,9 +173,6 @@ window.SandboxEngine = {
     }
   },
 
-  /**
-   * Opens the multi-file project in a new browser tab
-   */
   openInNewTab: function(filesMap, currentPage = 'index.html') {
     const docContent = this.buildPageDocument(filesMap, currentPage);
     const win = window.open('about:blank', '_blank');
