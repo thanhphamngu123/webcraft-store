@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cổng Quản Trị Admin - WebCraft Store</title>
+  <link rel="stylesheet" href="../styles.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+  <style>
+    body {
+      background-color: #07090E;
+      color: #F8FAFC;
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', sans-serif;
+    }
+
+    /* Admin Dedicated Page Layout */
+    .admin-page-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1.25rem 3rem;
+      background: rgba(14, 19, 31, 0.9);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      backdrop-filter: blur(16px);
+    }
+
+    .admin-page-container {
+      max-width: 1400px;
+      margin: 2rem auto;
+      padding: 0 2rem;
+    }
+
+    .admin-login-card {
+      max-width: 440px;
+      margin: 4rem auto;
+      padding: 2.5rem;
+      background: rgba(14, 19, 31, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(56, 189, 248, 0.15);
+    }
+
+    .admin-workspace-card {
+      background: #0E131F;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      height: 82vh;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Ambient Glow -->
+  <div class="hero-bg-glow"></div>
+
+  <!-- Header for Admin Portal -->
+  <header class="admin-page-header">
+    <a href="../index.html" class="brand-logo">
+      <div class="brand-icon">⚡</div>
+      <span class="brand-gradient">WebCraft Admin Portal</span>
+    </a>
+
+    <div class="nav-actions" id="admin-nav-actions">
+      <a href="../index.html" class="newtab-btn" style="text-decoration:none;">
+        👁️ Xem Trang Web Store
+      </a>
+    </div>
+  </header>
+
+  <!-- Login Section (Visible when not logged in) -->
+  <div id="admin-login-section" class="admin-login-card">
+    <div style="text-align: center; margin-bottom: 2rem;">
+      <div style="width:54px; height:54px; border-radius:14px; background:linear-gradient(135deg, #38BDF8, #818CF8); display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin:0 auto 1rem; box-shadow:0 4px 20px rgba(56,189,248,0.4);">🔐</div>
+      <h1 style="font-size:1.75rem; font-weight:800; margin-bottom:0.4rem;">Đăng Nhập Quản Trị</h1>
+      <p style="font-size:0.9rem; color:#94A3B8;">Nhập tài khoản Admin để vào giao diện đăng & quản lý bài bán trang web</p>
+    </div>
+
+    <form id="admin-portal-login-form" style="display:flex; flex-direction:column; gap:1.25rem;">
+      <div class="form-group">
+        <label>Tài Khoản Admin</label>
+        <input type="text" id="portal-user-input" class="form-input" placeholder="admin" value="admin" required>
+      </div>
+
+      <div class="form-group">
+        <label>Mật Khẩu</label>
+        <input type="password" id="portal-pass-input" class="form-input" placeholder="••••••••" value="admin123" required>
+      </div>
+
+      <button type="submit" class="save-tpl-btn" style="padding:0.9rem; margin-top:0.5rem; font-size:1rem;">⚡ Đăng Nhập</button>
+    </form>
+
+    <div style="background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.1); border-radius:10px; padding:0.8rem; margin-top:1.5rem; font-size:0.82rem; color:#94A3B8; text-align:center;">
+      🔑 Tài khoản mặc định: <code style="color:#38BDF8;">admin</code> | Mật khẩu: <code style="color:#38BDF8;">admin123</code>
+    </div>
+  </div>
+
+  <!-- Full Admin Management Workspace (Visible when logged in) -->
+  <div id="admin-workspace-section" class="admin-page-container" style="display:none;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+      <div>
+        <h1 style="font-size:1.8rem; font-weight:800;">⚙️ Bảng Quản Lý & Đăng Bài Web Store</h1>
+        <p style="color:#94A3B8; font-size:0.95rem;">Đăng sản phẩm mới, upload dự án (ZIP/Folder) hoặc quản lý bài viết hiện có</p>
+      </div>
+      <div style="display:flex; gap:1rem;">
+        <button class="save-tpl-btn" onclick="AdminManager.openModal()">➕ Đăng Dự Án Web Mới</button>
+      </div>
+    </div>
+
+    <!-- Existing Published Templates List -->
+    <div style="background:#0E131F; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:1.5rem; margin-bottom:2rem;">
+      <h3 style="font-size:1.2rem; margin-bottom:1rem; color:#38BDF8;">📚 Danh Sách Dự Án Web Đã Đăng</h3>
+      <div id="admin-templates-table-container">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Upload & Template Editor Modal (Reused) -->
+  <div class="modal-overlay" id="admin-modal">
+    <div class="admin-modal-container">
+      <div class="admin-header">
+        <h2 id="admin-form-title">⚙️ Đăng & Chỉnh Sửa Dự Án Web</h2>
+        <button class="close-btn" onclick="AdminManager.closeModal()">&times;</button>
+      </div>
+
+      <div class="admin-body">
+        <div class="admin-form-panel">
+          <form id="admin-template-form">
+            <div class="form-group">
+              <label>Tên Trang Web</label>
+              <input type="text" id="tpl-input-title" class="form-input" placeholder="VD: Corporate Multi-page Website" required>
+            </div>
+
+            <div class="form-group">
+              <label>Khẩu hiệu / Subtitle</label>
+              <input type="text" id="tpl-input-tagline" class="form-input" placeholder="VD: Giao diện đa trang gồm Home, About...">
+            </div>
+
+            <div class="form-group">
+              <label>Danh mục</label>
+              <select id="tpl-input-category" class="form-select">
+                <option value="SaaS">SaaS & AI</option>
+                <option value="Restaurant">Nhà Hàng & F&B</option>
+                <option value="Portfolio">Portfolio & Cá nhân</option>
+                <option value="E-Commerce">Thương Mại Điện Tử</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Giá bán ($ USD)</label>
+              <input type="number" id="tpl-input-price" class="form-input" value="49" min="0" required>
+            </div>
+
+            <div class="form-group">
+              <label>Tác giả / Nguồn</label>
+              <input type="text" id="tpl-input-author" class="form-input" placeholder="VD: WebCraft Studio">
+            </div>
+
+            <div class="form-group">
+              <label>Link Ảnh Thumbnail (URL)</label>
+              <input type="url" id="tpl-input-thumb" class="form-input" placeholder="https://images.unsplash.com/...">
+            </div>
+
+            <div class="form-group">
+              <label>Thẻ Kỹ thuật (Tags)</label>
+              <input type="text" id="tpl-input-tags" class="form-input" placeholder="Multi-page, HTML5, CSS3, JS, JSON">
+            </div>
+
+            <div class="form-group">
+              <label>Mô tả chi tiết</label>
+              <textarea id="tpl-input-desc" class="form-textarea" rows="3" placeholder="Mô tả cấu trúc file dự án..."></textarea>
+            </div>
+
+            <div class="form-group" style="margin-top:0.5rem;">
+              <label>Tải Lên Cả Dự Án (Nhiều File / ZIP / Folder)</label>
+              
+              <div class="upload-options-grid">
+                <div class="file-upload-box zip-upload-box">
+                  <label for="admin-file-zip" class="upload-label">📦 Tải Lên File .ZIP (Nhiều file)</label>
+                  <input type="file" id="admin-file-zip" accept=".zip">
+                </div>
+                
+                <div class="file-upload-box folder-upload-box">
+                  <label for="admin-folder-upload" class="upload-label">📁 Tải Lên Cả Thư Mục (Folder)</label>
+                  <input type="file" id="admin-folder-upload" webkitdirectory directory multiple>
+                </div>
+              </div>
+
+              <div class="single-files-grid">
+                <div class="file-upload-box">
+                  <label for="admin-file-html" class="upload-label">📄 + File HTML</label>
+                  <input type="file" id="admin-file-html" accept=".html,.htm" multiple>
+                </div>
+                <div class="file-upload-box">
+                  <label for="admin-file-css" class="upload-label">🎨 + File CSS</label>
+                  <input type="file" id="admin-file-css" accept=".css" multiple>
+                </div>
+                <div class="file-upload-box">
+                  <label for="admin-file-js" class="upload-label">⚡ + File JS</label>
+                  <input type="file" id="admin-file-js" accept=".js" multiple>
+                </div>
+                <div class="file-upload-box">
+                  <label for="admin-file-json" class="upload-label">📊 + File JSON</label>
+                  <input type="file" id="admin-file-json" accept=".json" multiple>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <div class="admin-editor-panel">
+          <div class="admin-workspace-split">
+            <div class="file-tree-sidebar">
+              <div class="file-tree-header">
+                <span>📁 Cấu Trúc Dự Án</span>
+                <button class="add-file-btn" onclick="AdminManager.promptNewFile()">+ File</button>
+              </div>
+              <ul class="file-tree-list" id="admin-file-tree"></ul>
+            </div>
+
+            <div class="code-editor-stage">
+              <div class="admin-tabs">
+                <div class="active-filename-indicator" id="active-file-title">
+                  📄 index.html
+                </div>
+                <button class="admin-tab-btn" id="btn-test-preview" onclick="AdminManager.togglePreviewTab(true)">
+                  <span>👁️ Test Live Sandbox</span>
+                </button>
+              </div>
+
+              <div class="editor-area-wrapper" id="editor-wrapper">
+                <textarea id="active-code-editor" class="code-textarea" placeholder="Nội dung mã nguồn của file đang chọn..."></textarea>
+              </div>
+
+              <div class="editor-area-wrapper" id="preview-wrapper" style="display:none;">
+                <iframe id="admin-preview-iframe" class="sandbox-iframe" style="width:100%; height:100%;" title="Admin Preview Sandbox"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-footer">
+        <button class="cancel-btn" onclick="AdminManager.closeModal()">Hủy Bỏ</button>
+        <button class="save-tpl-btn" onclick="AdminManager.saveTemplateFromForm()">✨ Lưu & Xuất Bản Bài Đăng</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/templates.js"></script>
+  <script src="../js/sandbox.js"></script>
+  <script src="../js/admin.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      await fetchTemplatesFromAPI();
+      checkAdminPortalState();
+
+      document.getElementById('admin-portal-login-form').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const user = document.getElementById('portal-user-input').value.trim();
+        const pass = document.getElementById('portal-pass-input').value.trim();
+
+        try {
+          const res = await fetch(`${window.API_BASE_URL}/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: user, password: pass })
+          });
+          if (res.ok) {
+            const json = await res.json();
+            if (json.success && json.token) {
+              localStorage.setItem('adminToken', json.token);
+              localStorage.setItem('adminUser', user);
+              checkAdminPortalState();
+              return;
+            }
+          }
+        } catch (err) {
+          console.warn("API login fallback", err);
+        }
+
+        if (user === 'admin' && pass === 'admin123') {
+          localStorage.setItem('adminToken', 'adm_token_' + Date.now());
+          localStorage.setItem('adminUser', 'admin');
+          checkAdminPortalState();
+        } else {
+          alert("❌ Sai tài khoản hoặc mật khẩu Admin!");
+        }
+      });
+    });
+
+    function checkAdminPortalState() {
+      const isLoggedIn = AdminManager.isLoggedIn();
+      const loginSection = document.getElementById('admin-login-section');
+      const workspaceSection = document.getElementById('admin-workspace-section');
+      const navActions = document.getElementById('admin-nav-actions');
+
+      if (isLoggedIn) {
+        loginSection.style.display = 'none';
+        workspaceSection.style.display = 'block';
+
+        const user = localStorage.getItem('adminUser') || 'admin';
+        navActions.innerHTML = `
+          <span style="color:var(--accent-emerald); font-weight:700; font-size:0.85rem;">🟢 Admin: ${user}</span>
+          <a href="../index.html" class="newtab-btn" style="text-decoration:none;">👁️ Xem Store Trang Chủ</a>
+          <button class="cancel-btn" style="padding:0.4rem 0.8rem; font-size:0.85rem;" onclick="logoutPortal()">🚪 Đăng Xuất</button>
+        `;
+
+        renderAdminTable();
+      } else {
+        loginSection.style.display = 'block';
+        workspaceSection.style.display = 'none';
+        navActions.innerHTML = `
+          <a href="../index.html" class="newtab-btn" style="text-decoration:none;">👁️ Xem Trang Web Store</a>
+        `;
+      }
+    }
+
+    function logoutPortal() {
+      localStorage.removeItem('adminToken');
+      localStorage.removeItem('adminUser');
+      checkAdminPortalState();
+    }
+
+    function renderAdminTable() {
+      const container = document.getElementById('admin-templates-table-container');
+      if (!container) return;
+
+      const templates = getStoredTemplates();
+
+      if (templates.length === 0) {
+        container.innerHTML = `<p style="color:#94A3B8;">Chưa có bài bán trang web nào.</p>`;
+        return;
+      }
+
+      container.innerHTML = `
+        <table style="width:100%; border-collapse:collapse; text-align:left; font-size:0.9rem;">
+          <thead>
+            <tr style="border-bottom:1px solid rgba(255,255,255,0.1); color:#94A3B8;">
+              <th style="padding:0.75rem;">Tên Dự Án Web</th>
+              <th style="padding:0.75rem;">Danh Mục</th>
+              <th style="padding:0.75rem;">Giá Bán</th>
+              <th style="padding:0.75rem;">Số File</th>
+              <th style="padding:0.75rem; text-align:right;">Thao Tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${templates.map(t => {
+              const fileCount = t.filesMap ? Object.keys(t.filesMap).length : 1;
+              return `
+                <tr style="border-bottom:1px solid rgba(255,255,255,0.05);">
+                  <td style="padding:0.8rem; font-weight:700; color:#FFF;">${t.title}</td>
+                  <td style="padding:0.8rem; color:#38BDF8;">${t.category}</td>
+                  <td style="padding:0.8rem; font-weight:bold; color:#10B981;">$${t.price}</td>
+                  <td style="padding:0.8rem; font-family:monospace; color:#94A3B8;">${fileCount} files</td>
+                  <td style="padding:0.8rem; text-align:right;">
+                    <button class="action-icon-btn" style="display:inline-flex;" onclick="AdminManager.openModal('${t.id}')">✏️ Sửa</button>
+                    <button class="action-icon-btn delete-btn" style="display:inline-flex;" onclick="deleteFromPortal('${t.id}')">🗑️ Xóa</button>
+                  </td>
+                </tr>
+              `;
+            }).join('')}
+          </tbody>
+        </table>
+      `;
+    }
+
+    async function deleteFromPortal(id) {
+      if (confirm("Bạn có chắc chắn muốn xóa bài bán trang web này không?")) {
+        await apiDeleteTemplate(id);
+        renderAdminTable();
+      }
+    }
+  </script>
+</body>
+</html>

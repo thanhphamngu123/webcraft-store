@@ -1,0 +1,28 @@
+[
+  {
+    "id": "tpl-cyber-saas",
+    "title": "Aether AI - NextGen Multi-Page SaaS",
+    "tagline": "Trang web SaaS AI đa trang với hiệu ứng Glassmorphism & Cyber Glow",
+    "category": "SaaS",
+    "price": 59,
+    "rating": 4.9,
+    "sales": 242,
+    "badge": "Multi-Page",
+    "author": "WebCraft Studio",
+    "updatedAt": "2026-07-28",
+    "description": "Template giao diện SaaS đa trang (Home, Features, Pricing) dành cho công ty AI. Tích hợp đầy đủ Dashboard Mockup, Bảng Giá và Thực Đơn Tương Tác.",
+    "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+    "tags": [
+      "Multi-page",
+      "HTML5",
+      "CSS3",
+      "JavaScript",
+      "JSON Data"
+    ],
+    "filesMap": {
+      "index.html": "<!DOCTYPE html><html><head><title>Aether AI</title></head><body><h1>⚡ Aether.ai SaaS Platform</h1><p>Chào mừng bạn đến với template SaaS AI!</p><nav><a href=\"features.html\">Xem Tính Năng</a> | <a href=\"pricing.html\">Bảng Giá</a></nav></body></html>",
+      "features.html": "<!DOCTYPE html><html><head><title>Features</title></head><body><h1>Tính Năng Nổi Bật</h1><p>Mô hình điện toán phân tán siêu tốc độ.</p><a href=\"index.html\"><- Trang Chủ</a></body></html>",
+      "pricing.html": "<!DOCTYPE html><html><head><title>Pricing</title></head><body><h1>Bảng Giá Gói Dịch Vụ</h1><p>Gói Enterprise: $99/tháng</p><a href=\"index.html\"><- Trang Chủ</a></body></html>"
+    }
+  }
+]

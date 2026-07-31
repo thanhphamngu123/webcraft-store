@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebCraft Store - Chợ Mua Bán & Trải Nghiệm Template Website Multi-File</title>
-  <meta name="description" content="Nền tảng mua bán giao diện trang web chất lượng cao. Hỗ trợ đăng nhập Admin riêng để quản lý & đăng bài tải lên dự án HTML, CSS, JS, JSON.">
+  <meta name="description" content="Nền tảng mua bán giao diện trang web chất lượng cao. Trải nghiệm Live Demo mượt mà các dự án website HTML, CSS, JS, JSON.">
   <link rel="stylesheet" href="styles.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
-  <!-- Top Navbar -->
+  <!-- Clean Public Top Navbar -->
   <header class="navbar">
     <a href="index.html" class="brand-logo">
       <div class="brand-icon">⚡</div>
       <span class="brand-gradient">WebCraft Store</span>
     </a>
 
-    <!-- Dynamic Admin Auth Actions Container -->
-    <div class="nav-actions" id="nav-auth-container">
-      <a href="admin-login.html" class="admin-btn" id="login-nav-btn">
-        <span>🔐 Đăng Nhập Admin</span>
-      </a>
+    <!-- Clean Customer Nav Actions -->
+    <div class="nav-actions">
+      <span style="font-size:0.85rem; color:var(--text-secondary); font-weight:600;">
+        🛍️ Chợ Giao Diện Website Chất Lượng Cao
+      </span>
     </div>
   </header>
 
@@ -29,10 +29,10 @@
   <section class="hero-section">
     <div class="hero-bg-glow"></div>
     <div class="hero-content">
-      <div class="hero-pill">✨ Admin Auth Protected Marketplace Engine</div>
+      <div class="hero-pill">✨ Live Demo Interactive Sandbox Engine</div>
       <h1 class="hero-title">Sở Hữu Trang Web Đẳng Cấp Chỉ Với 1 Click</h1>
       <p class="hero-subtitle">
-        Khám phá bộ sưu tập template website nhiều trang (Multi-Page Project). Admin có thể đăng nhập cổng riêng để tải lên dự án qua file ZIP hoặc Thư mục chứa đầy đủ HTML, CSS, JS, JSON.
+        Khám phá bộ sưu tập template website đa dạng (SaaS, Nhà Hàng, Portfolio, Thương Mại...). Trải nghiệm Live Demo trực tiếp các dự án website đa trang trước khi đưa ra quyết định mua hàng.
       </p>
     </div>
   </section>
@@ -105,138 +105,6 @@
     </div>
   </div>
 
-  <!-- Admin Upload & Multi-File Template Editor Modal -->
-  <div class="modal-overlay" id="admin-modal">
-    <div class="admin-modal-container">
-      <div class="admin-header">
-        <h2 id="admin-form-title">⚙️ Cổng Đăng Bài Admin (Multi-File / ZIP / Folder)</h2>
-        <button class="close-btn" onclick="AdminManager.closeModal()">&times;</button>
-      </div>
-
-      <div class="admin-body">
-        <div class="admin-form-panel">
-          <form id="admin-template-form">
-            <div class="form-group">
-              <label>Tên Trang Web</label>
-              <input type="text" id="tpl-input-title" class="form-input" placeholder="VD: Multi-Page Corporate Portal" required>
-            </div>
-
-            <div class="form-group">
-              <label>Khẩu hiệu / Subtitle</label>
-              <input type="text" id="tpl-input-tagline" class="form-input" placeholder="VD: Giao diện đa trang gồm Home, About, Contact...">
-            </div>
-
-            <div class="form-group">
-              <label>Danh mục</label>
-              <select id="tpl-input-category" class="form-select">
-                <option value="SaaS">SaaS & AI</option>
-                <option value="Restaurant">Nhà Hàng & F&B</option>
-                <option value="Portfolio">Portfolio & Cá nhân</option>
-                <option value="E-Commerce">Thương Mại Điện Tử</option>
-              </select>
-            </div>
-
-            <div class="form-group">
-              <label>Giá bán ($ USD)</label>
-              <input type="number" id="tpl-input-price" class="form-input" value="49" min="0" required>
-            </div>
-
-            <div class="form-group">
-              <label>Tác giả / Nguồn</label>
-              <input type="text" id="tpl-input-author" class="form-input" placeholder="VD: WebCraft Studio">
-            </div>
-
-            <div class="form-group">
-              <label>Link Ảnh Thumbnail (URL)</label>
-              <input type="url" id="tpl-input-thumb" class="form-input" placeholder="https://images.unsplash.com/...">
-            </div>
-
-            <div class="form-group">
-              <label>Thẻ Kỹ thuật (Tags)</label>
-              <input type="text" id="tpl-input-tags" class="form-input" placeholder="Multi-page, HTML5, CSS3, JS, JSON">
-            </div>
-
-            <div class="form-group">
-              <label>Mô tả chi tiết</label>
-              <textarea id="tpl-input-desc" class="form-textarea" rows="3" placeholder="Mô tả danh sách trang và cấu trúc file..."></textarea>
-            </div>
-
-            <div class="form-group" style="margin-top:0.5rem;">
-              <label>Tải Lên Dự Án (Nhiều File / ZIP / Folder)</label>
-              
-              <div class="upload-options-grid">
-                <div class="file-upload-box zip-upload-box">
-                  <label for="admin-file-zip" class="upload-label">📦 Tải Lên File .ZIP (Nhiều file)</label>
-                  <input type="file" id="admin-file-zip" accept=".zip">
-                </div>
-                
-                <div class="file-upload-box folder-upload-box">
-                  <label for="admin-folder-upload" class="upload-label">📁 Tải Lên Cả Thư Mục (Folder)</label>
-                  <input type="file" id="admin-folder-upload" webkitdirectory directory multiple>
-                </div>
-              </div>
-
-              <div class="single-files-grid">
-                <div class="file-upload-box">
-                  <label for="admin-file-html" class="upload-label">📄 + File HTML</label>
-                  <input type="file" id="admin-file-html" accept=".html,.htm" multiple>
-                </div>
-                <div class="file-upload-box">
-                  <label for="admin-file-css" class="upload-label">🎨 + File CSS</label>
-                  <input type="file" id="admin-file-css" accept=".css" multiple>
-                </div>
-                <div class="file-upload-box">
-                  <label for="admin-file-js" class="upload-label">⚡ + File JS</label>
-                  <input type="file" id="admin-file-js" accept=".js" multiple>
-                </div>
-                <div class="file-upload-box">
-                  <label for="admin-file-json" class="upload-label">📊 + File JSON</label>
-                  <input type="file" id="admin-file-json" accept=".json" multiple>
-                </div>
-              </div>
-            </div>
-          </form>
-        </div>
-
-        <div class="admin-editor-panel">
-          <div class="admin-workspace-split">
-            <div class="file-tree-sidebar">
-              <div class="file-tree-header">
-                <span>📁 Cấu Trúc Dự Án</span>
-                <button class="add-file-btn" onclick="AdminManager.promptNewFile()" title="Thêm file mới">+ File</button>
-              </div>
-              <ul class="file-tree-list" id="admin-file-tree"></ul>
-            </div>
-
-            <div class="code-editor-stage">
-              <div class="admin-tabs">
-                <div class="active-filename-indicator" id="active-file-title">
-                  📄 index.html
-                </div>
-                <button class="admin-tab-btn" id="btn-test-preview" onclick="AdminManager.togglePreviewTab(true)">
-                  <span>👁️ Test Live Sandbox</span>
-                </button>
-              </div>
-
-              <div class="editor-area-wrapper" id="editor-wrapper">
-                <textarea id="active-code-editor" class="code-textarea" placeholder="Nội dung mã nguồn của file đang chọn..."></textarea>
-              </div>
-
-              <div class="editor-area-wrapper" id="preview-wrapper" style="display:none;">
-                <iframe id="admin-preview-iframe" class="sandbox-iframe" style="width:100%; height:100%;" title="Admin Multi-File Preview Sandbox"></iframe>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="admin-footer">
-        <button class="cancel-btn" onclick="AdminManager.closeModal()">Hủy Bỏ</button>
-        <button class="save-tpl-btn" onclick="AdminManager.saveTemplateFromForm()">✨ Lưu & Xuất Bản Bài Đăng</button>
-      </div>
-    </div>
-  </div>
-
   <!-- Detail Info Drawer Modal -->
   <div class="modal-overlay" id="detail-modal">
     <div class="admin-modal-container" style="max-width: 750px; height: auto; max-height: 85vh;">
@@ -263,7 +131,6 @@
 
   <script src="js/templates.js"></script>
   <script src="js/sandbox.js"></script>
-  <script src="js/admin.js"></script>
   <script src="js/app.js"></script>
 </body>
 </html>
