@@ -1,13 +1,13 @@
 /**
- * Templates & Categories Data Manager - Newest First Sorting Edition
+ * Templates & Categories Data Manager - Robust Creation Time Sorting Edition
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V15";
-const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V15";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V16";
+const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V16";
 
 const DEFAULT_CATEGORIES = [
   { id: "All", name: "Tất cả" },
@@ -222,26 +222,38 @@ body { background: #080B10; color: #F1F5F9; line-height: 1.6; }
 ];
 
 /**
- * Sorts array of templates so NEWEST created items always appear FIRST at the top
+ * Extracts creation timestamp from template object via createdAt, updatedAt, or ID digits
+ */
+function getTimestampFromTemplate(tpl) {
+  if (!tpl) return 0;
+  
+  if (typeof tpl.createdAt === 'number' && tpl.createdAt > 0) {
+    return tpl.createdAt;
+  }
+  
+  if (tpl.createdAt && typeof tpl.createdAt === 'string' && !isNaN(Date.parse(tpl.createdAt))) {
+    return Date.parse(tpl.createdAt);
+  }
+  
+  if (tpl.updatedAt && typeof tpl.updatedAt === 'string' && !isNaN(Date.parse(tpl.updatedAt))) {
+    return Date.parse(tpl.updatedAt);
+  }
+  
+  if (tpl.id && typeof tpl.id === 'string') {
+    const match = tpl.id.match(/\d{10,}/);
+    if (match) return parseInt(match[0], 10);
+  }
+
+  return 0;
+}
+
+/**
+ * Sorts templates by Creation Time descending (Newest Created First)
  */
 function sortTemplatesNewestFirst(templatesList) {
   if (!Array.isArray(templatesList)) return [];
-  return templatesList.sort((a, b) => {
-    let timeA = a.createdAt;
-    if (!timeA && a.id && a.id.startsWith('tpl-')) {
-      const num = parseInt(a.id.replace('tpl-', ''), 10);
-      timeA = isNaN(num) ? 0 : num;
-    }
-    timeA = timeA || 0;
-
-    let timeB = b.createdAt;
-    if (!timeB && b.id && b.id.startsWith('tpl-')) {
-      const num = parseInt(b.id.replace('tpl-', ''), 10);
-      timeB = isNaN(num) ? 0 : num;
-    }
-    timeB = timeB || 0;
-
-    return timeB - timeA;
+  return templatesList.slice().sort((a, b) => {
+    return getTimestampFromTemplate(b) - getTimestampFromTemplate(a);
   });
 }
 
@@ -366,7 +378,7 @@ window.cachedTemplates = getLocalTemplates();
 
 /**
  * Direct Live Firebase Firestore Fetch Engine
- * Fetches all templates in web_templates collection directly from Firebase Cloud and sorts NEWEST FIRST.
+ * Fetches all templates in web_templates collection directly from Firebase Cloud and sorts strictly BY CREATION TIME DESCENDING.
  */
 async function fetchTemplatesFromAPI() {
   const db = window.getDb ? window.getDb() : null;
@@ -392,7 +404,7 @@ async function fetchTemplatesFromAPI() {
           const sortedFB = sortTemplatesNewestFirst(fbTemplates);
           window.cachedTemplates = sortedFB;
           saveLocalTemplates(sortedFB);
-          console.log(`🔥 Synchronized ${sortedFB.length} live products (Newest First) directly from Firebase Cloud Database!`);
+          console.log(`🔥 Synchronized ${sortedFB.length} live products (Strict Creation Time Order) directly from Firebase Cloud Database!`);
           return sortedFB;
         }
       }
@@ -409,7 +421,8 @@ async function apiAddTemplate(templateData) {
   const now = Date.now();
   const id = templateData.id || ('tpl-' + now);
   templateData.id = id;
-  templateData.createdAt = templateData.createdAt || now;
+  templateData.createdAt = now;
+  templateData.updatedAt = new Date().toISOString().split('T')[0];
 
   const sanitized = sanitizeForFirestore(templateData);
   const db = window.getDb ? window.getDb() : null;
@@ -436,10 +449,14 @@ async function apiAddTemplate(templateData) {
 
 async function apiUpdateTemplate(id, templateData) {
   templateData.id = id;
-  if (!templateData.createdAt) {
-    const existing = window.cachedTemplates.find(t => t.id === id);
-    templateData.createdAt = existing ? existing.createdAt : Date.now();
+  const existing = window.cachedTemplates.find(t => t.id === id);
+  if (existing && existing.createdAt) {
+    templateData.createdAt = existing.createdAt;
+  } else {
+    const match = id.match(/\d{10,}/);
+    templateData.createdAt = match ? parseInt(match[0], 10) : Date.now();
   }
+  templateData.updatedAt = new Date().toISOString().split('T')[0];
 
   const sanitized = sanitizeForFirestore(templateData);
   const db = window.getDb ? window.getDb() : null;
