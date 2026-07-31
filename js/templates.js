@@ -6,7 +6,7 @@ window.API_BASE_URL = window.location.origin.includes('localhost') || window.loc
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V5";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V6";
 
 const DEFAULT_TEMPLATES = [
   {
@@ -183,7 +183,6 @@ window.cachedTemplates = getLocalTemplates();
  * Fetch templates from Firebase Firestore Database first, with fallback to LocalStorage
  */
 async function fetchTemplatesFromAPI() {
-  // 1. Try Firebase Firestore Cloud Database
   if (window.db) {
     try {
       const snapshot = await window.db.collection('web_templates').get();
@@ -198,11 +197,10 @@ async function fetchTemplatesFromAPI() {
         return fbTemplates;
       }
     } catch (err) {
-      console.warn("Firebase Firestore fetch error", err);
+      console.warn("Firebase Firestore fetch notice:", err.message);
     }
   }
 
-  // 2. Try REST API Server if configured
   try {
     const response = await fetch(`${window.API_BASE_URL}/templates`);
     if (response && response.ok) {
@@ -213,11 +211,8 @@ async function fetchTemplatesFromAPI() {
         return json.data;
       }
     }
-  } catch (err) {
-    console.warn("Backend API offline, using LocalStorage fallback.");
-  }
+  } catch (err) {}
 
-  // 3. Fallback to Local Storage / Default Templates
   window.cachedTemplates = getLocalTemplates();
   return window.cachedTemplates;
 }
@@ -229,17 +224,20 @@ async function apiAddTemplate(templateData) {
   const id = templateData.id || ('tpl-' + Date.now());
   templateData.id = id;
 
-  // 1. Save to Firebase Firestore if connected
   if (window.db) {
     try {
       await window.db.collection('web_templates').doc(id).set(templateData);
-      console.log(`✅ Published new template to Firebase Firestore: "${templateData.title}"`);
+      console.log(`✅ Saved template to Firebase Firestore: "${templateData.title}"`);
     } catch (err) {
-      console.warn("Firebase save error", err);
+      console.error("Firebase Firestore Save Error:", err);
+      if (err.code === 'permission-denied') {
+        alert("⚠️ BẠN CẦN BẬT QUYỀN TRUY CẬP TRÊN FIREBASE:\nVào Firebase Console -> Firestore Database -> Rules -> Đổi 'allow read, write: if false;' thành 'allow read, write: if true;' rồi bấm Publish!");
+      } else {
+        alert("⚠️ Lỗi Firebase: Hãy chắc chắn bạn đã bấm nút 'Tạo cơ sở dữ liệu' (Create Database) trong Firebase Console -> Firestore Database!");
+      }
     }
   }
 
-  // 2. Save to REST API if available
   try {
     const token = getAdminToken();
     await fetch(`${window.API_BASE_URL}/templates`, {
@@ -252,7 +250,6 @@ async function apiAddTemplate(templateData) {
     });
   } catch (err) {}
 
-  // 3. Save locally
   window.cachedTemplates.unshift(templateData);
   saveLocalTemplates(window.cachedTemplates);
   return templateData;
@@ -265,7 +262,7 @@ async function apiUpdateTemplate(id, templateData) {
     try {
       await window.db.collection('web_templates').doc(id).set(templateData, { merge: true });
     } catch (err) {
-      console.warn("Firebase update error", err);
+      console.error("Firebase update error", err);
     }
   }
 
@@ -293,7 +290,7 @@ async function apiDeleteTemplate(id) {
       await window.db.collection('web_templates').doc(id).delete();
       console.log(`🗑️ Deleted template from Firebase Firestore: ${id}`);
     } catch (err) {
-      console.warn("Firebase delete error", err);
+      console.error("Firebase delete error", err);
     }
   }
 

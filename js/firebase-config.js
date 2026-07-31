@@ -1,5 +1,5 @@
 /**
- * Firebase Config & Automatic Cloud Sync Engine for WebCraft Store
+ * Firebase Config & Automatic Cloud Sync Engine with Diagnostic Error Handler
  * Connected to Firebase Project: webstore-a19ea
  */
 
@@ -19,9 +19,8 @@ window.initFirebaseStore = async function() {
     try {
       window.firebase.initializeApp(window.firebaseConfig);
       window.db = window.firebase.firestore();
-      console.log("⚡ Firebase Cloud Database (webstore-a19ea) connected & active!");
+      console.log("⚡ Firebase Cloud Database (webstore-a19ea) connected!");
       
-      // Auto-sync default templates to Firestore if empty
       await syncInitialTemplatesToFirebase();
     } catch (e) {
       console.warn("Firebase Init Error:", e);
@@ -30,7 +29,7 @@ window.initFirebaseStore = async function() {
 };
 
 /**
- * Automatically uploads default templates to Firebase Firestore if empty
+ * Automatically seeds default templates to Firebase Firestore if collection is empty
  */
 async function syncInitialTemplatesToFirebase() {
   if (!window.db) return;
@@ -45,11 +44,20 @@ async function syncInitialTemplatesToFirebase() {
       console.log(`✅ Successfully seeded ${defaults.length} template projects to Firebase Firestore!`);
     }
   } catch (err) {
-    console.warn("Firebase Firestore Sync notice (Ensure Firestore is created in Test Mode):", err);
+    console.error("Firebase Firestore Sync Notice:", err);
+    handleFirebaseError(err);
   }
 }
 
-// Auto init on DOM ready
+function handleFirebaseError(err) {
+  if (!err) return;
+  if (err.code === 'permission-denied' || (err.message && err.message.includes('permission'))) {
+    console.warn("⚠️ Firebase Rules is locked. Need to set test mode in Firebase Console.");
+  } else if (err.message && (err.message.includes('not found') || err.message.includes('NOT_FOUND'))) {
+    console.warn("⚠️ Firestore Database has not been created yet in Firebase Console.");
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   window.initFirebaseStore();
 });
