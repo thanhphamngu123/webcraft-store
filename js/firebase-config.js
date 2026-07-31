@@ -13,18 +13,22 @@ window.firebaseConfig = {
   measurementId: "G-EZNSTYWGFG"
 };
 
-// Initialize Firebase & Auto-Sync with Firestore Cloud Database
+// Initialize Firebase & Firestore Cloud Database immediately
 window.initFirebaseStore = async function() {
-  if (window.firebase && !window.firebase.apps.length) {
+  if (window.firebase) {
     try {
-      window.firebase.initializeApp(window.firebaseConfig);
+      if (!window.firebase.apps.length) {
+        window.firebase.initializeApp(window.firebaseConfig);
+      }
       window.db = window.firebase.firestore();
-      console.log("⚡ Firebase Cloud Database (webstore-a19ea) connected & active!");
+      console.log("⚡ Firebase Cloud Database (webstore-a19ea) initialized successfully!");
       
       await syncInitialTemplatesToFirebase();
     } catch (e) {
       console.warn("Firebase Init Error:", e);
     }
+  } else {
+    console.warn("⚠️ Firebase SDK not loaded from CDN yet.");
   }
 };
 
@@ -45,19 +49,13 @@ async function syncInitialTemplatesToFirebase() {
     }
   } catch (err) {
     console.error("Firebase Firestore Sync Notice:", err);
-    handleFirebaseError(err);
   }
 }
 
-function handleFirebaseError(err) {
-  if (!err) return;
-  if (err.code === 'permission-denied' || (err.message && err.message.includes('permission'))) {
-    console.warn("⚠️ Firebase Rules is locked. Set permanent rules in Firebase Console.");
-  } else if (err.message && (err.message.includes('not found') || err.message.includes('NOT_FOUND'))) {
-    console.warn("⚠️ Firestore Database has not been created yet in Firebase Console.");
-  }
-}
+// Execute immediately upon script load
+window.initFirebaseStore();
 
+// Also run on DOMContentLoaded just in case
 document.addEventListener('DOMContentLoaded', () => {
   window.initFirebaseStore();
 });
