@@ -1,12 +1,12 @@
 /**
- * Templates Data & Firebase Cloud Sync Engine - Guaranteed Firebase Connection Edition
+ * Templates Data & Firebase Cloud Sync Engine - Ultimate Reliable Edition
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V9";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V10";
 
 const DEFAULT_TEMPLATES = [
   {
@@ -148,25 +148,6 @@ function openContactModal() {
   }
 ];
 
-// Lazy-initialization helper to guarantee Firebase Firestore instance
-function getFirebaseInstance() {
-  if (window.db) return window.db;
-  if (window.firebase) {
-    try {
-      if (!window.firebase.apps || !window.firebase.apps.length) {
-        if (window.firebaseConfig) {
-          window.firebase.initializeApp(window.firebaseConfig);
-        }
-      }
-      window.db = window.firebase.firestore();
-      return window.db;
-    } catch (e) {
-      console.warn("getFirebaseInstance notice:", e);
-    }
-  }
-  return null;
-}
-
 function sanitizeForFirestore(obj) {
   const clean = {};
   for (const key in obj) {
@@ -216,7 +197,7 @@ window.cachedTemplates = getLocalTemplates();
  * Fetch templates from Firebase Firestore Database first, with bulletproof fallback
  */
 async function fetchTemplatesFromAPI() {
-  const db = getFirebaseInstance();
+  const db = window.getDb ? window.getDb() : null;
   if (db) {
     try {
       const snapshot = await db.collection('web_templates').get();
@@ -249,7 +230,7 @@ async function apiAddTemplate(templateData) {
   templateData.id = id;
 
   const sanitized = sanitizeForFirestore(templateData);
-  const db = getFirebaseInstance();
+  const db = window.getDb ? window.getDb() : null;
 
   if (db) {
     try {
@@ -258,10 +239,10 @@ async function apiAddTemplate(templateData) {
       alert(`🎉 Đã đăng bài "${templateData.title}" thành công lên Firebase Cloud Database!`);
     } catch (err) {
       console.error("Firebase Firestore Save Error:", err);
-      alert(`⚠️ Lỗi Firebase (${err.code}): ${err.message}`);
+      alert(`⚠️ Lỗi Firebase (${err.code || 'Firestore'}): ${err.message}`);
     }
   } else {
-    alert("⚠️ Lỗi: Không thể khởi tạo kết nối Firebase. Đã lưu tạm ở Local Storage.");
+    alert("⚠️ Lỗi: Chưa kết nối được Firebase SDK. Đã lưu tạm vào máy Local.");
   }
 
   window.cachedTemplates.unshift(sanitized);
@@ -272,7 +253,7 @@ async function apiAddTemplate(templateData) {
 async function apiUpdateTemplate(id, templateData) {
   templateData.id = id;
   const sanitized = sanitizeForFirestore(templateData);
-  const db = getFirebaseInstance();
+  const db = window.getDb ? window.getDb() : null;
 
   if (db) {
     try {
@@ -291,7 +272,7 @@ async function apiUpdateTemplate(id, templateData) {
 }
 
 async function apiDeleteTemplate(id) {
-  const db = getFirebaseInstance();
+  const db = window.getDb ? window.getDb() : null;
   if (db) {
     try {
       await db.collection('web_templates').doc(id).delete();
