@@ -10,6 +10,171 @@ const STORAGE_KEY = "WEB_STORE_TEMPLATES_V2";
 
 const DEFAULT_TEMPLATES = [
   {
+    id: "tpl-cyberstore-ecommerce",
+    title: "CyberStore - Future Fashion E-Commerce",
+    tagline: "Trang web thương mại điện tử thời trang Cyberpunk với Giỏ Hàng realtime",
+    category: "E-Commerce",
+    price: 69,
+    rating: 5.0,
+    sales: 88,
+    badge: "Mới tạo (Multi-Page)",
+    author: "CyberDesign Studio",
+    updatedAt: "2026-07-31",
+    description: "Template thương mại điện tử phong cách Cyberpunk hiện đại dành cho thương hiệu thời trang, phụ kiện công nghệ. Tích hợp giỏ hàng tự động, bộ lọc sản phẩm và trải nghiệm mua sắm siêu mượt.",
+    thumbnail: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80",
+    tags: ["Multi-page", "E-Commerce", "HTML5", "CSS3", "JS", "JSON"],
+    filesMap: {
+      "index.html": `
+<header class="store-nav">
+  <div class="store-brand">🛍️ CYBERSTORE</div>
+  <nav>
+    <a href="index.html" class="active">Trang Chủ</a>
+    <a href="products.html">Sản Phẩm</a>
+  </nav>
+  <div class="cart-trigger" onclick="toggleCartModal()">
+    🛒 Giỏ Hàng (<span id="cart-count">0</span>)
+  </div>
+</header>
+
+<main>
+  <section class="store-hero">
+    <span class="season-badge">🔥 BỘ SƯU TẬP THU ĐÔNG 2026</span>
+    <h1>Thời Trang Tương Lai Phong Cách Cyberpunk</h1>
+    <p>Khám phá bộ sưu tập trang phục và phụ kiện độc bản tích hợp công nghệ chiếu sáng neon.</p>
+    <div style="margin-top:2rem;">
+      <a href="products.html" class="shop-btn">Sắm Ngay -></a>
+    </div>
+  </section>
+
+  <section class="featured-products">
+    <h2>Sản Phẩm Nổi Bật</h2>
+    <div class="product-grid" id="home-products">
+      <div class="p-card">
+        <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=500&q=80" alt="Cyber Hoodie">
+        <h3>Cyber Neon Jacket</h3>
+        <p class="price">$120</p>
+        <button class="add-cart-btn" onclick="addToCart('Cyber Neon Jacket', 120)">+ Thêm Vào Giỏ</button>
+      </div>
+
+      <div class="p-card">
+        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80" alt="Neon Sneakers">
+        <h3>Holo Glow Sneakers</h3>
+        <p class="price">$180</p>
+        <button class="add-cart-btn" onclick="addToCart('Holo Glow Sneakers', 180)">+ Thêm Vào Giỏ</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 CyberStore Inc. Designed for WebCraft Marketplace.</p>
+</footer>
+      `.trim(),
+
+      "products.html": `
+<header class="store-nav">
+  <div class="store-brand">🛍️ CYBERSTORE</div>
+  <nav>
+    <a href="index.html">Trang Chủ</a>
+    <a href="products.html" class="active">Sản Phẩm</a>
+  </nav>
+  <div class="cart-trigger" onclick="toggleCartModal()">
+    🛒 Giỏ Hàng (<span id="cart-count">0</span>)
+  </div>
+</header>
+
+<main style="padding:4rem 2rem; max-width:1200px; margin:0 auto;">
+  <h2 style="font-size:2.5rem; text-align:center; color:#38BDF8; margin-bottom:3rem;">Tất Cả Sản Phẩm</h2>
+  
+  <div class="product-grid">
+    <div class="p-card">
+      <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=500&q=80" alt="Cyber Hoodie">
+      <h3>Cyber Neon Jacket</h3>
+      <p class="price">$120</p>
+      <button class="add-cart-btn" onclick="addToCart('Cyber Neon Jacket', 120)">+ Thêm Vào Giỏ</button>
+    </div>
+
+    <div class="p-card">
+      <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80" alt="Neon Sneakers">
+      <h3>Holo Glow Sneakers</h3>
+      <p class="price">$180</p>
+      <button class="add-cart-btn" onclick="addToCart('Holo Glow Sneakers', 180)">+ Thêm Vào Giỏ</button>
+    </div>
+
+    <div class="p-card">
+      <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=500&q=80" alt="Holo Glasses">
+      <h3>Smart Holo Glasses</h3>
+      <p class="price">$250</p>
+      <button class="add-cart-btn" onclick="addToCart('Smart Holo Glasses', 250)">+ Thêm Vào Giỏ</button>
+    </div>
+  </div>
+
+  <div style="text-align:center; margin-top:3rem;">
+    <a href="index.html" class="shop-btn" style="background:rgba(255,255,255,0.1);"><- Quay lại Trang Chủ</a>
+  </div>
+</main>
+      `.trim(),
+
+      "css/store.css": `
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+body { background: #080B10; color: #F1F5F9; line-height: 1.6; }
+
+.store-nav {
+  display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 3rem;
+  background: rgba(14, 19, 31, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1);
+  position: sticky; top: 0; z-index: 100;
+}
+
+.store-brand { font-size: 1.4rem; font-weight: 800; color: #38BDF8; letter-spacing: 1px; }
+.store-nav nav a { color: #94A3B8; text-decoration: none; margin: 0 1rem; font-weight: 600; }
+.store-nav nav a.active, .store-nav nav a:hover { color: #38BDF8; }
+
+.cart-trigger { background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.5rem 1.2rem; border-radius: 99px; font-weight: 700; cursor: pointer; }
+
+.store-hero { text-align: center; padding: 5rem 2rem 4rem; max-width: 900px; margin: 0 auto; }
+.season-badge { background: rgba(244, 63, 94, 0.15); color: #F43F5E; border: 1px solid rgba(244, 63, 94, 0.3); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.82rem; font-weight: 700; display: inline-block; margin-bottom: 1.5rem; }
+
+.store-hero h1 { font-size: 3.2rem; font-weight: 800; line-height: 1.15; margin-bottom: 1rem; background: linear-gradient(to right, #FFF, #94A3B8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.store-hero p { color: #94A3B8; font-size: 1.1rem; }
+
+.shop-btn { background: linear-gradient(135deg, #38BDF8, #818CF8); color: white; border: none; padding: 0.8rem 2rem; border-radius: 99px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 20px rgba(56,189,248,0.4); }
+
+.featured-products { padding: 3rem 2rem 5rem; max-width: 1200px; margin: 0 auto; }
+.featured-products h2 { text-align: center; font-size: 2.2rem; margin-bottom: 3rem; }
+
+.product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
+
+.p-card { background: #0E131F; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; padding: 1.25rem; text-align: center; transition: transform 0.3s; }
+.p-card:hover { transform: translateY(-5px); border-color: #38BDF8; }
+.p-card img { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem; }
+.p-card h3 { font-size: 1.2rem; margin-bottom: 0.4rem; color: #FFF; }
+.p-card .price { font-size: 1.4rem; font-weight: 800; color: #10B981; margin-bottom: 1rem; }
+
+.add-cart-btn { background: rgba(255,255,255,0.05); color: #F1F5F9; border: 1px solid rgba(255,255,255,0.15); padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; }
+.add-cart-btn:hover { background: #38BDF8; color: #080B10; border-color: #38BDF8; }
+
+footer { text-align: center; padding: 3rem; color: #64748B; border-top: 1px solid rgba(255,255,255,0.05); }
+      `.trim(),
+
+      "js/cart.js": `
+let cartCount = 0;
+
+function addToCart(name, price) {
+  cartCount++;
+  const el = document.getElementById('cart-count');
+  if (el) el.textContent = cartCount;
+  alert(\`🎉 Đã thêm "\${name}" (\$\${price}) vào Giỏ hàng CyberStore!\`);
+}
+
+function toggleCartModal() {
+  alert(\`🛒 Giỏ hàng của bạn đang có \${cartCount} sản phẩm.\`);
+}
+      `.trim()
+    }
+  },
+  {
     id: "tpl-cyber-saas",
     title: "Aether AI - NextGen Multi-Page SaaS",
     tagline: "Trang web SaaS AI đa trang với hiệu ứng Glassmorphism & Cyber Glow",
@@ -42,7 +207,13 @@ function getLocalTemplates() {
     return DEFAULT_TEMPLATES;
   }
   try {
-    return JSON.parse(data);
+    const parsed = JSON.parse(data);
+    // Ensure CyberStore is present
+    if (!parsed.some(t => t.id === 'tpl-cyberstore-ecommerce')) {
+      parsed.unshift(DEFAULT_TEMPLATES[0]);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+    }
+    return parsed;
   } catch (e) {
     return DEFAULT_TEMPLATES;
   }
