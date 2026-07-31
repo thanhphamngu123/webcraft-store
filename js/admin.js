@@ -1,6 +1,5 @@
 /**
- * Admin Panel Manager - Multi-File & Backend API Edition
- * Handles multi-file tree, ZIP unpacking, folder uploads, code editing, and API syncing.
+ * Admin Panel Manager - Multi-File & Auth Protection Edition
  */
 
 window.AdminManager = {
@@ -10,7 +9,46 @@ window.AdminManager = {
   isPreviewing: false,
 
   init: function() {
+    this.renderAuthNavbar();
     this.bindEvents();
+  },
+
+  isLoggedIn: function() {
+    const token = localStorage.getItem('adminToken');
+    return !!token && token.length > 5;
+  },
+
+  renderAuthNavbar: function() {
+    const container = document.getElementById('nav-auth-container');
+    if (!container) return;
+
+    if (this.isLoggedIn()) {
+      const username = localStorage.getItem('adminUser') || 'admin';
+      container.innerHTML = `
+        <span style="color:var(--accent-emerald); font-size:0.85rem; font-weight:700; background:rgba(16,185,129,0.1); padding:0.4rem 0.8rem; border-radius:99px; border:1px solid rgba(16,185,129,0.3);">
+          🟢 Admin: ${username}
+        </span>
+        <button class="admin-btn" onclick="AdminManager.openModal()">
+          <span>➕ Đăng Bài Mới</span>
+        </button>
+        <button class="cancel-btn" style="padding:0.5rem 0.9rem; font-size:0.85rem;" onclick="AdminManager.logoutAdmin()">
+          🚪 Đăng Xuất
+        </button>
+      `;
+    } else {
+      container.innerHTML = `
+        <a href="admin-login.html" class="admin-btn">
+          <span>🔐 Đăng Nhập Admin</span>
+        </a>
+      `;
+    }
+  },
+
+  logoutAdmin: function() {
+    localStorage.removeItem('adminToken');
+    localStorage.removeItem('adminUser');
+    alert("Đã đăng xuất tài khoản Admin.");
+    window.location.href = 'index.html';
   },
 
   bindEvents: function() {
@@ -231,6 +269,13 @@ window.AdminManager = {
   },
 
   openModal: function(templateIdToEdit = null) {
+    // ENFORCE AUTHENTICATION CHECK BEFORE OPENING ADMIN MODAL
+    if (!this.isLoggedIn()) {
+      alert("🔒 BẠN CẦN ĐĂNG NHẬP ADMIN!\nVui lòng đăng nhập qua cổng Admin riêng để có quyền đăng bài hoặc sửa sản phẩm.");
+      window.location.href = 'admin-login.html';
+      return;
+    }
+
     const modal = document.getElementById('admin-modal');
     if (!modal) return;
 
@@ -289,6 +334,12 @@ window.AdminManager = {
   },
 
   saveTemplateFromForm: async function() {
+    if (!this.isLoggedIn()) {
+      alert("Bạn chưa đăng nhập Admin!");
+      window.location.href = 'admin-login.html';
+      return;
+    }
+
     const title = document.getElementById('tpl-input-title').value.trim();
     const tagline = document.getElementById('tpl-input-tagline').value.trim();
     const category = document.getElementById('tpl-input-category').value;
@@ -322,10 +373,10 @@ window.AdminManager = {
 
     if (this.editingId) {
       await apiUpdateTemplate(this.editingId, templateData);
-      this.showNotification("Đã cập nhật dự án web trên Backend Server!", "success");
+      this.showNotification("Đã cập nhật bài đăng thành công!", "success");
     } else {
       await apiAddTemplate(templateData);
-      this.showNotification("Đã đăng bài & tải trang web mới lên Backend Server!", "success");
+      this.showNotification("Đã đăng bài & xuất bản trang web bán thành công!", "success");
     }
 
     this.closeModal();

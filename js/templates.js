@@ -1,12 +1,10 @@
 /**
- * Templates Data & API Manager
- * Connects frontend marketplace with Backend API (/api/templates) with LocalStorage fallback.
+ * Templates Data & API Manager with Admin Session Token Support
  */
 
-// Configurable API base URL (Change this to your deployed backend URL on Render / Vercel / Railway)
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
-  : 'https://webcraft-store-backend.onrender.com/api'; // Replace with deployed backend URL if applicable
+  : 'https://webcraft-store-backend.onrender.com/api';
 
 const STORAGE_KEY = "WEB_STORE_TEMPLATES_V2";
 
@@ -33,7 +31,10 @@ const DEFAULT_TEMPLATES = [
   }
 ];
 
-// Helper to get local templates
+function getAdminToken() {
+  return localStorage.getItem('adminToken') || '';
+}
+
 function getLocalTemplates() {
   const data = localStorage.getItem(STORAGE_KEY);
   if (!data) {
@@ -51,12 +52,8 @@ function saveLocalTemplates(templates) {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
 }
 
-// Global cached templates state
 window.cachedTemplates = getLocalTemplates();
 
-/**
- * Fetch templates from Backend API with local fallback
- */
 async function fetchTemplatesFromAPI() {
   try {
     const response = await fetch(`${window.API_BASE_URL}/templates`);
@@ -75,14 +72,15 @@ async function fetchTemplatesFromAPI() {
   return window.cachedTemplates;
 }
 
-/**
- * Save new template via Backend API & LocalStorage
- */
 async function apiAddTemplate(templateData) {
   try {
+    const token = getAdminToken();
     const res = await fetch(`${window.API_BASE_URL}/templates`, {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(templateData)
     });
     if (res.ok) {
@@ -97,20 +95,20 @@ async function apiAddTemplate(templateData) {
     console.warn("API Post failed, saving locally", err);
   }
 
-  // Fallback local insert
   window.cachedTemplates.unshift(templateData);
   saveLocalTemplates(window.cachedTemplates);
   return templateData;
 }
 
-/**
- * Update template via Backend API & LocalStorage
- */
 async function apiUpdateTemplate(id, templateData) {
   try {
+    const token = getAdminToken();
     const res = await fetch(`${window.API_BASE_URL}/templates/${id}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify(templateData)
     });
     if (res.ok) {
@@ -132,12 +130,13 @@ async function apiUpdateTemplate(id, templateData) {
   return templateData;
 }
 
-/**
- * Delete template via Backend API & LocalStorage
- */
 async function apiDeleteTemplate(id) {
   try {
-    await fetch(`${window.API_BASE_URL}/templates/${id}`, { method: 'DELETE' });
+    const token = getAdminToken();
+    await fetch(`${window.API_BASE_URL}/templates/${id}`, {
+      method: 'DELETE',
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
   } catch (err) {
     console.warn("API Delete failed, deleting locally", err);
   }

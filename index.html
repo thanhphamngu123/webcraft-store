@@ -4,24 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebCraft Store - Chợ Mua Bán & Trải Nghiệm Template Website Multi-File</title>
-  <meta name="description" content="Nền tảng mua bán giao diện trang web chất lượng cao. Hỗ trợ tải lên dự án nhiều file (ZIP / Folder) HTML, CSS, JS, JSON và chạy Live Demo đa trang trực tiếp.">
+  <meta name="description" content="Nền tảng mua bán giao diện trang web chất lượng cao. Hỗ trợ đăng nhập Admin riêng để quản lý & đăng bài tải lên dự án HTML, CSS, JS, JSON.">
   <link rel="stylesheet" href="styles.css">
-  <!-- JSZip library for unpacking multi-file ZIP archives in browser -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </head>
 <body>
 
   <!-- Top Navbar -->
   <header class="navbar">
-    <a href="#" class="brand-logo">
+    <a href="index.html" class="brand-logo">
       <div class="brand-icon">⚡</div>
       <span class="brand-gradient">WebCraft Store</span>
     </a>
 
-    <div class="nav-actions">
-      <button class="admin-btn" onclick="AdminManager.openModal()">
-        <span>➕ Thêm Web Bán (Admin)</span>
-      </button>
+    <!-- Dynamic Admin Auth Actions Container -->
+    <div class="nav-actions" id="nav-auth-container">
+      <a href="admin-login.html" class="admin-btn" id="login-nav-btn">
+        <span>🔐 Đăng Nhập Admin</span>
+      </a>
     </div>
   </header>
 
@@ -29,10 +29,10 @@
   <section class="hero-section">
     <div class="hero-bg-glow"></div>
     <div class="hero-content">
-      <div class="hero-pill">✨ Support Multi-File & ZIP Archive Virtual File System</div>
+      <div class="hero-pill">✨ Admin Auth Protected Marketplace Engine</div>
       <h1 class="hero-title">Sở Hữu Trang Web Đẳng Cấp Chỉ Với 1 Click</h1>
       <p class="hero-subtitle">
-        Khám phá bộ sưu tập template website nhiều trang (Multi-Page Project). Admin có thể tải lên toàn bộ dự án qua file ZIP hoặc Thư mục chứa hàng chục file HTML, CSS, JS, JSON và hình ảnh.
+        Khám phá bộ sưu tập template website nhiều trang (Multi-Page Project). Admin có thể đăng nhập cổng riêng để tải lên dự án qua file ZIP hoặc Thư mục chứa đầy đủ HTML, CSS, JS, JSON.
       </p>
     </div>
   </section>
@@ -75,7 +75,6 @@
           <span id="demo-page-indicator" class="page-indicator-badge">index.html</span>
         </div>
 
-        <!-- Responsive Device Viewport Switcher -->
         <div class="device-switcher">
           <button class="device-btn active" data-device="desktop" title="Màn hình Máy tính">
             💻 Desktop
@@ -98,7 +97,6 @@
         </div>
       </div>
 
-      <!-- Stage hosting the dynamic iframe -->
       <div class="sandbox-stage">
         <div class="iframe-wrapper device-desktop" id="iframe-wrapper">
           <iframe id="demo-iframe" class="sandbox-iframe" title="Live Preview Sandbox"></iframe>
@@ -111,12 +109,11 @@
   <div class="modal-overlay" id="admin-modal">
     <div class="admin-modal-container">
       <div class="admin-header">
-        <h2 id="admin-form-title">⚙️ Quản Lý & Thêm Dự Án Web Bán (Multi-File / ZIP / Folder)</h2>
+        <h2 id="admin-form-title">⚙️ Cổng Đăng Bài Admin (Multi-File / ZIP / Folder)</h2>
         <button class="close-btn" onclick="AdminManager.closeModal()">&times;</button>
       </div>
 
       <div class="admin-body">
-        <!-- Left: Template Metadata & Multi-File Upload Form -->
         <div class="admin-form-panel">
           <form id="admin-template-form">
             <div class="form-group">
@@ -161,12 +158,11 @@
 
             <div class="form-group">
               <label>Mô tả chi tiết</label>
-              <textarea id="tpl-input-desc" class="form-textarea" rows="3" placeholder="Mô tả danh sách trang và cấu trúc file trong dự án..."></textarea>
+              <textarea id="tpl-input-desc" class="form-textarea" rows="3" placeholder="Mô tả danh sách trang và cấu trúc file..."></textarea>
             </div>
 
-            <!-- Multi-File & ZIP Upload Controls -->
             <div class="form-group" style="margin-top:0.5rem;">
-              <label>Tải Lên Cả Dự Án (Nhiều File / ZIP / Folder)</label>
+              <label>Tải Lên Dự Án (Nhiều File / ZIP / Folder)</label>
               
               <div class="upload-options-grid">
                 <div class="file-upload-box zip-upload-box">
@@ -180,7 +176,6 @@
                 </div>
               </div>
 
-              <!-- Single File Upload Fallback -->
               <div class="single-files-grid">
                 <div class="file-upload-box">
                   <label for="admin-file-html" class="upload-label">📄 + File HTML</label>
@@ -203,21 +198,16 @@
           </form>
         </div>
 
-        <!-- Right: Multi-File Code Workspace & File Tree Explorer -->
         <div class="admin-editor-panel">
           <div class="admin-workspace-split">
-            <!-- File Tree Explorer Sidebar -->
             <div class="file-tree-sidebar">
               <div class="file-tree-header">
                 <span>📁 Cấu Trúc Dự Án</span>
-                <button class="add-file-btn" onclick="AdminManager.promptNewFile()" title="Thêm file mới trong dự án">+ File</button>
+                <button class="add-file-btn" onclick="AdminManager.promptNewFile()" title="Thêm file mới">+ File</button>
               </div>
-              <ul class="file-tree-list" id="admin-file-tree">
-                <!-- Rendered dynamically by admin.js -->
-              </ul>
+              <ul class="file-tree-list" id="admin-file-tree"></ul>
             </div>
 
-            <!-- Editor & Test Stage -->
             <div class="code-editor-stage">
               <div class="admin-tabs">
                 <div class="active-filename-indicator" id="active-file-title">
@@ -228,12 +218,10 @@
                 </button>
               </div>
 
-              <!-- Textarea Code Editor -->
               <div class="editor-area-wrapper" id="editor-wrapper">
                 <textarea id="active-code-editor" class="code-textarea" placeholder="Nội dung mã nguồn của file đang chọn..."></textarea>
               </div>
 
-              <!-- Test Preview Sandbox iframe -->
               <div class="editor-area-wrapper" id="preview-wrapper" style="display:none;">
                 <iframe id="admin-preview-iframe" class="sandbox-iframe" style="width:100%; height:100%;" title="Admin Multi-File Preview Sandbox"></iframe>
               </div>
@@ -244,7 +232,7 @@
 
       <div class="admin-footer">
         <button class="cancel-btn" onclick="AdminManager.closeModal()">Hủy Bỏ</button>
-        <button class="save-tpl-btn" onclick="AdminManager.saveTemplateFromForm()">✨ Lưu & Xuất Bản Dự Án Web</button>
+        <button class="save-tpl-btn" onclick="AdminManager.saveTemplateFromForm()">✨ Lưu & Xuất Bản Bài Đăng</button>
       </div>
     </div>
   </div>
@@ -273,7 +261,6 @@
     </div>
   </div>
 
-  <!-- App Scripts -->
   <script src="js/templates.js"></script>
   <script src="js/sandbox.js"></script>
   <script src="js/admin.js"></script>

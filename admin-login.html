@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đăng Nhập Admin - WebCraft Store</title>
+  <link rel="stylesheet" href="styles.css">
+  <style>
+    body {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      background: #07090E;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .login-container {
+      width: 100%;
+      max-width: 440px;
+      padding: 2.5rem;
+      background: rgba(14, 19, 31, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.8), 0 0 35px rgba(56, 189, 248, 0.15);
+      z-index: 10;
+      position: relative;
+    }
+
+    .login-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+
+    .login-logo-icon {
+      width: 54px;
+      height: 54px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #38BDF8, #818CF8);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      margin: 0 auto 1rem;
+      box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4);
+    }
+
+    .login-header h1 {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: #F8FAFC;
+      margin-bottom: 0.4rem;
+    }
+
+    .login-header p {
+      font-size: 0.9rem;
+      color: #94A3B8;
+    }
+
+    .login-form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0.4rem;
+    }
+
+    .input-group label {
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #94A3B8;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .login-input {
+      background: #07090E;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      color: #F8FAFC;
+      font-size: 0.95rem;
+      font-family: inherit;
+      outline: none;
+      transition: all 0.3s ease;
+    }
+
+    .login-input:focus {
+      border-color: #38BDF8;
+      box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15);
+    }
+
+    .login-submit-btn {
+      background: linear-gradient(135deg, #38BDF8, #818CF8);
+      color: #FFF;
+      border: none;
+      padding: 0.9rem;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 1rem;
+      cursor: pointer;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4);
+      transition: all 0.2s ease;
+    }
+
+    .login-submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 25px rgba(56, 189, 248, 0.6);
+    }
+
+    .login-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+    }
+
+    .back-link {
+      color: #94A3B8;
+      text-decoration: none;
+      font-size: 0.88rem;
+      font-weight: 600;
+      transition: color 0.2s;
+    }
+
+    .back-link:hover {
+      color: #38BDF8;
+    }
+
+    .demo-credentials-box {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px dashed rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 0.8rem 1rem;
+      margin-top: 1rem;
+      font-size: 0.82rem;
+      color: #94A3B8;
+      text-align: center;
+    }
+
+    .demo-credentials-box code {
+      color: #38BDF8;
+      font-family: monospace;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Background Ambient Glow -->
+  <div class="hero-bg-glow"></div>
+
+  <div class="login-container">
+    <div class="login-header">
+      <div class="login-logo-icon">🔐</div>
+      <h1>Cổng Đăng Nhập Admin</h1>
+      <p>Nhập tài khoản quản trị để có quyền đăng & sửa sản phẩm web</p>
+    </div>
+
+    <form class="login-form" id="login-form">
+      <div class="input-group">
+        <label>Tài Khoản Admin</label>
+        <input type="text" id="username-input" class="login-input" placeholder="Tên đăng nhập (VD: admin)" required value="admin">
+      </div>
+
+      <div class="input-group">
+        <label>Mật Khẩu</label>
+        <input type="password" id="password-input" class="login-input" placeholder="••••••••" required value="admin123">
+      </div>
+
+      <button type="submit" class="login-submit-btn">⚡ Đăng Nhập Quản Trị</button>
+    </form>
+
+    <div class="demo-credentials-box">
+      🔑 Tài khoản mặc định: <code>admin</code> | Mật khẩu: <code>admin123</code>
+    </div>
+
+    <div class="login-footer">
+      <a href="index.html" class="back-link">← Quay về Trang Chủ WebCraft Store</a>
+    </div>
+  </div>
+
+  <script src="js/templates.js"></script>
+  <script>
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const username = document.getElementById('username-input').value.trim();
+      const password = document.getElementById('password-input').value.trim();
+
+      try {
+        // Try logging in via Backend API
+        const response = await fetch(`${window.API_BASE_URL}/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username, password })
+        });
+
+        if (response.ok) {
+          const json = await response.json();
+          if (json.success && json.token) {
+            localStorage.setItem('adminToken', json.token);
+            localStorage.setItem('adminUser', username);
+            alert("🎉 Đăng nhập Admin thành công! Bạn có quyền đăng & sửa sản phẩm.");
+            window.location.href = 'index.html?admin=true';
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn("Backend API offline, attempting client-side admin verify", err);
+      }
+
+      // Offline / Local verification fallback
+      if (username === 'admin' && password === 'admin123') {
+        const localToken = 'adm_token_' + Date.now();
+        localStorage.setItem('adminToken', localToken);
+        localStorage.setItem('adminUser', 'admin');
+        alert("🎉 Đăng nhập Admin thành công!");
+        window.location.href = 'index.html?admin=true';
+      } else {
+        alert("❌ Sai tài khoản hoặc mật khẩu Admin!");
+      }
+    });
+  </script>
+</body>
+</html>

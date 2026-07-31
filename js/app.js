@@ -1,6 +1,5 @@
 /**
- * Main Application Logic - Multi-File & Backend API Edition
- * Catalog renderer, backend API sync, live demo navigation, and postMessage event handling.
+ * Main Application Logic - Multi-File, Auth & Backend API Edition
  */
 
 window.App = {
@@ -14,13 +13,11 @@ window.App = {
     this.bindEvents();
     window.AdminManager.init();
 
-    // Fetch initial templates from Backend API
     await fetchTemplatesFromAPI();
     this.renderMarketplace();
   },
 
   bindEvents: function() {
-    // Search input
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
       searchInput.addEventListener('input', (e) => {
@@ -29,7 +26,6 @@ window.App = {
       });
     }
 
-    // Category filter pills
     document.querySelectorAll('.cat-pill').forEach(pill => {
       pill.addEventListener('click', (e) => {
         document.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
@@ -39,7 +35,6 @@ window.App = {
       });
     });
 
-    // Device Switcher in Live Demo Viewer
     document.querySelectorAll('.device-btn').forEach(btn => {
       btn.addEventListener('click', (e) => {
         document.querySelectorAll('.device-btn').forEach(b => b.classList.remove('active'));
@@ -51,7 +46,6 @@ window.App = {
       });
     });
 
-    // Listen for Sandbox multi-page navigation messages from iframe (<a href="page2.html">)
     window.addEventListener('message', (event) => {
       if (event.data && event.data.type === 'SANDBOX_NAVIGATE') {
         const targetPage = event.data.page;
@@ -65,13 +59,12 @@ window.App = {
     if (!container) return;
 
     let templates = getStoredTemplates();
+    const isAdmin = window.AdminManager.isLoggedIn();
 
-    // Filter by Category
     if (this.currentCategory !== 'All') {
       templates = templates.filter(t => t.category === this.currentCategory);
     }
 
-    // Filter by Search Query
     if (this.searchQuery) {
       templates = templates.filter(t => 
         t.title.toLowerCase().includes(this.searchQuery) ||
@@ -81,7 +74,6 @@ window.App = {
       );
     }
 
-    // Counter update
     const countEl = document.getElementById('template-count');
     if (countEl) countEl.textContent = `${templates.length} Giao Diện Mẫu`;
 
@@ -133,12 +125,14 @@ window.App = {
                 <span class="currency">$</span><span class="price">${t.price}</span>
               </div>
               <div class="card-actions">
-                <button class="action-icon-btn" title="Chỉnh sửa (Admin)" onclick="AdminManager.openModal('${t.id}')">
-                  ✏️
-                </button>
-                <button class="action-icon-btn delete-btn" title="Xóa" onclick="App.confirmDelete('${t.id}')">
-                  🗑️
-                </button>
+                ${isAdmin ? `
+                  <button class="action-icon-btn" title="Chỉnh sửa (Admin)" onclick="AdminManager.openModal('${t.id}')">
+                    ✏️
+                  </button>
+                  <button class="action-icon-btn delete-btn" title="Xóa" onclick="App.confirmDelete('${t.id}')">
+                    🗑️
+                  </button>
+                ` : ''}
                 <button class="buy-btn" onclick="App.buyTemplate('${t.id}')">
                   Mua Ngay
                 </button>
@@ -246,9 +240,15 @@ window.App = {
   },
 
   confirmDelete: async function(id) {
-    if (confirm("Bạn có chắc chắn muốn xóa template dự án trang web này khỏi Backend Server không?")) {
+    if (!window.AdminManager.isLoggedIn()) {
+      alert("Bạn cần đăng nhập Admin để thực hiện xóa!");
+      window.location.href = 'admin-login.html';
+      return;
+    }
+
+    if (confirm("Bạn có chắc chắn muốn xóa template dự án trang web này không?")) {
       await apiDeleteTemplate(id);
-      AdminManager.showNotification("Đã xóa template khỏi Backend!", "info");
+      AdminManager.showNotification("Đã xóa bài đăng khỏi hệ thống!", "info");
       this.renderMarketplace();
     }
   },
@@ -263,7 +263,6 @@ window.App = {
   }
 };
 
-// Launch on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   window.App.init();
 });
