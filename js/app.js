@@ -1,5 +1,5 @@
 /**
- * Main Application Logic - Airbnb Product Card Edition
+ * Main Application Logic - Airbnb Product Card Edition (Dynamic Category Badge)
  */
 
 window.App = {
@@ -105,13 +105,13 @@ window.App = {
     container.innerHTML = templates.map((t, idx) => {
       const filesCount = t.filesMap ? Object.keys(t.filesMap).length : 1;
       const fakeRating = (4.85 + (idx % 3) * 0.04).toFixed(2);
-      const isFavorite = idx % 2 === 0 ? 'Guest favorite' : t.category;
+      const displayCategory = t.category || 'Website';
 
       return `
         <div class="product-card" data-id="${t.id}" onclick="App.openLiveDemo('${t.id}')">
           <div class="card-thumb-wrap">
             <img src="${t.thumbnail}" class="card-thumb" alt="${t.title}" loading="lazy">
-            <span class="card-guest-favorite-badge">${isFavorite}</span>
+            <span class="card-guest-favorite-badge">${displayCategory}</span>
             <button class="card-heart-btn" title="Yêu thích" onclick="event.stopPropagation(); this.classList.toggle('active');">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
             </button>
@@ -119,7 +119,7 @@ window.App = {
 
           <div class="card-body">
             <h3 class="card-title">${t.title}</h3>
-            <p class="card-subtitle-info">${t.description ? t.description.substring(0, 60) + '...' : t.category}</p>
+            <p class="card-subtitle-info">${t.description ? t.description.substring(0, 60) + '...' : displayCategory}</p>
             <div class="card-rating-row">
               <span class="star-rating">★ ${fakeRating}</span>
               <span>· ${filesCount} files multi-page</span>

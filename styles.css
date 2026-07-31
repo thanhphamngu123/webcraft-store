@@ -378,7 +378,7 @@ body {
 }
 
 /* ==========================================================================
-   AIRBNB MINIMALIST PRODUCT CARD (100% MATCH TO USER MOCKUP SCREENSHOT)
+   AIRBNB MINIMALIST PRODUCT CARD (SOLID WHITE BADGE, NO NEON LIGHTS)
    ========================================================================== */
 .product-card {
   background: transparent;
@@ -415,19 +415,19 @@ body {
   transform: scale(1.03);
 }
 
+/* Solid Pure White Category Badge (No Neon Light, No Glow) */
 .card-guest-favorite-badge {
   position: absolute;
   top: 14px;
   left: 14px;
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
+  background: #FFFFFF;
   color: #0F172A;
   font-weight: 700;
   font-size: 0.85rem;
   padding: 6px 14px;
   border-radius: 999px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border: 1px solid #E2E8F0;
   z-index: 2;
 }
 
@@ -452,12 +452,12 @@ body {
 
 .card-heart-btn:hover {
   transform: scale(1.1);
-  background: rgba(255, 255, 255, 0.9);
+  background: #FFFFFF;
   color: #F43F5E;
 }
 
 .card-heart-btn.active {
-  background: #FFF;
+  background: #FFFFFF;
   color: #F43F5E;
 }
 .card-heart-btn.active svg {
@@ -617,7 +617,7 @@ body {
 }
 
 .status-widget-header { display: flex; align-items: center; gap: 0.5rem; }
-.status-dot-pulse { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
+.status-dot-pulse { width: 10px; height: 10px; border-radius: 99px; display: inline-block; }
 .pulse-green { background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); animation: pulseDot 2s infinite; }
 .pulse-red { background: var(--accent-rose); box-shadow: 0 0 10px var(--accent-rose); animation: pulseDot 2s infinite; }
 
