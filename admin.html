@@ -220,7 +220,7 @@
                 </div>
               </div>
 
-              <div class="single-files-grid">
+              <div class="single-files-grid" style="grid-template-columns: repeat(3, 1fr); gap: 0.5rem;">
                 <div class="file-upload-box">
                   <label for="admin-file-html" class="upload-label">+ File HTML</label>
                   <input type="file" id="admin-file-html" accept=".html,.htm" multiple>
@@ -236,6 +236,14 @@
                 <div class="file-upload-box">
                   <label for="admin-file-json" class="upload-label">+ File JSON</label>
                   <input type="file" id="admin-file-json" accept=".json" multiple>
+                </div>
+                <div class="file-upload-box">
+                  <label for="admin-file-img" class="upload-label">+ File Ảnh (Images)</label>
+                  <input type="file" id="admin-file-img" accept="image/*" multiple>
+                </div>
+                <div class="file-upload-box">
+                  <label for="admin-file-video" class="upload-label">+ File Video (Videos)</label>
+                  <input type="file" id="admin-file-video" accept="video/*" multiple>
                 </div>
               </div>
             </div>
@@ -263,7 +271,9 @@
               </div>
 
               <div class="editor-area-wrapper" id="editor-wrapper">
-                <textarea id="active-code-editor" class="code-textarea" placeholder="Nội dung mã nguồn của file đang chọn..."></textarea>
+                <div id="editor-area-container" style="width:100%; height:100%;">
+                  <textarea id="active-code-editor" class="code-textarea" placeholder="Nội dung mã nguồn của file đang chọn..."></textarea>
+                </div>
               </div>
 
               <div class="editor-area-wrapper" id="preview-wrapper" style="display:none;">

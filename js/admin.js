@@ -1,5 +1,5 @@
 /**
- * Admin Panel Manager - Pure Text Interface Edition
+ * Admin Panel Manager - Multi-File, Images & Videos Support Edition
  */
 
 window.ModalDialog = {
@@ -98,7 +98,39 @@ window.AdminManager = {
     return !!token;
   },
 
+  readFileAsDataURL: function(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = e => resolve(e.target.result);
+      reader.onerror = err => reject(err);
+      reader.readAsDataURL(file);
+    });
+  },
+
+  getMimeType: function(filename) {
+    const ext = filename.split('.').pop().toLowerCase();
+    const map = {
+      'png': 'image/png', 'jpg': 'image/jpeg', 'jpeg': 'image/jpeg',
+      'gif': 'image/gif', 'webp': 'image/webp', 'svg': 'image/svg+xml', 'ico': 'image/x-icon',
+      'mp4': 'video/mp4', 'webm': 'video/webm', 'ogg': 'video/ogg', 'mov': 'video/quicktime'
+    };
+    return map[ext] || 'application/octet-stream';
+  },
+
+  isMediaFile: function(filepath) {
+    return /\.(png|jpe?g|gif|webp|svg|ico|mp4|webm|ogg|mov)$/i.test(filepath);
+  },
+
+  isImageFile: function(filepath) {
+    return /\.(png|jpe?g|gif|webp|svg|ico)$/i.test(filepath);
+  },
+
+  isVideoFile: function(filepath) {
+    return /\.(mp4|webm|ogg|mov)$/i.test(filepath);
+  },
+
   bindEvents: function() {
+    // 1. ZIP File Upload (Supports text + images & videos)
     const zipInput = document.getElementById('admin-file-zip');
     if (zipInput) {
       zipInput.addEventListener('change', async (e) => {
@@ -111,17 +143,23 @@ window.AdminManager = {
             for (const filename of Object.keys(zip.files)) {
               const zipEntry = zip.files[filename];
               if (!zipEntry.dir) {
-                const content = await zipEntry.async('string');
-                newFilesMap[filename] = content;
+                if (this.isMediaFile(filename)) {
+                  const base64 = await zipEntry.async('base64');
+                  const mime = this.getMimeType(filename);
+                  newFilesMap[filename] = `data:${mime};base64,${base64}`;
+                } else {
+                  const content = await zipEntry.async('string');
+                  newFilesMap[filename] = content;
+                }
               }
             }
 
             if (Object.keys(newFilesMap).length > 0) {
-              this.currentFilesMap = newFilesMap;
+              this.currentFilesMap = { ...this.currentFilesMap, ...newFilesMap };
               this.activeFilePath = Object.keys(newFilesMap).includes('index.html') ? 'index.html' : Object.keys(newFilesMap)[0];
               this.renderFileTree();
               this.loadActiveFileToEditor();
-              this.showNotification("Đã giải nén dự án ZIP thành công!", "success");
+              this.showNotification(`Đã nạp ${Object.keys(newFilesMap).length} file từ ZIP thành công!`, "success");
             }
           } catch (err) {
             this.showNotification("Lỗi đọc file ZIP!", "error");
@@ -130,6 +168,7 @@ window.AdminManager = {
       });
     }
 
+    // 2. Folder Upload (Supports subfolders, images, videos)
     const folderInput = document.getElementById('admin-folder-upload');
     if (folderInput) {
       folderInput.addEventListener('change', async (e) => {
@@ -139,20 +178,64 @@ window.AdminManager = {
           for (const file of files) {
             const path = file.webkitRelativePath ? file.webkitRelativePath.split('/').slice(1).join('/') : file.name;
             if (path) {
-              const content = await file.text();
-              newFilesMap[path] = content;
+              if (this.isMediaFile(path)) {
+                const dataUrl = await this.readFileAsDataURL(file);
+                newFilesMap[path] = dataUrl;
+              } else {
+                const content = await file.text();
+                newFilesMap[path] = content;
+              }
             }
           }
           if (Object.keys(newFilesMap).length > 0) {
-            this.currentFilesMap = newFilesMap;
+            this.currentFilesMap = { ...this.currentFilesMap, ...newFilesMap };
             this.activeFilePath = Object.keys(newFilesMap).includes('index.html') ? 'index.html' : Object.keys(newFilesMap)[0];
             this.renderFileTree();
             this.loadActiveFileToEditor();
-            this.showNotification("Đã nạp thư mục dự án thành công!", "success");
+            this.showNotification(`Đã nạp ${Object.keys(newFilesMap).length} file từ thư mục thành công!`, "success");
           }
         }
       });
     }
+
+    // 3. Single / Multi File Upload (HTML, CSS, JS, JSON, Images, Videos)
+    const fileInputs = [
+      { id: 'admin-file-html', isMedia: false },
+      { id: 'admin-file-css', isMedia: false },
+      { id: 'admin-file-js', isMedia: false },
+      { id: 'admin-file-json', isMedia: false },
+      { id: 'admin-file-img', isMedia: true, defaultFolder: 'assets/' },
+      { id: 'admin-file-video', isMedia: true, defaultFolder: 'videos/' }
+    ];
+
+    fileInputs.forEach(item => {
+      const inputEl = document.getElementById(item.id);
+      if (inputEl) {
+        inputEl.addEventListener('change', async (e) => {
+          const files = Array.from(e.target.files);
+          if (files.length === 0) return;
+
+          for (const file of files) {
+            let path = file.name;
+            if (item.isMedia && item.defaultFolder && !path.includes('/')) {
+              path = item.defaultFolder + path;
+            }
+            if (item.isMedia) {
+              const dataUrl = await this.readFileAsDataURL(file);
+              this.currentFilesMap[path] = dataUrl;
+            } else {
+              const content = await file.text();
+              this.currentFilesMap[path] = content;
+            }
+            this.activeFilePath = path;
+          }
+
+          this.renderFileTree();
+          this.loadActiveFileToEditor();
+          this.showNotification(`Đã tải lên ${files.length} file vào dự án!`, "success");
+        });
+      }
+    });
   },
 
   renderFileTree: function() {
@@ -168,11 +251,18 @@ window.AdminManager = {
 
     listContainer.innerHTML = files.map(filepath => {
       const isActive = filepath === this.activeFilePath ? 'active' : '';
+      let badge = '📄';
+      if (this.isImageFile(filepath)) badge = '🖼️';
+      else if (this.isVideoFile(filepath)) badge = '🎥';
+      else if (filepath.endsWith('.css')) badge = '🎨';
+      else if (filepath.endsWith('.js')) badge = '⚡';
+      else if (filepath.endsWith('.json')) badge = '⚙️';
 
       return `
         <li class="file-tree-item ${isActive}" onclick="AdminManager.selectFile('${filepath}')">
-          <div class="file-name-wrap">
-            <span>${filepath}</span>
+          <div class="file-name-wrap" style="display:flex; align-items:center; gap:0.4rem;">
+            <span>${badge}</span>
+            <span style="white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:140px;" title="${filepath}">${filepath}</span>
           </div>
           ${files.length > 1 ? `<span class="del-file-icon" title="Xóa file" onclick="event.stopPropagation(); AdminManager.deleteFileFromTree('${filepath}')">Xóa</span>` : ''}
         </li>
@@ -182,7 +272,7 @@ window.AdminManager = {
 
   selectFile: function(filepath) {
     const textarea = document.getElementById('active-code-editor');
-    if (this.activeFilePath && textarea) {
+    if (this.activeFilePath && textarea && !this.isMediaFile(this.activeFilePath)) {
       this.currentFilesMap[this.activeFilePath] = textarea.value;
     }
 
@@ -194,17 +284,40 @@ window.AdminManager = {
 
   loadActiveFileToEditor: function() {
     const titleEl = document.getElementById('active-file-title');
-    const textarea = document.getElementById('active-code-editor');
-    
-    if (titleEl) titleEl.textContent = filepath => filepath;
+    const editorWrapper = document.getElementById('editor-area-container');
     if (titleEl) titleEl.textContent = `${this.activeFilePath}`;
-    if (textarea) {
-      textarea.value = this.currentFilesMap[this.activeFilePath] || '';
+
+    if (!editorWrapper) return;
+
+    const content = this.currentFilesMap[this.activeFilePath] || '';
+
+    if (this.isImageFile(this.activeFilePath)) {
+      editorWrapper.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:2rem; background:#07090E; text-align:center;">
+          <h4 style="color:#94A3B8; margin-bottom:1rem;">Xem Trước File Ảnh: <span style="color:#38BDF8;">${this.activeFilePath}</span></h4>
+          <img src="${content}" alt="Image Preview" style="max-width:100%; max-height:360px; object-fit:contain; border-radius:12px; border:1px solid rgba(255,255,255,0.1); box-shadow:0 10px 30px rgba(0,0,0,0.5);">
+          <p style="color:#64748B; font-size:0.8rem; margin-top:1rem;">Sử dụng đường dẫn <code>&lt;img src="${this.activeFilePath}"&gt;</code> trong HTML hoặc CSS để chèn ảnh.</p>
+        </div>
+      `;
+    } else if (this.isVideoFile(this.activeFilePath)) {
+      editorWrapper.innerHTML = `
+        <div style="display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; padding:2rem; background:#07090E; text-align:center;">
+          <h4 style="color:#94A3B8; margin-bottom:1rem;">Xem Trước File Video: <span style="color:#38BDF8;">${this.activeFilePath}</span></h4>
+          <video src="${content}" controls style="max-width:100%; max-height:360px; border-radius:12px; border:1px solid rgba(255,255,255,0.1); box-shadow:0 10px 30px rgba(0,0,0,0.5);"></video>
+          <p style="color:#64748B; font-size:0.8rem; margin-top:1rem;">Sử dụng đường dẫn <code>&lt;video src="${this.activeFilePath}" controls&gt;&lt;/video&gt;</code> trong HTML để chèn video.</p>
+        </div>
+      `;
+    } else {
+      editorWrapper.innerHTML = `
+        <textarea id="active-code-editor" class="code-textarea" spellcheck="false"></textarea>
+      `;
+      const textarea = document.getElementById('active-code-editor');
+      if (textarea) textarea.value = content;
     }
   },
 
   promptNewFile: async function() {
-    const filename = await ModalDialog.showPrompt("Tạo File Mới", "Nhập tên file mới (VD: page2.html, css/custom.css, js/modal.js):", "page2.html");
+    const filename = await ModalDialog.showPrompt("Tạo File Mới", "Nhập tên file mới (VD: page2.html, css/custom.css, assets/photo.jpg, videos/demo.mp4):", "page2.html");
     if (!filename) return;
 
     const clean = filename.trim();
@@ -249,7 +362,7 @@ window.AdminManager = {
 
     if (showPreview) {
       const textarea = document.getElementById('active-code-editor');
-      if (this.activeFilePath && textarea) {
+      if (this.activeFilePath && textarea && !this.isMediaFile(this.activeFilePath)) {
         this.currentFilesMap[this.activeFilePath] = textarea.value;
       }
 
@@ -301,12 +414,12 @@ window.AdminManager = {
         this.activeFilePath = Object.keys(this.currentFilesMap).includes('index.html') ? 'index.html' : Object.keys(this.currentFilesMap)[0];
       }
     } else {
-      if (formTitle) formTitle.textContent = "Thêm Dự Án Web Mới (Multi-File)";
+      if (formTitle) formTitle.textContent = "Thêm Dự Án Web Mới (Multi-File & Media)";
       document.getElementById('admin-template-form').reset();
       this.populateCategorySelect();
 
       this.currentFilesMap = {
-        'index.html': '<h1>Trang Chủ - Multi Page Web</h1>\n<p>Chào mừng bạn! Hãy bấm vào các trang dưới đây:</p>\n<nav><a href="about.html">Về Chúng Tôi</a> | <a href="contact.html">Liên Hệ</a></nav>',
+        'index.html': '<h1>Trang Chủ - Multi Page & Media Web</h1>\n<p>Chào mừng bạn! Hãy bấm vào các trang dưới đây:</p>\n<nav><a href="about.html">Về Chúng Tôi</a> | <a href="contact.html">Liên Hệ</a></nav>',
         'about.html': '<h1>Trang Giới Thiệu (About)</h1>\n<p>Chúng tôi là đội ngũ lập trình viên hàng đầu.</p>\n<a href="index.html"><- Quay về Trang Chủ</a>',
         'contact.html': '<h1>Trang Liên Hệ (Contact)</h1>\n<p>Email: contact@webcraft.io</p>\n<a href="index.html"><- Quay về Trang Chủ</a>',
         'css/styles.css': 'body { background: #0b0f19; color: #fff; padding: 2rem; font-family: sans-serif; }\na { color: #38bdf8; text-decoration: none; }',
@@ -342,7 +455,7 @@ window.AdminManager = {
     }
 
     const textarea = document.getElementById('active-code-editor');
-    if (this.activeFilePath && textarea) {
+    if (this.activeFilePath && textarea && !this.isMediaFile(this.activeFilePath)) {
       this.currentFilesMap[this.activeFilePath] = textarea.value;
     }
 

@@ -1,7 +1,6 @@
 /**
- * Multi-File Live Sandbox Engine - Direct CSS Inline Replacer
- * Replaces relative <link rel="stylesheet" href="..."> tags with inline <style> blocks.
- * Guarantees 100% CSS styling in iframe srcdoc without network delays or CORS issues.
+ * Multi-File Live Sandbox Engine - Direct CSS & Media Asset Converter
+ * Resolves relative HTML/CSS links, JS scripts, images, and videos seamlessly via DataURLs and Blob URLs.
  */
 
 window.SandboxEngine = {
@@ -16,8 +15,25 @@ window.SandboxEngine = {
     return path.replace(/\\/g, '/').replace(/^\.\//, '').replace(/^\//, '').trim();
   },
 
+  dataURLtoBlob: function(dataurl) {
+    try {
+      const arr = dataurl.split(',');
+      const mimeMatch = arr[0].match(/:(.*?);/);
+      const mime = mimeMatch ? mimeMatch[1] : 'application/octet-stream';
+      const bstr = atob(arr[1]);
+      let n = bstr.length;
+      const u8arr = new Uint8Array(n);
+      while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+      }
+      return new Blob([u8arr], { type: mime });
+    } catch(e) {
+      return new Blob([dataurl], { type: 'text/plain' });
+    }
+  },
+
   /**
-   * Creates Virtual Blob URLs for JS, JSON, and media assets
+   * Creates Virtual Blob URLs for JS, JSON, Images, and Video media assets
    */
   createVirtualAssetsMap: function(filesMap) {
     const assetBlobs = {};
@@ -32,9 +48,19 @@ window.SandboxEngine = {
       else if (normPath.endsWith('.svg')) mime = 'image/svg+xml';
       else if (normPath.endsWith('.png')) mime = 'image/png';
       else if (normPath.endsWith('.jpg') || normPath.endsWith('.jpeg')) mime = 'image/jpeg';
+      else if (normPath.endsWith('.webp')) mime = 'image/webp';
+      else if (normPath.endsWith('.gif')) mime = 'image/gif';
+      else if (normPath.endsWith('.mp4')) mime = 'video/mp4';
+      else if (normPath.endsWith('.webm')) mime = 'video/webm';
+      else if (normPath.endsWith('.ogg')) mime = 'video/ogg';
 
       if (!normPath.endsWith('.html') && !normPath.endsWith('.css')) {
-        const blob = new Blob([content], { type: mime });
+        let blob;
+        if (typeof content === 'string' && content.startsWith('data:')) {
+          blob = this.dataURLtoBlob(content);
+        } else {
+          blob = new Blob([content], { type: mime });
+        }
         const blobUrl = URL.createObjectURL(blob);
         this.activeBlobUrls.push(blobUrl);
         assetBlobs[normPath] = blobUrl;
@@ -47,20 +73,26 @@ window.SandboxEngine = {
   /**
    * Replaces <link rel="stylesheet" href="..."> with inline <style> blocks directly
    */
-  inlineCssFiles: function(htmlContent, filesMap) {
+  inlineCssFiles: function(htmlContent, filesMap, assetBlobs) {
     let modifiedHtml = htmlContent;
     let replacedAny = false;
 
-    // Build lookup for CSS files in filesMap
     const cssLookup = {};
     for (const filepath in filesMap) {
       const norm = this.normalizePath(filepath);
       if (norm.endsWith('.css')) {
-        cssLookup[norm] = filesMap[filepath];
+        let cssText = filesMap[filepath];
+        // Replace image/video URLs inside CSS
+        for (const relPath in assetBlobs) {
+          const blobUrl = assetBlobs[relPath];
+          const escaped = relPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+          const cssUrlRegex = new RegExp(`url\\(["']?(?:\\./|/)?${escaped}["']?\\)`, 'gi');
+          cssText = cssText.replace(cssUrlRegex, `url("${blobUrl}")`);
+        }
+        cssLookup[norm] = cssText;
       }
     }
 
-    // Match <link rel="stylesheet" href="..."> and <link href="..." rel="stylesheet">
     const linkRegex = /<link[^>]+(?:rel=["']stylesheet["'][^>]+href=["']([^"']+)["']|href=["']([^"']+)["'][^>]+rel=["']stylesheet["'])[^>]*>/gi;
 
     modifiedHtml = modifiedHtml.replace(linkRegex, (match, href1, href2) => {
@@ -77,7 +109,6 @@ window.SandboxEngine = {
       return match;
     });
 
-    // Fallback: If no <link> tag matched, inject all CSS files from filesMap into <head>
     if (!replacedAny && Object.keys(cssLookup).length > 0) {
       let allCssContent = '';
       for (const normKey in cssLookup) {
@@ -98,34 +129,33 @@ window.SandboxEngine = {
   },
 
   /**
-   * Builds an HTML document with resolved relative links and page-specific CSS
+   * Builds an HTML document with resolved relative links, images, videos, and page-specific CSS
    */
   buildPageDocument: function(filesMap, currentPage = 'index.html') {
     const normCurrent = this.normalizePath(currentPage);
     
-    // 1. Obtain HTML content for target page
     let htmlContent = filesMap[normCurrent] || filesMap['index.html'];
     if (!htmlContent) {
       const firstHtmlKey = Object.keys(filesMap).find(k => k.endsWith('.html'));
       htmlContent = firstHtmlKey ? filesMap[firstHtmlKey] : '<h1>404 - Page Not Found</h1>';
     }
 
-    // 2. Inline CSS styles directly into the HTML
-    htmlContent = this.inlineCssFiles(htmlContent, filesMap);
-
-    // 3. Create Virtual Asset Blobs for JS, Images, etc.
+    // 1. Create Virtual Asset Blobs for JS, Images, and Videos
     const assetBlobs = this.createVirtualAssetsMap(filesMap);
 
-    // 4. Replace relative JS, JSON, and Image paths with Blob URLs
+    // 2. Inline CSS styles and resolve CSS image URLs
+    htmlContent = this.inlineCssFiles(htmlContent, filesMap, assetBlobs);
+
+    // 3. Replace relative JS, JSON, Image, and Video paths in HTML attributes
     for (const relativePath in assetBlobs) {
       const blobUrl = assetBlobs[relativePath];
       const escapedPath = relativePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
       
-      const pathRegex = new RegExp(`(href|src)=["'](?:\\./|/)?${escapedPath}["']`, 'gi');
+      const pathRegex = new RegExp(`(href|src|data-src)=["'](?:\\./|/)?${escapedPath}["']`, 'gi');
       htmlContent = htmlContent.replace(pathRegex, `$1="${blobUrl}"`);
     }
 
-    // 5. Inject navigation interceptor script for multi-page linking (<a href="about.html">)
+    // 4. Inject navigation interceptor script for multi-page linking (<a href="about.html">)
     const navScript = `
       <script>
         (function() {
