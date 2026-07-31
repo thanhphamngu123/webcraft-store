@@ -1,36 +1,28 @@
 /**
  * Firebase Config & Automatic Cloud Sync Engine for WebCraft Store
- * Automatically syncs & seeds template projects directly into Firebase Firestore Cloud Database.
- * 
- * Instructions:
- * 1. Go to https://console.firebase.google.com/
- * 2. Create a free project -> Add Web App
- * 3. Copy your firebaseConfig object and paste it below.
+ * Connected to Firebase Project: webstore-a19ea
  */
 
 window.firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "webcraft-store.firebaseapp.com",
-  projectId: "webcraft-store",
-  storageBucket: "webcraft-store.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef123456"
+  apiKey: "AIzaSyBWTvE9SBnNnblvUyt2E57bDJ37lJ8leEs",
+  authDomain: "webstore-a19ea.firebaseapp.com",
+  projectId: "webstore-a19ea",
+  storageBucket: "webstore-a19ea.firebasestorage.app",
+  messagingSenderId: "315684270789",
+  appId: "1:315684270789:web:d9062a2b1875356dc5b6ac",
+  measurementId: "G-HCBR076R0J"
 };
 
-// Initialize Firebase & Auto-Sync with Firestore
+// Initialize Firebase & Auto-Sync with Firestore Cloud Database
 window.initFirebaseStore = async function() {
   if (window.firebase && !window.firebase.apps.length) {
     try {
-      if (window.firebaseConfig.apiKey !== "YOUR_FIREBASE_API_KEY") {
-        window.firebase.initializeApp(window.firebaseConfig);
-        window.db = window.firebase.firestore();
-        console.log("⚡ Firebase Cloud Store connected & ready!");
-        
-        // Auto-seed default templates if Firestore collection is empty
-        await syncInitialTemplatesToFirebase();
-      } else {
-        console.warn("⚠️ Firebase notice: Vui lòng dán apiKey của bạn vào js/firebase-config.js để đồng bộ với Firebase Console!");
-      }
+      window.firebase.initializeApp(window.firebaseConfig);
+      window.db = window.firebase.firestore();
+      console.log("⚡ Firebase Cloud Database (webstore-a19ea) connected & active!");
+      
+      // Auto-sync default templates to Firestore if empty
+      await syncInitialTemplatesToFirebase();
     } catch (e) {
       console.warn("Firebase Init Error:", e);
     }
@@ -50,14 +42,14 @@ async function syncInitialTemplatesToFirebase() {
       for (const tpl of defaults) {
         await window.db.collection('web_templates').doc(tpl.id).set(tpl);
       }
-      console.log(`✅ Successfully uploaded ${defaults.length} default template projects to Firebase Firestore!`);
+      console.log(`✅ Successfully seeded ${defaults.length} template projects to Firebase Firestore!`);
     }
   } catch (err) {
-    console.warn("Firebase Firestore Sync notice:", err);
+    console.warn("Firebase Firestore Sync notice (Ensure Firestore is created in Test Mode):", err);
   }
 }
 
-// Auto init on script load
+// Auto init on DOM ready
 document.addEventListener('DOMContentLoaded', () => {
   window.initFirebaseStore();
 });
