@@ -6,7 +6,7 @@ window.API_BASE_URL = window.location.origin.includes('localhost') || window.loc
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V60";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V70";
 const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V16";
 
 const DEFAULT_CATEGORIES = [
