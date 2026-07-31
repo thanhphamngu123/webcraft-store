@@ -1,12 +1,12 @@
 /**
- * Templates Data & API Manager with Bulletproof Local & API Fallback
+ * Templates Data & Firebase Cloud Sync Engine
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V4";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V5";
 
 const DEFAULT_TEMPLATES = [
   {
@@ -179,7 +179,30 @@ function saveLocalTemplates(templates) {
 
 window.cachedTemplates = getLocalTemplates();
 
+/**
+ * Fetch templates from Firebase Firestore Database first, with fallback to LocalStorage
+ */
 async function fetchTemplatesFromAPI() {
+  // 1. Try Firebase Firestore Cloud Database
+  if (window.db) {
+    try {
+      const snapshot = await window.db.collection('web_templates').get();
+      if (!snapshot.empty) {
+        const fbTemplates = [];
+        snapshot.forEach(doc => {
+          fbTemplates.push({ id: doc.id, ...doc.data() });
+        });
+        console.log(`⚡ Fetched ${fbTemplates.length} template projects from Firebase Cloud Database!`);
+        window.cachedTemplates = fbTemplates;
+        saveLocalTemplates(fbTemplates);
+        return fbTemplates;
+      }
+    } catch (err) {
+      console.warn("Firebase Firestore fetch error", err);
+    }
+  }
+
+  // 2. Try REST API Server if configured
   try {
     const response = await fetch(`${window.API_BASE_URL}/templates`);
     if (response && response.ok) {
@@ -191,17 +214,35 @@ async function fetchTemplatesFromAPI() {
       }
     }
   } catch (err) {
-    console.warn("Backend API offline or unreachable, using LocalStorage fallback.", err);
+    console.warn("Backend API offline, using LocalStorage fallback.");
   }
 
+  // 3. Fallback to Local Storage / Default Templates
   window.cachedTemplates = getLocalTemplates();
   return window.cachedTemplates;
 }
 
+/**
+ * Save new template project to Firebase Firestore Cloud & Local Storage
+ */
 async function apiAddTemplate(templateData) {
+  const id = templateData.id || ('tpl-' + Date.now());
+  templateData.id = id;
+
+  // 1. Save to Firebase Firestore if connected
+  if (window.db) {
+    try {
+      await window.db.collection('web_templates').doc(id).set(templateData);
+      console.log(`✅ Published new template to Firebase Firestore: "${templateData.title}"`);
+    } catch (err) {
+      console.warn("Firebase save error", err);
+    }
+  }
+
+  // 2. Save to REST API if available
   try {
     const token = getAdminToken();
-    const res = await fetch(`${window.API_BASE_URL}/templates`, {
+    await fetch(`${window.API_BASE_URL}/templates`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -209,27 +250,28 @@ async function apiAddTemplate(templateData) {
       },
       body: JSON.stringify(templateData)
     });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success && json.data) {
-        window.cachedTemplates.unshift(json.data);
-        saveLocalTemplates(window.cachedTemplates);
-        return json.data;
-      }
-    }
-  } catch (err) {
-    console.warn("API Post failed, saving locally", err);
-  }
+  } catch (err) {}
 
+  // 3. Save locally
   window.cachedTemplates.unshift(templateData);
   saveLocalTemplates(window.cachedTemplates);
   return templateData;
 }
 
 async function apiUpdateTemplate(id, templateData) {
+  templateData.id = id;
+
+  if (window.db) {
+    try {
+      await window.db.collection('web_templates').doc(id).set(templateData, { merge: true });
+    } catch (err) {
+      console.warn("Firebase update error", err);
+    }
+  }
+
   try {
     const token = getAdminToken();
-    const res = await fetch(`${window.API_BASE_URL}/templates/${id}`, {
+    await fetch(`${window.API_BASE_URL}/templates/${id}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
@@ -237,18 +279,7 @@ async function apiUpdateTemplate(id, templateData) {
       },
       body: JSON.stringify(templateData)
     });
-    if (res.ok) {
-      const json = await res.json();
-      if (json.success) {
-        const idx = window.cachedTemplates.findIndex(t => t.id === id);
-        if (idx !== -1) window.cachedTemplates[idx] = json.data;
-        saveLocalTemplates(window.cachedTemplates);
-        return json.data;
-      }
-    }
-  } catch (err) {
-    console.warn("API Update failed, updating locally", err);
-  }
+  } catch (err) {}
 
   const idx = window.cachedTemplates.findIndex(t => t.id === id);
   if (idx !== -1) window.cachedTemplates[idx] = templateData;
@@ -257,15 +288,22 @@ async function apiUpdateTemplate(id, templateData) {
 }
 
 async function apiDeleteTemplate(id) {
+  if (window.db) {
+    try {
+      await window.db.collection('web_templates').doc(id).delete();
+      console.log(`🗑️ Deleted template from Firebase Firestore: ${id}`);
+    } catch (err) {
+      console.warn("Firebase delete error", err);
+    }
+  }
+
   try {
     const token = getAdminToken();
     await fetch(`${window.API_BASE_URL}/templates/${id}`, {
       method: 'DELETE',
       headers: { 'Authorization': `Bearer ${token}` }
     });
-  } catch (err) {
-    console.warn("API Delete failed, deleting locally", err);
-  }
+  } catch (err) {}
 
   window.cachedTemplates = window.cachedTemplates.filter(t => t.id !== id);
   saveLocalTemplates(window.cachedTemplates);
