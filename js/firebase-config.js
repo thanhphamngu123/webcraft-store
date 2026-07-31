@@ -8,13 +8,15 @@
  * 3. Copy your firebaseConfig object and paste it below.
  */
 
-window.firebaseConfig = {
-  apiKey: "YOUR_FIREBASE_API_KEY",
-  authDomain: "webcraft-store.firebaseapp.com",
-  projectId: "webcraft-store",
-  storageBucket: "webcraft-store.appspot.com",
-  messagingSenderId: "123456789",
-  appId: "1:123456789:web:abcdef123456"
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyBWTvE9SBnNnblvUyt2E57bDJ37lJ8leEs",
+  authDomain: "webstore-a19ea.firebaseapp.com",
+  projectId: "webstore-a19ea",
+  storageBucket: "webstore-a19ea.firebasestorage.app",
+  messagingSenderId: "315684270789",
+  appId: "1:315684270789:web:d9062a2b1875356dc5b6ac",
+  measurementId: "G-HCBR076R0J"
 };
 
 // Initialize Firebase if CDN script is loaded
