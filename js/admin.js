@@ -1,5 +1,5 @@
 /**
- * Admin Panel Manager - Dynamic Categories & Custom Overlay Dialogs Edition
+ * Admin Panel Manager - Pure Text Interface Edition
  */
 
 window.ModalDialog = {
@@ -167,20 +167,14 @@ window.AdminManager = {
     }
 
     listContainer.innerHTML = files.map(filepath => {
-      let icon = '📄';
-      if (filepath.endsWith('.css')) icon = '🎨';
-      else if (filepath.endsWith('.js')) icon = '⚡';
-      else if (filepath.endsWith('.json')) icon = '📊';
-
       const isActive = filepath === this.activeFilePath ? 'active' : '';
 
       return `
         <li class="file-tree-item ${isActive}" onclick="AdminManager.selectFile('${filepath}')">
           <div class="file-name-wrap">
-            <span>${icon}</span>
             <span>${filepath}</span>
           </div>
-          ${files.length > 1 ? `<span class="del-file-icon" title="Xóa file" onclick="event.stopPropagation(); AdminManager.deleteFileFromTree('${filepath}')">&times;</span>` : ''}
+          ${files.length > 1 ? `<span class="del-file-icon" title="Xóa file" onclick="event.stopPropagation(); AdminManager.deleteFileFromTree('${filepath}')">Xóa</span>` : ''}
         </li>
       `;
     }).join('');
@@ -202,7 +196,8 @@ window.AdminManager = {
     const titleEl = document.getElementById('active-file-title');
     const textarea = document.getElementById('active-code-editor');
     
-    if (titleEl) titleEl.textContent = `📄 ${this.activeFilePath}`;
+    if (titleEl) titleEl.textContent = filepath => filepath;
+    if (titleEl) titleEl.textContent = `${this.activeFilePath}`;
     if (textarea) {
       textarea.value = this.currentFilesMap[this.activeFilePath] || '';
     }
@@ -353,7 +348,7 @@ window.AdminManager = {
 
     const templateData = {
       title: title || 'Trang web mới',
-      category: category || 'SaaS',
+      category: category || 'SaaS & AI',
       updatedAt: new Date().toISOString().split('T')[0],
       description: description || 'Mô tả dự án trang web',
       thumbnail: thumbnail,
@@ -378,13 +373,13 @@ window.AdminManager = {
   showNotification: function(msg, type = 'info') {
     const toast = document.createElement('div');
     toast.className = `toast-notification toast-${type}`;
-    toast.innerHTML = `<span class="toast-icon">✨</span> <span>${msg}</span>`;
+    toast.innerHTML = `<span>${msg}</span>`;
     document.body.appendChild(toast);
 
     setTimeout(() => toast.classList.add('show'), 10);
     setTimeout(() => {
       toast.classList.remove('show');
-      setTimeout(() => toast.remove(), 3500);
+      setTimeout(() => toast.remove(), 300);
     }, 3500);
   }
 };

@@ -1,5 +1,5 @@
 /**
- * Main Application Logic - Streamlined Clean Marketplace
+ * Main Application Logic - Pure Text Interface Edition
  */
 
 window.App = {
@@ -29,7 +29,6 @@ window.App = {
       return `<button class="cat-pill ${activeClass}" data-cat="${cat.name}">${cat.name}</button>`;
     }).join('');
 
-    // Rebind category click events
     container.querySelectorAll('.cat-pill').forEach(pill => {
       pill.addEventListener('click', (e) => {
         container.querySelectorAll('.cat-pill').forEach(p => p.classList.remove('active'));
@@ -95,10 +94,9 @@ window.App = {
 
     if (templates.length === 0) {
       container.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-icon">🔍</div>
+        <div class="empty-state" style="grid-column:1/-1; text-align:center; padding:4rem;">
           <h3>Không tìm thấy giao diện phù hợp</h3>
-          <p>Thử tìm kiếm với từ khóa khác hoặc chuyển danh mục.</p>
+          <p style="color:var(--text-muted);">Thử tìm kiếm với từ khóa khác hoặc chuyển danh mục.</p>
         </div>
       `;
       return;
@@ -113,7 +111,6 @@ window.App = {
             <img src="${t.thumbnail}" class="card-thumb" alt="${t.title}" loading="lazy">
             <div class="card-overlay">
               <button class="demo-btn-primary" onclick="App.openLiveDemo('${t.id}')">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                 Xem Demo Live
               </button>
             </div>
@@ -130,7 +127,7 @@ window.App = {
 
             <div class="card-footer" style="margin-top:1rem; border-top:1px solid rgba(255,255,255,0.05); padding-top:0.8rem; justify-content:flex-end;">
               <button class="demo-btn-primary" style="width:100%; text-align:center; justify-center;" onclick="App.openLiveDemo('${t.id}')">
-                👁️ Xem Demo Live
+                Xem Demo Live
               </button>
             </div>
           </div>

@@ -25,7 +25,6 @@
     <!-- Firebase Console Style Left Sidebar -->
     <aside class="firebase-sidebar">
       <div class="sidebar-brand">
-        <div class="sidebar-logo-icon">🔥</div>
         <div class="sidebar-brand-info">
           <span class="sidebar-title">WebCraft Console</span>
           <span class="sidebar-sub">webstore-a19ea</span>
@@ -35,12 +34,10 @@
       <div class="sidebar-section-label">Lối Tắt Quản Trị</div>
       <nav class="sidebar-nav">
         <button class="sidebar-nav-btn active" id="nav-btn-posts" onclick="switchAdminTab('posts')">
-          <span class="nav-icon">📝</span>
           <span class="nav-text">Đăng Bài / Dự Án Web</span>
         </button>
         
         <button class="sidebar-nav-btn" id="nav-btn-categories" onclick="switchAdminTab('categories')">
-          <span class="nav-icon">📂</span>
           <span class="nav-text">Quản Lý Danh Mục</span>
         </button>
       </nav>
@@ -48,11 +45,9 @@
       <div class="sidebar-section-label">Hệ Thống</div>
       <nav class="sidebar-nav">
         <a href="index.html" class="sidebar-nav-btn" style="text-decoration:none;">
-          <span class="nav-icon">👁️</span>
           <span class="nav-text">Xem Store Trang Chủ</span>
         </a>
         <button class="sidebar-nav-btn" onclick="logoutPortal()" style="color:var(--accent-rose);">
-          <span class="nav-icon">🚪</span>
           <span class="nav-text">Đăng Xuất Admin</span>
         </button>
       </nav>
@@ -78,7 +73,6 @@
       <!-- Login Overlay for Unauthenticated Users -->
       <div id="admin-login-section" class="admin-login-card" style="margin-top:5rem;">
         <div style="text-align: center; margin-bottom: 2rem;">
-          <div style="width:54px; height:54px; border-radius:14px; background:linear-gradient(135deg, #38BDF8, #818CF8); display:flex; align-items:center; justify-content:center; font-size:1.6rem; margin:0 auto 1rem; box-shadow:0 4px 20px rgba(56,189,248,0.4);">🔐</div>
           <h1 style="font-size:1.75rem; font-weight:800; margin-bottom:0.4rem;">Đăng Nhập Quản Trị Console</h1>
           <p style="font-size:0.9rem; color:#94A3B8;">Nhập tài khoản Admin để truy cập toàn bộ chức năng Console</p>
         </div>
@@ -94,11 +88,11 @@
             <input type="password" id="portal-pass-input" class="form-input" placeholder="••••••••" value="admin123" required>
           </div>
 
-          <button type="submit" class="save-tpl-btn" style="padding:0.9rem; margin-top:0.5rem; font-size:1rem;">⚡ Đăng Nhập Console</button>
+          <button type="submit" class="save-tpl-btn" style="padding:0.9rem; margin-top:0.5rem; font-size:1rem;">Đăng Nhập Console</button>
         </form>
 
         <div style="background:rgba(255,255,255,0.03); border:1px dashed rgba(255,255,255,0.1); border-radius:10px; padding:0.8rem; margin-top:1.5rem; font-size:0.82rem; color:#94A3B8; text-align:center;">
-          🔑 Tài khoản mặc định: <code style="color:#38BDF8;">admin</code> | Mật khẩu: <code style="color:#38BDF8;">admin123</code>
+          Tài khoản mặc định: <code style="color:#38BDF8;">admin</code> | Mật khẩu: <code style="color:#38BDF8;">admin123</code>
         </div>
       </div>
 
@@ -109,16 +103,16 @@
         <section id="tab-view-posts" class="tab-view-section active">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
             <div>
-              <h1 style="font-size:1.9rem; font-weight:800;">📝 Đăng Bài & Quản Lý Dự Án Web</h1>
+              <h1 style="font-size:1.9rem; font-weight:800;">Đăng Bài & Quản Lý Dự Án Web</h1>
               <p style="color:#94A3B8; font-size:0.95rem;">Đăng bài bán trang web mới hoặc tải lên cả folder dự án Multi-File</p>
             </div>
             <button class="save-tpl-btn" onclick="AdminManager.openModal()" style="font-size:1rem; padding:0.8rem 1.6rem;">
-              ➕ Đăng Dự Án Web Mới
+              Đăng Dự Án Web Mới
             </button>
           </div>
 
           <div style="background:#0E131F; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:1.5rem;">
-            <h3 style="font-size:1.2rem; margin-bottom:1rem; color:#38BDF8;">📚 Danh Sách Các Trang Web Đã Xuất Bản</h3>
+            <h3 style="font-size:1.2rem; margin-bottom:1rem; color:#38BDF8;">Danh Sách Các Trang Web Đã Xuất Bản</h3>
             <div id="admin-templates-table-container"></div>
           </div>
         </section>
@@ -127,16 +121,16 @@
         <section id="tab-view-categories" class="tab-view-section">
           <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:2rem;">
             <div>
-              <h1 style="font-size:1.9rem; font-weight:800;">📂 Quản Lý Danh Mục</h1>
+              <h1 style="font-size:1.9rem; font-weight:800;">Quản Lý Danh Mục</h1>
               <p style="color:#94A3B8; font-size:0.95rem;">Thêm, sửa, xóa các danh mục sản phẩm (Tự động đồng bộ với trang chủ Store)</p>
             </div>
             <button class="save-tpl-btn" onclick="promptAddCategory()" style="font-size:1rem; padding:0.8rem 1.6rem;">
-              + Thêm Danh Mục Mới
+              Thêm Danh Mục Mới
             </button>
           </div>
 
           <div style="background:#0E131F; border:1px solid rgba(255,255,255,0.08); border-radius:16px; padding:1.75rem;">
-            <h3 style="font-size:1.2rem; margin-bottom:1.5rem; color:#38BDF8;">🏷️ Danh Sách Danh Mục Hiện Có</h3>
+            <h3 style="font-size:1.2rem; margin-bottom:1.5rem; color:#38BDF8;">Danh Sách Danh Mục Hiện Có</h3>
             <div id="admin-category-cards-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:1.25rem;"></div>
           </div>
         </section>
@@ -151,7 +145,6 @@
   <div class="modal-overlay" id="custom-prompt-modal">
     <div class="dialog-modal-box">
       <div class="dialog-header">
-        <span class="dialog-icon">✏️</span>
         <h3 id="prompt-modal-title">Nhập Thông Tin</h3>
       </div>
       <div class="dialog-body">
@@ -169,7 +162,6 @@
   <div class="modal-overlay" id="custom-confirm-modal">
     <div class="dialog-modal-box">
       <div class="dialog-header">
-        <span class="dialog-icon" style="color:var(--accent-rose);">⚠️</span>
         <h3 id="confirm-modal-title">Xác Nhận Thao Tác</h3>
       </div>
       <div class="dialog-body">
@@ -186,7 +178,7 @@
   <div class="modal-overlay" id="admin-modal">
     <div class="admin-modal-container">
       <div class="admin-header">
-        <h2 id="admin-form-title">⚙️ Đăng & Chỉnh Sửa Dự Án Web</h2>
+        <h2 id="admin-form-title">Đăng & Chỉnh Sửa Dự Án Web</h2>
         <button class="close-btn" onclick="AdminManager.closeModal()">&times;</button>
       </div>
 
@@ -218,31 +210,31 @@
               
               <div class="upload-options-grid">
                 <div class="file-upload-box zip-upload-box">
-                  <label for="admin-file-zip" class="upload-label">📦 Tải File .ZIP</label>
+                  <label for="admin-file-zip" class="upload-label">Tải File .ZIP</label>
                   <input type="file" id="admin-file-zip" accept=".zip">
                 </div>
                 
                 <div class="file-upload-box folder-upload-box">
-                  <label for="admin-folder-upload" class="upload-label">📁 Tải Thư Mục</label>
+                  <label for="admin-folder-upload" class="upload-label">Tải Thư Mục</label>
                   <input type="file" id="admin-folder-upload" webkitdirectory directory multiple>
                 </div>
               </div>
 
               <div class="single-files-grid">
                 <div class="file-upload-box">
-                  <label for="admin-file-html" class="upload-label">📄 + HTML</label>
+                  <label for="admin-file-html" class="upload-label">+ File HTML</label>
                   <input type="file" id="admin-file-html" accept=".html,.htm" multiple>
                 </div>
                 <div class="file-upload-box">
-                  <label for="admin-file-css" class="upload-label">🎨 + CSS</label>
+                  <label for="admin-file-css" class="upload-label">+ File CSS</label>
                   <input type="file" id="admin-file-css" accept=".css" multiple>
                 </div>
                 <div class="file-upload-box">
-                  <label for="admin-file-js" class="upload-label">⚡ + JS</label>
+                  <label for="admin-file-js" class="upload-label">+ File JS</label>
                   <input type="file" id="admin-file-js" accept=".js" multiple>
                 </div>
                 <div class="file-upload-box">
-                  <label for="admin-file-json" class="upload-label">📊 + JSON</label>
+                  <label for="admin-file-json" class="upload-label">+ File JSON</label>
                   <input type="file" id="admin-file-json" accept=".json" multiple>
                 </div>
               </div>
@@ -254,7 +246,7 @@
           <div class="admin-workspace-split">
             <div class="file-tree-sidebar">
               <div class="file-tree-header">
-                <span>📁 Cấu Trúc Dự Án</span>
+                <span>Cấu Trúc Dự Án</span>
                 <button class="add-file-btn" onclick="AdminManager.promptNewFile()">+ File</button>
               </div>
               <ul class="file-tree-list" id="admin-file-tree"></ul>
@@ -263,10 +255,10 @@
             <div class="code-editor-stage">
               <div class="admin-tabs">
                 <div class="active-filename-indicator" id="active-file-title">
-                  📄 index.html
+                  index.html
                 </div>
                 <button class="admin-tab-btn" id="btn-test-preview" onclick="AdminManager.togglePreviewTab(true)">
-                  <span>👁️ Test Live Sandbox</span>
+                  <span>Test Live Sandbox</span>
                 </button>
               </div>
 
@@ -284,7 +276,7 @@
 
       <div class="admin-footer">
         <button class="cancel-btn" onclick="AdminManager.closeModal()">Hủy Bỏ</button>
-        <button class="save-tpl-btn" onclick="AdminManager.saveTemplateFromForm()">✨ Lưu & Xuất Bản Bài Đăng</button>
+        <button class="save-tpl-btn" onclick="AdminManager.saveTemplateFromForm()">Lưu & Xuất Bản Bài Đăng</button>
       </div>
     </div>
   </div>
@@ -316,7 +308,7 @@
           localStorage.setItem('adminUser', 'admin');
           checkAdminPortalState();
         } else {
-          AdminManager.showNotification("❌ Sai tài khoản hoặc mật khẩu Admin!", "error");
+          AdminManager.showNotification("Sai tài khoản hoặc mật khẩu Admin!", "error");
         }
       });
     });
@@ -369,8 +361,8 @@
           </div>
           <div style="display:flex; gap:0.5rem;">
             ${cat.id !== 'All' ? `
-              <button class="action-icon-btn" onclick="promptEditCategory('${cat.id}', '${cat.name}')" title="Sửa tên">✏️</button>
-              <button class="action-icon-btn delete-btn" onclick="deleteCategoryFromAdmin('${cat.id}')" title="Xóa">🗑️</button>
+              <button class="action-icon-btn" onclick="promptEditCategory('${cat.id}', '${cat.name}')">Sửa</button>
+              <button class="action-icon-btn delete-btn" onclick="deleteCategoryFromAdmin('${cat.id}')">Xóa</button>
             ` : `<span style="font-size:0.75rem; color:#38BDF8; font-weight:bold;">Chung</span>`}
           </div>
         </div>
@@ -383,7 +375,7 @@
       await apiAddCategory(name.trim());
       renderAdminCategoryManager();
       updateFirebaseConnectionMonitor();
-      AdminManager.showNotification(`🎉 Đã thêm danh mục mới "${name}"!`, "success");
+      AdminManager.showNotification(`Đã thêm danh mục mới "${name}"!`, "success");
     }
 
     async function promptEditCategory(id, oldName) {
@@ -391,7 +383,7 @@
       if (!newName || newName.trim() === oldName) return;
       await apiUpdateCategory(id, newName.trim());
       renderAdminCategoryManager();
-      AdminManager.showNotification(`🎉 Đã cập nhật tên danh mục!`, "success");
+      AdminManager.showNotification(`Đã cập nhật tên danh mục!`, "success");
     }
 
     async function deleteCategoryFromAdmin(id) {
@@ -440,8 +432,8 @@
                   <td style="padding:0.8rem; color:#38BDF8;">${t.category}</td>
                   <td style="padding:0.8rem; font-family:monospace; color:#94A3B8;">${fileCount} files</td>
                   <td style="padding:0.8rem; text-align:right;">
-                    <button class="action-icon-btn" style="display:inline-flex;" onclick="AdminManager.openModal('${t.id}')">✏️ Sửa</button>
-                    <button class="action-icon-btn delete-btn" style="display:inline-flex;" onclick="deleteFromPortal('${t.id}')">🗑️ Xóa</button>
+                    <button class="action-icon-btn" style="display:inline-flex;" onclick="AdminManager.openModal('${t.id}')">Sửa</button>
+                    <button class="action-icon-btn delete-btn" style="display:inline-flex;" onclick="deleteFromPortal('${t.id}')">Xóa</button>
                   </td>
                 </tr>
               `;
@@ -483,19 +475,19 @@
 
           dot.className = "status-dot-pulse pulse-green";
           title.textContent = "Firebase Đã Kết Nối";
-          detail.innerHTML = "🟢 Project: webstore-a19ea<br>⚡ Firestore Cloud Active";
-          meta.textContent = `📊 ${templates.length} Bài Đăng • ${categories.length} Danh Mục`;
+          detail.innerHTML = "Project: webstore-a19ea<br>Firestore Cloud Active";
+          meta.textContent = `${templates.length} Bài Đăng • ${categories.length} Danh Mục`;
         } catch (e) {
           dot.className = "status-dot-pulse pulse-red";
           title.textContent = "Firebase Lỗi Quyền / Rules";
-          detail.innerHTML = `🔴 Project: webstore-a19ea<br>⚠️ ${e.code || 'Locked Rules'}`;
-          meta.textContent = `💾 Chế Độ Lưu Local Storage`;
+          detail.innerHTML = `Project: webstore-a19ea<br>${e.code || 'Locked Rules'}`;
+          meta.textContent = `Chế Độ Lưu Local Storage`;
         }
       } else {
         dot.className = "status-dot-pulse pulse-red";
         title.textContent = "Chưa Kết Nối Firebase";
-        detail.innerHTML = "🔴 Firebase SDK chưa sẵn sàng<br>💾 Lưu tạm ở máy Local";
-        meta.textContent = `📊 ${templates.length} Bài Đăng Local`;
+        detail.innerHTML = "Firebase SDK chưa sẵn sàng<br>Lưu tạm ở máy Local";
+        meta.textContent = `${templates.length} Bài Đăng Local`;
       }
     }
   </script>

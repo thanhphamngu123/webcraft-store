@@ -1,27 +1,27 @@
 /**
- * Templates & Categories Data Manager
+ * Templates & Categories Data Manager - Clean Text Edition
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V12";
-const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V12";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V13";
+const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V13";
 
 const DEFAULT_CATEGORIES = [
-  { id: "All", name: "🔥 Tất cả" },
-  { id: "SaaS", name: "🚀 SaaS & AI" },
-  { id: "Restaurant", name: "🍽️ Nhà Hàng" },
-  { id: "Portfolio", name: "👨‍💻 Portfolio" },
-  { id: "E-Commerce", name: "🛒 Thương Mại" }
+  { id: "All", name: "Tất cả" },
+  { id: "SaaS", name: "SaaS & AI" },
+  { id: "Restaurant", name: "Nhà Hàng" },
+  { id: "Portfolio", name: "Portfolio" },
+  { id: "E-Commerce", name: "Thương Mại" }
 ];
 
 const DEFAULT_TEMPLATES = [
   {
     id: "tpl-quantum-ai-agency",
     title: "Quantum AI Agency - Futuristic Design Studio",
-    category: "SaaS",
+    category: "SaaS & AI",
     updatedAt: "2026-07-31",
     description: "Template dành cho Agency thiết kế, công ty công nghệ AI và Studio sáng tạo. Tích hợp cấu trúc đa trang (Home, About Us, Services), hiệu ứng đếm số động.",
     thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
@@ -36,7 +36,7 @@ const DEFAULT_TEMPLATES = [
 </head>
 <body>
   <header class="q-navbar">
-    <div class="q-logo">⚛️ Quantum Studio</div>
+    <div class="q-logo">Quantum Studio</div>
     <nav>
       <a href="index.html" class="active">Trang Chủ</a>
       <a href="about.html">Về Chúng Tôi</a>
@@ -46,7 +46,7 @@ const DEFAULT_TEMPLATES = [
 
   <main>
     <section class="q-hero">
-      <div class="q-pill">✨ Next-Gen Web Experience 2026</div>
+      <div class="q-pill">Next-Gen Web Experience 2026</div>
       <h1>Định Hình Tương Lai Giao Diện Số Với AI</h1>
       <p>Chúng tôi giúp các thương hiệu hàng đầu xây dựng trải nghiệm web 3D và giao diện người dùng đỉnh cao.</p>
       <div style="margin-top:2.5rem; display:flex; gap:1rem; justify-content:center;">
@@ -79,7 +79,7 @@ const DEFAULT_TEMPLATES = [
 </head>
 <body>
   <header class="q-navbar">
-    <div class="q-logo">⚛️ Quantum Studio</div>
+    <div class="q-logo">Quantum Studio</div>
     <nav>
       <a href="index.html">Trang Chủ</a>
       <a href="about.html" class="active">Về Chúng Tôi</a>
@@ -93,13 +93,11 @@ const DEFAULT_TEMPLATES = [
 
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:2rem;">
       <div style="background:#0F172A; padding:2rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
-        <div style="font-size:3rem; margin-bottom:1rem;">👨‍🎨</div>
         <h3 style="color:#FFF;">Alex Rivera</h3>
         <p style="color:#38BDF8; font-size:0.9rem;">Creative Director</p>
       </div>
 
       <div style="background:#0F172A; padding:2rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
-        <div style="font-size:3rem; margin-bottom:1rem;">👩‍💻</div>
         <h3 style="color:#FFF;">Elena Rostova</h3>
         <p style="color:#38BDF8; font-size:0.9rem;">Lead AI Engineer</p>
       </div>
@@ -146,7 +144,7 @@ footer { text-align: center; padding: 3rem; color: #64748B; border-top: 1px soli
 
       "js/quantum.js": `
 function openContactModal() {
-  alert("📬 Cảm ơn bạn đã quan tâm đến Quantum AI Studio! Email: contact@quantumlab.io");
+  alert("Cảm ơn bạn đã quan tâm đến Quantum AI Studio! Email: contact@quantumlab.io");
 }
       `.trim()
     }
@@ -154,7 +152,7 @@ function openContactModal() {
   {
     id: "tpl-cyberstore-ecommerce",
     title: "CyberStore - Future Fashion E-Commerce",
-    category: "E-Commerce",
+    category: "Thương Mại",
     updatedAt: "2026-07-31",
     description: "Template thương mại điện tử phong cách Cyberpunk hiện đại dành cho thương hiệu thời trang, phụ kiện công nghệ.",
     thumbnail: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80",
@@ -169,7 +167,7 @@ function openContactModal() {
 </head>
 <body>
   <header class="store-nav">
-    <div class="store-brand">🛍️ CYBERSTORE</div>
+    <div class="store-brand">CYBERSTORE</div>
     <nav>
       <a href="index.html" class="active">Trang Chủ</a>
       <a href="products.html">Sản Phẩm</a>
@@ -193,7 +191,7 @@ function openContactModal() {
 </head>
 <body>
   <header class="store-nav">
-    <div class="store-brand">🛍️ CYBERSTORE</div>
+    <div class="store-brand">CYBERSTORE</div>
     <nav>
       <a href="index.html">Trang Chủ</a>
       <a href="products.html" class="active">Sản Phẩm</a>
@@ -235,7 +233,6 @@ function sanitizeForFirestore(obj) {
   return clean;
 }
 
-// Dynamic Category Management System
 function getCategories() {
   const data = localStorage.getItem(CATEGORIES_KEY);
   if (!data) {
@@ -267,10 +264,10 @@ function saveCategories(cats) {
 
 window.cachedCategories = getCategories();
 
-async function apiAddCategory(name, emoji = '📁') {
+async function apiAddCategory(name) {
   const cats = getCategories();
   const id = 'cat-' + Date.now();
-  const newCat = { id: id, name: `${emoji} ${name}` };
+  const newCat = { id: id, name: name.trim() };
   cats.push(newCat);
   saveCategories(cats);
   return cats;
@@ -280,7 +277,7 @@ async function apiUpdateCategory(id, name) {
   const cats = getCategories();
   const idx = cats.findIndex(c => c.id === id);
   if (idx !== -1) {
-    cats[idx].name = name;
+    cats[idx].name = name.trim();
     saveCategories(cats);
   }
   return cats;
@@ -294,7 +291,6 @@ async function apiDeleteCategory(id) {
   return cats;
 }
 
-// Templates Persistence System
 function getLocalTemplates() {
   const data = localStorage.getItem(STORAGE_KEY);
   if (!data) {
@@ -363,11 +359,14 @@ async function apiAddTemplate(templateData) {
   if (db) {
     try {
       await db.collection('web_templates').doc(id).set(sanitized);
-      console.log(`✅ Saved template to Firebase Firestore: "${templateData.title}"`);
-      alert(`🎉 Đã đăng bài "${templateData.title}" thành công lên Firebase Cloud Database!`);
+      if (window.AdminManager) {
+        window.AdminManager.showNotification(`Đã đăng bài "${templateData.title}" thành công lên Firebase Cloud Database!`, "success");
+      }
     } catch (err) {
       console.error("Firebase Firestore Save Error:", err);
-      alert(`⚠️ Lỗi Firebase (${err.code || 'Firestore'}): ${err.message}`);
+      if (window.AdminManager) {
+        window.AdminManager.showNotification(`Lỗi Firebase: ${err.message}`, "error");
+      }
     }
   }
 
@@ -384,7 +383,9 @@ async function apiUpdateTemplate(id, templateData) {
   if (db) {
     try {
       await db.collection('web_templates').doc(id).set(sanitized, { merge: true });
-      alert(`🎉 Đã cập nhật bài đăng trên Firebase Cloud Database!`);
+      if (window.AdminManager) {
+        window.AdminManager.showNotification("Đã cập nhật bài đăng trên Firebase Cloud Database!", "success");
+      }
     } catch (err) {
       console.error("Firebase update error", err);
     }
@@ -401,7 +402,6 @@ async function apiDeleteTemplate(id) {
   if (db) {
     try {
       await db.collection('web_templates').doc(id).delete();
-      console.log(`🗑️ Deleted template from Firebase Firestore: ${id}`);
     } catch (err) {
       console.error("Firebase delete error", err);
     }
