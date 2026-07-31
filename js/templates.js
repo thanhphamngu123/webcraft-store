@@ -6,7 +6,7 @@ window.API_BASE_URL = window.location.origin.includes('localhost') || window.loc
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V25";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V30";
 const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V16";
 
 const DEFAULT_CATEGORIES = [
@@ -421,17 +421,16 @@ async function fetchTemplatesFromAPI() {
         snapshot.forEach(doc => {
           fbTemplates.push({ id: doc.id, ...doc.data() });
         });
-        // Non-blocking sync for MelodyFlow Studio to Firebase Cloud Database
-        const hasMelodyFlow = fbTemplates.some(t => t.id === 'tpl-melodyflow-studio');
-        if (!hasMelodyFlow) {
-          const melodyTpl = DEFAULT_TEMPLATES.find(t => t.id === 'tpl-melodyflow-studio');
-          if (melodyTpl) {
-            try {
-              const sanitized = sanitizeForFirestore(melodyTpl);
-              db.collection('web_templates').doc('tpl-melodyflow-studio').set(sanitized).catch(() => {});
-              fbTemplates.unshift(sanitized);
-            } catch(e) {}
-          }
+        // Force overwrite MelodyFlow Studio with latest room.html in Firebase Cloud Database
+        const melodyTpl = DEFAULT_TEMPLATES.find(t => t.id === 'tpl-melodyflow-studio');
+        if (melodyTpl) {
+          try {
+            const sanitized = sanitizeForFirestore(melodyTpl);
+            db.collection('web_templates').doc('tpl-melodyflow-studio').set(sanitized).catch(() => {});
+            const idx = fbTemplates.findIndex(t => t.id === 'tpl-melodyflow-studio');
+            if (idx !== -1) fbTemplates[idx] = sanitized;
+            else fbTemplates.unshift(sanitized);
+          } catch(e) {}
         }
 
         if (fbTemplates.length > 0) {
