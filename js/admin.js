@@ -96,9 +96,7 @@ window.AdminManager = {
 
   isLoggedIn: function() {
     const token = localStorage.getItem('adminToken');
-    if (token === 'true') return true;
-    if (window.location.pathname.includes('admin.html')) return true;
-    return false;
+    return !!token;
   },
 
   readFileAsDataURL: function(file) {
@@ -395,11 +393,6 @@ window.AdminManager = {
   },
 
   openModal: function(templateIdToEdit = null) {
-    if (!this.isLoggedIn()) {
-      window.location.href = 'admin.html';
-      return;
-    }
-
     const modal = document.getElementById('admin-modal');
     if (!modal) return;
 
