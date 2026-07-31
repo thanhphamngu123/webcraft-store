@@ -39,68 +39,6 @@ body {
 }
 
 /* ==========================================================================
-   TOP MAIN NAVBAR (MOVED FROLAX-TOPBAR TO MAIN NAVBAR WITH WEBCRAFT STORE)
-   ========================================================================== */
-.frolax-topbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1.1rem 3rem;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(16px);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-  border-bottom: 1px solid #E2E8F0;
-  width: 100%;
-}
-
-.frolax-brand {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  text-decoration: none;
-}
-.frolax-logo-emblem {
-  width: 16px;
-  height: 24px;
-  background: #E85D26;
-  clip-path: polygon(0 0, 100% 25%, 100% 75%, 0 100%, 40% 50%);
-}
-.frolax-brand-name {
-  font-size: 1.5rem;
-  font-weight: 800;
-  color: #0F172A;
-  letter-spacing: -0.02em;
-}
-
-.frolax-nav-pill {
-  background: #F1F5F9;
-  border: 1px solid #E2E8F0;
-  border-radius: 999px;
-  padding: 5px 8px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.frolax-nav-link {
-  color: #475569;
-  font-weight: 700;
-  font-size: 0.9rem;
-  padding: 8px 22px;
-  border-radius: 999px;
-  cursor: pointer;
-  transition: all 0.2s;
-}
-
-.frolax-nav-link.active {
-  background: #E85D26;
-  color: #FFFFFF;
-  box-shadow: 0 4px 15px rgba(232, 93, 38, 0.3);
-}
-
-/* ==========================================================================
    FROLAX PREMIUM SHOWCASE HERO SECTION STYLES
    ========================================================================== */
 .frolax-hero-wrapper {
@@ -116,11 +54,66 @@ body {
   color: #FFFFFF;
 }
 
+/* Frolax Topbar (Inside Hero Banner) */
+.frolax-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.75rem 3rem 1rem;
+  background: transparent;
+  width: 100%;
+}
+
+.frolax-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+.frolax-logo-emblem {
+  width: 16px;
+  height: 24px;
+  background: #FFFFFF;
+  clip-path: polygon(0 0, 100% 25%, 100% 75%, 0 100%, 40% 50%);
+}
+.frolax-brand-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.frolax-nav-pill {
+  background: #FFFFFF;
+  border-radius: 999px;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.frolax-nav-link {
+  color: #1E293B;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 8px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.frolax-nav-link.active {
+  background: #E85D26;
+  color: #FFFFFF;
+  box-shadow: 0 4px 15px rgba(232, 93, 38, 0.3);
+}
+
 .frolax-hero-body {
   display: grid;
   grid-template-columns: 1.1fr 1.2fr 1fr;
   align-items: center;
-  padding: 3rem 3rem 4rem;
+  padding: 1rem 3rem 4rem;
   position: relative;
 }
 
@@ -463,7 +456,7 @@ body {
   background: #FFFFFF; border-bottom: 1px solid #E2E8F0;
 }
 .demo-info { display: flex; align-items: center; gap: 1rem; }
-.close-demo-btn { background: #F1F5F9; color: #0F172A; border: none; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 0.4rem; }
+.close-demo-btn { background: #F1F5F9; color: #0F172A; border: none; padding: 0.5rem 1rem; border-radius: var(--radius-sm); font-weight: 600; cursor: pointer; display: flex; align-items: gap: 0.4rem; }
 .close-demo-btn:hover { background: var(--accent-rose); color: #FFF; }
 .demo-title-text { font-weight: 700; font-size: 1.1rem; color: #0F172A; }
 .page-indicator-badge { background: #F1F5F9; color: #0284C7; border: 1px solid #E2E8F0; padding: 0.2rem 0.6rem; border-radius: 6px; font-size: 0.8rem; font-family: monospace; }
