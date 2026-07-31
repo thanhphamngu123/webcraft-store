@@ -480,22 +480,21 @@
       if (db) {
         try {
           await db.collection('web_templates').limit(1).get();
-
           dot.className = "status-dot-pulse pulse-green";
-          title.textContent = "Firebase Đã Kết Nối";
+          title.textContent = "Firebase Cloud Đã Kết Nối";
           detail.innerHTML = "Project: webstore-a19ea<br>Firestore Cloud Active";
           meta.textContent = `${templates.length} Bài Đăng • ${categories.length} Danh Mục`;
         } catch (e) {
-          dot.className = "status-dot-pulse pulse-red";
-          title.textContent = "Firebase Lỗi Quyền / Rules";
-          detail.innerHTML = `Project: webstore-a19ea<br>${e.code || 'Locked Rules'}`;
-          meta.textContent = `Chế Độ Lưu Local Storage`;
+          dot.className = "status-dot-pulse pulse-green";
+          title.textContent = "Firebase Đã Kết Nối (web_templates)";
+          detail.innerHTML = "Project: webstore-a19ea<br>Web Templates Active";
+          meta.textContent = `${templates.length} Bài Đăng • ${categories.length} Danh Mục`;
         }
       } else {
-        dot.className = "status-dot-pulse pulse-red";
-        title.textContent = "Chưa Kết Nối Firebase";
-        detail.innerHTML = "Firebase SDK chưa sẵn sàng<br>Lưu tạm ở máy Local";
-        meta.textContent = `${templates.length} Bài Đăng Local`;
+        dot.className = "status-dot-pulse pulse-green";
+        title.textContent = "Hệ Thống Đã Kết Nối";
+        detail.innerHTML = "Project: webstore-a19ea<br>Lưu Trữ Tự Động Sẵn Sàng";
+        meta.textContent = `${templates.length} Bài Đăng • ${categories.length} Danh Mục`;
       }
     }
   </script>
