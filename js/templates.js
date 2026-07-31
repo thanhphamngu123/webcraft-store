@@ -6,7 +6,7 @@ window.API_BASE_URL = window.location.origin.includes('localhost') || window.loc
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V50";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V60";
 const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V16";
 
 const DEFAULT_CATEGORIES = [
@@ -369,7 +369,9 @@ function getTimestampFromTemplate(tpl) {
  */
 function sortTemplatesNewestFirst(templatesList) {
   if (!Array.isArray(templatesList)) return [];
-  return templatesList.slice().sort((a, b) => {
+  const valid = templatesList.filter(t => t && typeof t === 'object' && t.id && t.title);
+  if (valid.length === 0 && Array.isArray(DEFAULT_TEMPLATES)) return DEFAULT_TEMPLATES;
+  return valid.sort((a, b) => {
     return getTimestampFromTemplate(b) - getTimestampFromTemplate(a);
   });
 }
