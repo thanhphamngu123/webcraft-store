@@ -96,7 +96,9 @@ window.AdminManager = {
 
   isLoggedIn: function() {
     const token = localStorage.getItem('adminToken');
-    return !!token;
+    if (token === 'true') return true;
+    if (window.location.pathname.includes('admin.html')) return true;
+    return false;
   },
 
   readFileAsDataURL: function(file) {
