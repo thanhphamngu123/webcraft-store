@@ -6,8 +6,8 @@ window.API_BASE_URL = window.location.origin.includes('localhost') || window.loc
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V11";
-const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V11";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V12";
+const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V12";
 
 const DEFAULT_CATEGORIES = [
   { id: "All", name: "🔥 Tất cả" },
@@ -27,69 +27,91 @@ const DEFAULT_TEMPLATES = [
     thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
     filesMap: {
       "index.html": `
-<header class="q-navbar">
-  <div class="q-logo">⚛️ Quantum Studio</div>
-  <nav>
-    <a href="index.html" class="active">Trang Chủ</a>
-    <a href="about.html">Về Chúng Tôi</a>
-  </nav>
-  <button class="q-contact-btn" onclick="openContactModal()">Liên Hệ Ngay</button>
-</header>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Quantum AI Studio</title>
+  <link rel="stylesheet" href="css/agency.css">
+</head>
+<body>
+  <header class="q-navbar">
+    <div class="q-logo">⚛️ Quantum Studio</div>
+    <nav>
+      <a href="index.html" class="active">Trang Chủ</a>
+      <a href="about.html">Về Chúng Tôi</a>
+    </nav>
+    <button class="q-contact-btn" onclick="openContactModal()">Liên Hệ Ngay</button>
+  </header>
 
-<main>
-  <section class="q-hero">
-    <div class="q-pill">✨ Next-Gen Web Experience 2026</div>
-    <h1>Định Hình Tương Lai Giao Diện Số Với AI</h1>
-    <p>Chúng tôi giúp các thương hiệu hàng đầu xây dựng trải nghiệm web 3D và giao diện người dùng đỉnh cao.</p>
-    <div style="margin-top:2.5rem; display:flex; gap:1rem; justify-content:center;">
-      <a href="about.html" class="q-primary-btn">Khám Phá Dự Án -></a>
-    </div>
+  <main>
+    <section class="q-hero">
+      <div class="q-pill">✨ Next-Gen Web Experience 2026</div>
+      <h1>Định Hình Tương Lai Giao Diện Số Với AI</h1>
+      <p>Chúng tôi giúp các thương hiệu hàng đầu xây dựng trải nghiệm web 3D và giao diện người dùng đỉnh cao.</p>
+      <div style="margin-top:2.5rem; display:flex; gap:1rem; justify-content:center;">
+        <a href="about.html" class="q-primary-btn">Khám Phá Dự Án -></a>
+      </div>
 
-    <div class="q-stats-grid">
-      <div class="q-stat-card"><span class="num">150+</span><span class="lbl">Dự Án Đã Xuất Bản</span></div>
-      <div class="q-stat-card"><span class="num">99.8%</span><span class="lbl">Khách Hàng Hài Lòng</span></div>
-      <div class="q-stat-card"><span class="num">12ms</span><span class="lbl">Tốc Độ Tải Màn Hình</span></div>
-    </div>
-  </section>
-</main>
+      <div class="q-stats-grid">
+        <div class="q-stat-card"><span class="num">150+</span><span class="lbl">Dự Án Đã Xuất Bản</span></div>
+        <div class="q-stat-card"><span class="num">99.8%</span><span class="lbl">Khách Hàng Hài Lòng</span></div>
+        <div class="q-stat-card"><span class="num">12ms</span><span class="lbl">Tốc Độ Tải Màn Hình</span></div>
+      </div>
+    </section>
+  </main>
 
-<footer>
-  <p>&copy; 2026 Quantum AI Studio. All rights reserved.</p>
-</footer>
+  <footer>
+    <p>&copy; 2026 Quantum AI Studio. All rights reserved.</p>
+  </footer>
+  <script src="js/quantum.js"></script>
+</body>
+</html>
       `.trim(),
 
       "about.html": `
-<header class="q-navbar">
-  <div class="q-logo">⚛️ Quantum Studio</div>
-  <nav>
-    <a href="index.html">Trang Chủ</a>
-    <a href="about.html" class="active">Về Chúng Tôi</a>
-  </nav>
-  <button class="q-contact-btn" onclick="openContactModal()">Liên Hệ Ngay</button>
-</header>
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Về Quantum Studio</title>
+  <link rel="stylesheet" href="css/agency.css">
+</head>
+<body>
+  <header class="q-navbar">
+    <div class="q-logo">⚛️ Quantum Studio</div>
+    <nav>
+      <a href="index.html">Trang Chủ</a>
+      <a href="about.html" class="active">Về Chúng Tôi</a>
+    </nav>
+    <button class="q-contact-btn" onclick="openContactModal()">Liên Hệ Ngay</button>
+  </header>
 
-<main style="padding:5rem 2rem; max-width:1000px; margin:0 auto; text-align:center;">
-  <h2 style="font-size:2.8rem; color:#38BDF8; margin-bottom:1rem;">Về Quantum Studio</h2>
-  <p style="color:#94A3B8; font-size:1.15rem; margin-bottom:3rem;">Đội ngũ kiến trúc sư giao diện & chuyên gia AI sáng tạo hàng đầu</p>
+  <main style="padding:5rem 2rem; max-width:1000px; margin:0 auto; text-align:center;">
+    <h2 style="font-size:2.8rem; color:#38BDF8; margin-bottom:1rem;">Về Quantum Studio</h2>
+    <p style="color:#94A3B8; font-size:1.15rem; margin-bottom:3rem;">Đội ngũ kiến trúc sư giao diện & chuyên gia AI sáng tạo hàng đầu</p>
 
-  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:2rem;">
-    <div style="background:#0F172A; padding:2rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
-      <div style="font-size:3rem; margin-bottom:1rem;">👨‍🎨</div>
-      <h3 style="color:#FFF;">Alex Rivera</h3>
-      <p style="color:#38BDF8; font-size:0.9rem;">Creative Director</p>
+    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:2rem;">
+      <div style="background:#0F172A; padding:2rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:3rem; margin-bottom:1rem;">👨‍🎨</div>
+        <h3 style="color:#FFF;">Alex Rivera</h3>
+        <p style="color:#38BDF8; font-size:0.9rem;">Creative Director</p>
+      </div>
+
+      <div style="background:#0F172A; padding:2rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
+        <div style="font-size:3rem; margin-bottom:1rem;">👩‍💻</div>
+        <h3 style="color:#FFF;">Elena Rostova</h3>
+        <p style="color:#38BDF8; font-size:0.9rem;">Lead AI Engineer</p>
+      </div>
     </div>
 
-    <div style="background:#0F172A; padding:2rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
-      <div style="font-size:3rem; margin-bottom:1rem;">👩‍💻</div>
-      <h3 style="color:#FFF;">Elena Rostova</h3>
-      <p style="color:#38BDF8; font-size:0.9rem;">Lead AI Engineer</p>
+    <div style="margin-top:3rem;">
+      <a href="index.html" class="q-primary-btn"><- Quay về Trang Chủ</a>
     </div>
-  </div>
-
-  <div style="margin-top:3rem;">
-    <a href="index.html" class="q-primary-btn"><- Quay về Trang Chủ</a>
-  </div>
-</main>
+  </main>
+  <script src="js/quantum.js"></script>
+</body>
+</html>
       `.trim(),
 
       "css/agency.css": `
@@ -137,8 +159,64 @@ function openContactModal() {
     description: "Template thương mại điện tử phong cách Cyberpunk hiện đại dành cho thương hiệu thời trang, phụ kiện công nghệ.",
     thumbnail: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80",
     filesMap: {
-      "index.html": `<!DOCTYPE html><html><head><style>body { background:#080B10; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>🛍️ CYBERSTORE E-Commerce</h1><p>Trang web mẫu bán sắm thời trang Cyberpunk.</p><nav><a href="products.html">Xem Sản Phẩm</a></nav></body></html>`,
-      "products.html": `<!DOCTYPE html><html><head><style>body { background:#080B10; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>Tất Cả Sản Phẩm</h1><p>Cyber Neon Jacket</p><a href="index.html"><- Trang Chủ</a></body></html>`
+      "index.html": `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>CyberStore</title>
+  <link rel="stylesheet" href="css/store.css">
+</head>
+<body>
+  <header class="store-nav">
+    <div class="store-brand">🛍️ CYBERSTORE</div>
+    <nav>
+      <a href="index.html" class="active">Trang Chủ</a>
+      <a href="products.html">Sản Phẩm</a>
+    </nav>
+  </header>
+  <main style="padding:4rem 2rem; text-align:center;">
+    <h1 style="font-size:3rem; color:#38BDF8; margin-bottom:1rem;">CyberStore E-Commerce</h1>
+    <p style="color:#94A3B8; margin-bottom:2rem;">Thời Trang Cyberpunk Tương Lai</p>
+    <a href="products.html" style="background:#38BDF8; color:#000; padding:0.8rem 2rem; border-radius:99px; text-decoration:none; font-weight:bold;">Xem Sản Phẩm -></a>
+  </main>
+</body>
+</html>
+      `.trim(),
+      "products.html": `
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Sản Phẩm - CyberStore</title>
+  <link rel="stylesheet" href="css/store.css">
+</head>
+<body>
+  <header class="store-nav">
+    <div class="store-brand">🛍️ CYBERSTORE</div>
+    <nav>
+      <a href="index.html">Trang Chủ</a>
+      <a href="products.html" class="active">Sản Phẩm</a>
+    </nav>
+  </header>
+  <main style="padding:4rem 2rem; text-align:center;">
+    <h2 style="font-size:2.5rem; color:#38BDF8; margin-bottom:1rem;">Tất Cả Sản Phẩm</h2>
+    <p style="color:#10B981; font-size:1.5rem; font-weight:bold;">Cyber Neon Jacket - $120</p>
+    <br>
+    <a href="index.html" style="color:#38BDF8;"><- Quay về Trang Chủ</a>
+  </main>
+</body>
+</html>
+      `.trim(),
+      "css/store.css": `
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+body { background: #080B10; color: #F1F5F9; line-height: 1.6; }
+.store-nav { display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 3rem; background: rgba(14, 19, 31, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1); position: sticky; top: 0; z-index: 100; }
+.store-brand { font-size: 1.4rem; font-weight: 800; color: #38BDF8; letter-spacing: 1px; }
+.store-nav nav a { color: #94A3B8; text-decoration: none; margin: 0 1rem; font-weight: 600; }
+.store-nav nav a.active, .store-nav nav a:hover { color: #38BDF8; }
+      `.trim()
     }
   }
 ];
@@ -157,9 +235,7 @@ function sanitizeForFirestore(obj) {
   return clean;
 }
 
-// ----------------------------------------------------
 // Dynamic Category Management System
-// ----------------------------------------------------
 function getCategories() {
   const data = localStorage.getItem(CATEGORIES_KEY);
   if (!data) {
@@ -182,7 +258,6 @@ function saveCategories(cats) {
     localStorage.setItem(CATEGORIES_KEY, JSON.stringify(cats));
     window.cachedCategories = cats;
 
-    // Sync to Firebase if connected
     const db = window.getDb ? window.getDb() : null;
     if (db) {
       db.collection('web_config').doc('categories').set({ items: cats }).catch(e => console.warn(e));
@@ -219,9 +294,7 @@ async function apiDeleteCategory(id) {
   return cats;
 }
 
-// ----------------------------------------------------
 // Templates Persistence System
-// ----------------------------------------------------
 function getLocalTemplates() {
   const data = localStorage.getItem(STORAGE_KEY);
   if (!data) {
@@ -253,14 +326,12 @@ async function fetchTemplatesFromAPI() {
   const db = window.getDb ? window.getDb() : null;
   if (db) {
     try {
-      // Sync categories from Firebase
       const catDoc = await db.collection('web_config').doc('categories').get();
       if (catDoc.exists && catDoc.data().items) {
         window.cachedCategories = catDoc.data().items;
         saveCategories(catDoc.data().items);
       }
 
-      // Sync templates from Firebase
       const snapshot = await db.collection('web_templates').get();
       if (!snapshot.empty) {
         const fbTemplates = [];

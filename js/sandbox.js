@@ -1,7 +1,7 @@
 /**
- * Multi-File Live Sandbox Engine - Precise HTML-to-CSS Linking Edition
- * Compiles and renders complex multi-file projects (HTML, CSS, JS, JSON, assets) inside an iframe.
- * Parses explicit <link rel="stylesheet" href="..."> tags per HTML file to match exact CSS usage.
+ * Multi-File Live Sandbox Engine - Direct CSS Inline Replacer
+ * Replaces relative <link rel="stylesheet" href="..."> tags with inline <style> blocks.
+ * Guarantees 100% CSS styling in iframe srcdoc without network delays or CORS issues.
  */
 
 window.SandboxEngine = {
@@ -17,7 +17,7 @@ window.SandboxEngine = {
   },
 
   /**
-   * Creates Virtual Blob URLs for all asset files (JS, JSON, Images)
+   * Creates Virtual Blob URLs for JS, JSON, and media assets
    */
   createVirtualAssetsMap: function(filesMap) {
     const assetBlobs = {};
@@ -27,14 +27,13 @@ window.SandboxEngine = {
       const content = filesMap[filepath];
       
       let mime = 'text/plain';
-      if (normPath.endsWith('.css')) mime = 'text/css';
-      else if (normPath.endsWith('.js')) mime = 'text/javascript';
+      if (normPath.endsWith('.js')) mime = 'text/javascript';
       else if (normPath.endsWith('.json')) mime = 'application/json';
       else if (normPath.endsWith('.svg')) mime = 'image/svg+xml';
       else if (normPath.endsWith('.png')) mime = 'image/png';
       else if (normPath.endsWith('.jpg') || normPath.endsWith('.jpeg')) mime = 'image/jpeg';
 
-      if (!normPath.endsWith('.html')) {
+      if (!normPath.endsWith('.html') && !normPath.endsWith('.css')) {
         const blob = new Blob([content], { type: mime });
         const blobUrl = URL.createObjectURL(blob);
         this.activeBlobUrls.push(blobUrl);
@@ -46,26 +45,56 @@ window.SandboxEngine = {
   },
 
   /**
-   * Parses explicit <link rel="stylesheet"> tags from the HTML content
+   * Replaces <link rel="stylesheet" href="..."> with inline <style> blocks directly
    */
-  extractLinkedCssPaths: function(htmlContent) {
-    const cssPaths = [];
-    const linkRegex = /<link[^>]+rel=["']stylesheet["'][^>]+href=["']([^"']+)["']/gi;
-    let match;
-    while ((match = linkRegex.exec(htmlContent)) !== null) {
-      if (match[1]) {
-        cssPaths.push(this.normalizePath(match[1]));
+  inlineCssFiles: function(htmlContent, filesMap) {
+    let modifiedHtml = htmlContent;
+    let replacedAny = false;
+
+    // Build lookup for CSS files in filesMap
+    const cssLookup = {};
+    for (const filepath in filesMap) {
+      const norm = this.normalizePath(filepath);
+      if (norm.endsWith('.css')) {
+        cssLookup[norm] = filesMap[filepath];
       }
     }
-    // Also check href before rel order: <link href="..." rel="stylesheet">
-    const altRegex = /<link[^>]+href=["']([^"']+)["'][^>]+rel=["']stylesheet["']/gi;
-    while ((match = altRegex.exec(htmlContent)) !== null) {
-      if (match[1]) {
-        const norm = this.normalizePath(match[1]);
-        if (!cssPaths.includes(norm)) cssPaths.push(norm);
+
+    // Match <link rel="stylesheet" href="..."> and <link href="..." rel="stylesheet">
+    const linkRegex = /<link[^>]+(?:rel=["']stylesheet["'][^>]+href=["']([^"']+)["']|href=["']([^"']+)["'][^>]+rel=["']stylesheet["'])[^>]*>/gi;
+
+    modifiedHtml = modifiedHtml.replace(linkRegex, (match, href1, href2) => {
+      const rawHref = href1 || href2;
+      if (!rawHref) return match;
+
+      const normHref = this.normalizePath(rawHref);
+      const matchedKey = Object.keys(cssLookup).find(k => k === normHref || k.endsWith(normHref) || normHref.endsWith(k));
+
+      if (matchedKey && cssLookup[matchedKey]) {
+        replacedAny = true;
+        return `<style data-file="${matchedKey}">\n/* Embedded from ${matchedKey} */\n${cssLookup[matchedKey]}\n</style>`;
+      }
+      return match;
+    });
+
+    // Fallback: If no <link> tag matched, inject all CSS files from filesMap into <head>
+    if (!replacedAny && Object.keys(cssLookup).length > 0) {
+      let allCssContent = '';
+      for (const normKey in cssLookup) {
+        allCssContent += `\n/* Embedded Fallback ${normKey} */\n${cssLookup[normKey]}\n`;
+      }
+      const styleBlock = `\n<style id="all-virtual-styles">\n${allCssContent}\n</style>\n`;
+
+      if (modifiedHtml.includes('</head>')) {
+        modifiedHtml = modifiedHtml.replace('</head>', styleBlock + '</head>');
+      } else if (modifiedHtml.includes('<body')) {
+        modifiedHtml = modifiedHtml.replace(/<body/i, styleBlock + '<body');
+      } else {
+        modifiedHtml = styleBlock + modifiedHtml;
       }
     }
-    return cssPaths;
+
+    return modifiedHtml;
   },
 
   /**
@@ -74,44 +103,20 @@ window.SandboxEngine = {
   buildPageDocument: function(filesMap, currentPage = 'index.html') {
     const normCurrent = this.normalizePath(currentPage);
     
-    // 1. Obtain HTML content for the target page
+    // 1. Obtain HTML content for target page
     let htmlContent = filesMap[normCurrent] || filesMap['index.html'];
     if (!htmlContent) {
       const firstHtmlKey = Object.keys(filesMap).find(k => k.endsWith('.html'));
       htmlContent = firstHtmlKey ? filesMap[firstHtmlKey] : '<h1>404 - Page Not Found</h1>';
     }
 
-    // 2. Extract which CSS files are explicitly linked in this HTML file
-    const linkedCssFiles = this.extractLinkedCssPaths(htmlContent);
+    // 2. Inline CSS styles directly into the HTML
+    htmlContent = this.inlineCssFiles(htmlContent, filesMap);
 
-    // 3. Build CSS styles string specifically for this HTML page
-    let pageCssContent = '';
-
-    if (linkedCssFiles.length > 0) {
-      // Load ONLY the CSS files explicitly linked in this HTML page
-      linkedCssFiles.forEach(cssPath => {
-        // Try exact match or partial match in filesMap
-        const matchedKey = Object.keys(filesMap).find(k => this.normalizePath(k) === cssPath || k.endsWith(cssPath));
-        if (matchedKey && filesMap[matchedKey]) {
-          pageCssContent += `\n/* Explicitly Linked CSS: ${matchedKey} */\n${filesMap[matchedKey]}\n`;
-        }
-      });
-    }
-
-    // If no explicit linked CSS was found or resolved, include all project CSS files as smart fallback
-    if (!pageCssContent.trim()) {
-      for (const filepath in filesMap) {
-        const norm = this.normalizePath(filepath);
-        if (norm.endsWith('.css')) {
-          pageCssContent += `\n/* Project CSS Fallback: ${norm} */\n${filesMap[filepath]}\n`;
-        }
-      }
-    }
-
-    // 4. Create Virtual Asset Blobs for JS, Images, etc.
+    // 3. Create Virtual Asset Blobs for JS, Images, etc.
     const assetBlobs = this.createVirtualAssetsMap(filesMap);
 
-    // 5. Replace relative JS, JSON, and Image paths with Blob URLs
+    // 4. Replace relative JS, JSON, and Image paths with Blob URLs
     for (const relativePath in assetBlobs) {
       const blobUrl = assetBlobs[relativePath];
       const escapedPath = relativePath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
@@ -120,18 +125,7 @@ window.SandboxEngine = {
       htmlContent = htmlContent.replace(pathRegex, `$1="${blobUrl}"`);
     }
 
-    // 6. Inject the page-specific CSS into <head>
-    const styleBlock = pageCssContent ? `\n<style id="page-virtual-styles">\n${pageCssContent}\n</style>\n` : '';
-
-    if (htmlContent.includes('</head>')) {
-      htmlContent = htmlContent.replace('</head>', styleBlock + '</head>');
-    } else if (htmlContent.includes('<body')) {
-      htmlContent = htmlContent.replace(/<body/i, styleBlock + '<body');
-    } else {
-      htmlContent = styleBlock + htmlContent;
-    }
-
-    // 7. Inject navigation interceptor script for multi-page linking (<a href="about.html">)
+    // 5. Inject navigation interceptor script for multi-page linking (<a href="about.html">)
     const navScript = `
       <script>
         (function() {
