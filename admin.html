@@ -440,8 +440,8 @@
 
       if (db) {
         try {
-          // Perform quick heartbeat query to verify Firestore rules & connection
-          await db.collection('web_config').doc('categories').get();
+          // Heartbeat check directly against web_templates collection
+          await db.collection('web_templates').limit(1).get();
 
           dot.className = "status-dot-pulse pulse-green";
           title.textContent = "Firebase Đã Kết Nối";
