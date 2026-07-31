@@ -1,13 +1,13 @@
 /**
- * Templates & Categories Data Manager - Clean Text Edition
+ * Templates & Categories Data Manager - Direct Firebase Sync Edition
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V13";
-const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V13";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V14";
+const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V14";
 
 const DEFAULT_CATEGORIES = [
   { id: "All", name: "Tất cả" },
@@ -318,16 +318,26 @@ function saveLocalTemplates(templates) {
 
 window.cachedTemplates = getLocalTemplates();
 
+/**
+ * Direct Live Firebase Firestore Fetch Engine
+ * Fetches all templates in web_templates collection directly from Firebase Cloud.
+ */
 async function fetchTemplatesFromAPI() {
   const db = window.getDb ? window.getDb() : null;
   if (db) {
+    // 1. Try fetching categories independently
     try {
       const catDoc = await db.collection('web_config').doc('categories').get();
       if (catDoc.exists && catDoc.data().items) {
         window.cachedCategories = catDoc.data().items;
         saveCategories(catDoc.data().items);
       }
+    } catch (e) {
+      console.warn("Categories fetch notice:", e.message);
+    }
 
+    // 2. Fetch web_templates collection directly from Firebase Cloud
+    try {
       const snapshot = await db.collection('web_templates').get();
       if (!snapshot.empty) {
         const fbTemplates = [];
@@ -337,11 +347,12 @@ async function fetchTemplatesFromAPI() {
         if (fbTemplates.length > 0) {
           window.cachedTemplates = fbTemplates;
           saveLocalTemplates(fbTemplates);
+          console.log(`🔥 Synchronized ${fbTemplates.length} live products directly from Firebase Cloud Database!`);
           return fbTemplates;
         }
       }
     } catch (err) {
-      console.warn("Firebase Firestore fetch notice:", err.message);
+      console.warn("Firebase Firestore fetch templates notice:", err.message);
     }
   }
 
