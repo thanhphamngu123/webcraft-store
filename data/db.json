@@ -1,5 +1,123 @@
 [
   {
+    "id": "tpl-quantum-ai-agency",
+    "title": "Quantum AI Agency - Futuristic Design Studio",
+    "tagline": "Trang web công ty thiết kế giao diện AI & 3D WebGL với hiệu ứng chuyển trang mượt mà",
+    "category": "SaaS",
+    "price": 79,
+    "rating": 5.0,
+    "sales": 112,
+    "badge": "Mới tạo (Multi-Page)",
+    "author": "Quantum Lab",
+    "updatedAt": "2026-07-31",
+    "description": "Template dành cho Agency thiết kế, công ty công nghệ AI và Studio sáng tạo. Tích hợp cấu trúc đa trang (Home, About Us, Services), hiệu ứng đếm số động và bộ dịch vụ tải từ JSON.",
+    "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
+    "tags": ["Multi-page", "AI Agency", "HTML5", "CSS3", "JS", "JSON"],
+    "filesMap": {
+      "index.html": `
+<header class="q-navbar">
+  <div class="q-logo">⚛️ Quantum Studio</div>
+  <nav>
+    <a href="index.html" class="active">Trang Chủ</a>
+    <a href="about.html">Về Chúng Tôi</a>
+  </nav>
+  <button class="q-contact-btn" onclick="openContactModal()">Liên Hệ Ngay</button>
+</header>
+
+<main>
+  <section class="q-hero">
+    <div class="q-pill">✨ Next-Gen Web Experience 2026</div>
+    <h1>Định Hình Tương Lai Giao Diện Số Với AI</h1>
+    <p>Chúng tôi giúp các thương hiệu hàng đầu xây dựng trải nghiệm web 3D và giao diện người dùng đỉnh cao.</p>
+    <div style="margin-top:2.5rem; display:flex; gap:1rem; justify-content:center;">
+      <a href="about.html" class="q-primary-btn">Khám Phá Dự Án -></a>
+    </div>
+
+    <div class="q-stats-grid">
+      <div class="q-stat-card"><span class="num">150+</span><span class="lbl">Dự Án Đã Xuất Bản</span></div>
+      <div class="q-stat-card"><span class="num">99.8%</span><span class="lbl">Khách Hàng Hài Lòng</span></div>
+      <div class="q-stat-card"><span class="num">12ms</span><span class="lbl">Tốc Độ Tải Màn Hình</span></div>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>&copy; 2026 Quantum AI Studio. All rights reserved.</p>
+</footer>
+      `.trim(),
+
+      "about.html": `
+<header class="q-navbar">
+  <div class="q-logo">⚛️ Quantum Studio</div>
+  <nav>
+    <a href="index.html">Trang Chủ</a>
+    <a href="about.html" class="active">Về Chúng Tôi</a>
+  </nav>
+  <button class="q-contact-btn" onclick="openContactModal()">Liên Hệ Ngay</button>
+</header>
+
+<main style="padding:5rem 2rem; max-width:1000px; margin:0 auto; text-align:center;">
+  <h2 style="font-size:2.8rem; color:#38BDF8; margin-bottom:1rem;">Về Quantum Studio</h2>
+  <p style="color:#94A3B8; font-size:1.15rem; margin-bottom:3rem;">Đội ngũ kiến trúc sư giao diện & chuyên gia AI sáng tạo hàng đầu</p>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:2rem;">
+    <div style="background:#0F172A; padding:2rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:3rem; margin-bottom:1rem;">👨‍🎨</div>
+      <h3 style="color:#FFF;">Alex Rivera</h3>
+      <p style="color:#38BDF8; font-size:0.9rem;">Creative Director</p>
+    </div>
+
+    <div style="background:#0F172A; padding:2rem; border-radius:16px; border:1px solid rgba(255,255,255,0.1);">
+      <div style="font-size:3rem; margin-bottom:1rem;">👩‍💻</div>
+      <h3 style="color:#FFF;">Elena Rostova</h3>
+      <p style="color:#38BDF8; font-size:0.9rem;">Lead AI Engineer</p>
+    </div>
+  </div>
+
+  <div style="margin-top:3rem;">
+    <a href="index.html" class="q-primary-btn"><- Quay về Trang Chủ</a>
+  </div>
+</main>
+      `.trim(),
+
+      "css/agency.css": `
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
+body { background: #07090E; color: #F8FAFC; line-height: 1.6; }
+
+.q-navbar { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 3.5rem; background: rgba(14, 19, 31, 0.8); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(255, 255, 255, 0.1); position: sticky; top: 0; z-index: 100; }
+.q-logo { font-size: 1.4rem; font-weight: 800; background: linear-gradient(135deg, #38BDF8, #818CF8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+.q-navbar nav a { color: #94A3B8; text-decoration: none; margin: 0 1.2rem; font-weight: 600; }
+.q-navbar nav a.active, .q-navbar nav a:hover { color: #38BDF8; }
+
+.q-contact-btn { background: linear-gradient(135deg, #38BDF8, #818CF8); color: #FFF; border: none; padding: 0.75rem 1.6rem; border-radius: 99px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 20px rgba(56, 189, 248, 0.4); }
+
+.q-hero { text-align: center; padding: 6rem 2rem 4rem; max-width: 1000px; margin: 0 auto; }
+.q-pill { display: inline-block; background: rgba(56, 189, 248, 0.1); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.4rem 1.2rem; border-radius: 99px; font-size: 0.85rem; font-weight: 700; margin-bottom: 1.5rem; }
+
+.q-hero h1 { font-size: 3.5rem; font-weight: 800; line-height: 1.15; margin-bottom: 1.5rem; background: linear-gradient(180deg, #FFFFFF 0%, #94A3B8 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+.q-hero p { color: #94A3B8; font-size: 1.2rem; }
+
+.q-primary-btn { background: linear-gradient(135deg, #38BDF8, #818CF8); color: white; padding: 0.9rem 2.2rem; border-radius: 99px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 25px rgba(56, 189, 248, 0.4); }
+
+.q-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1.5rem; margin-top: 5rem; }
+.q-stat-card { background: rgba(15, 23, 42, 0.8); border: 1px solid rgba(255, 255, 255, 0.08); padding: 2rem; border-radius: 16px; text-align: center; }
+.q-stat-card .num { font-size: 2.5rem; font-weight: 800; color: #38BDF8; display: block; margin-bottom: 0.3rem; }
+.q-stat-card .lbl { color: #94A3B8; font-size: 0.88rem; }
+
+footer { text-align: center; padding: 3rem; color: #64748B; border-top: 1px solid rgba(255, 255, 255, 0.05); margin-top: 4rem; }
+      `.trim(),
+
+      "js/quantum.js": `
+function openContactModal() {
+  alert("📬 Cảm ơn bạn đã quan tâm đến Quantum AI Studio! Email: contact@quantumlab.io");
+}
+      `.trim()
+    }
+  },
+  {
     "id": "tpl-cyberstore-ecommerce",
     "title": "CyberStore - Future Fashion E-Commerce",
     "tagline": "Trang web thương mại điện tử thời trang Cyberpunk với Giỏ Hàng realtime",
@@ -14,174 +132,8 @@
     "thumbnail": "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80",
     "tags": ["Multi-page", "E-Commerce", "HTML5", "CSS3", "JS", "JSON"],
     "filesMap": {
-      "index.html": `
-<header class="store-nav">
-  <div class="store-brand">🛍️ CYBERSTORE</div>
-  <nav>
-    <a href="index.html" class="active">Trang Chủ</a>
-    <a href="products.html">Sản Phẩm</a>
-  </nav>
-  <div class="cart-trigger" onclick="toggleCartModal()">
-    🛒 Giỏ Hàng (<span id="cart-count">0</span>)
-  </div>
-</header>
-
-<main>
-  <section class="store-hero">
-    <span class="season-badge">🔥 BỘ SƯU TẬP THU ĐÔNG 2026</span>
-    <h1>Thời Trang Tương Lai Phong Cách Cyberpunk</h1>
-    <p>Khám phá bộ sưu tập trang phục và phụ kiện độc bản tích hợp công nghệ chiếu sáng neon.</p>
-    <div style="margin-top:2rem;">
-      <a href="products.html" class="shop-btn">Sắm Ngay -></a>
-    </div>
-  </section>
-
-  <section class="featured-products">
-    <h2>Sản Phẩm Nổi Bật</h2>
-    <div class="product-grid" id="home-products">
-      <div class="p-card">
-        <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=500&q=80" alt="Cyber Hoodie">
-        <h3>Cyber Neon Jacket</h3>
-        <p class="price">$120</p>
-        <button class="add-cart-btn" onclick="addToCart('Cyber Neon Jacket', 120)">+ Thêm Vào Giỏ</button>
-      </div>
-
-      <div class="p-card">
-        <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80" alt="Neon Sneakers">
-        <h3>Holo Glow Sneakers</h3>
-        <p class="price">$180</p>
-        <button class="add-cart-btn" onclick="addToCart('Holo Glow Sneakers', 180)">+ Thêm Vào Giỏ</button>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <p>&copy; 2026 CyberStore Inc. Designed for WebCraft Marketplace.</p>
-</footer>
-      `.trim(),
-
-      "products.html": `
-<header class="store-nav">
-  <div class="store-brand">🛍️ CYBERSTORE</div>
-  <nav>
-    <a href="index.html">Trang Chủ</a>
-    <a href="products.html" class="active">Sản Phẩm</a>
-  </nav>
-  <div class="cart-trigger" onclick="toggleCartModal()">
-    🛒 Giỏ Hàng (<span id="cart-count">0</span>)
-  </div>
-</header>
-
-<main style="padding:4rem 2rem; max-width:1200px; margin:0 auto;">
-  <h2 style="font-size:2.5rem; text-align:center; color:#38BDF8; margin-bottom:3rem;">Tất Cả Sản Phẩm</h2>
-  
-  <div class="product-grid">
-    <div class="p-card">
-      <img src="https://images.unsplash.com/photo-1556905055-8f358a7a47b2?auto=format&fit=crop&w=500&q=80" alt="Cyber Hoodie">
-      <h3>Cyber Neon Jacket</h3>
-      <p class="price">$120</p>
-      <button class="add-cart-btn" onclick="addToCart('Cyber Neon Jacket', 120)">+ Thêm Vào Giỏ</button>
-    </div>
-
-    <div class="p-card">
-      <img src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?auto=format&fit=crop&w=500&q=80" alt="Neon Sneakers">
-      <h3>Holo Glow Sneakers</h3>
-      <p class="price">$180</p>
-      <button class="add-cart-btn" onclick="addToCart('Holo Glow Sneakers', 180)">+ Thêm Vào Giỏ</button>
-    </div>
-
-    <div class="p-card">
-      <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?auto=format&fit=crop&w=500&q=80" alt="Holo Glasses">
-      <h3>Smart Holo Glasses</h3>
-      <p class="price">$250</p>
-      <button class="add-cart-btn" onclick="addToCart('Smart Holo Glasses', 250)">+ Thêm Vào Giỏ</button>
-    </div>
-  </div>
-
-  <div style="text-align:center; margin-top:3rem;">
-    <a href="index.html" class="shop-btn" style="background:rgba(255,255,255,0.1);"><- Quay lại Trang Chủ</a>
-  </div>
-</main>
-      `.trim(),
-
-      "css/store.css": `
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap');
-
-* { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; }
-body { background: #080B10; color: #F1F5F9; line-height: 1.6; }
-
-.store-nav {
-  display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 3rem;
-  background: rgba(14, 19, 31, 0.85); backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.1);
-  position: sticky; top: 0; z-index: 100;
-}
-
-.store-brand { font-size: 1.4rem; font-weight: 800; color: #38BDF8; letter-spacing: 1px; }
-.store-nav nav a { color: #94A3B8; text-decoration: none; margin: 0 1rem; font-weight: 600; }
-.store-nav nav a.active, .store-nav nav a:hover { color: #38BDF8; }
-
-.cart-trigger { background: rgba(56, 189, 248, 0.15); color: #38BDF8; border: 1px solid rgba(56, 189, 248, 0.3); padding: 0.5rem 1.2rem; border-radius: 99px; font-weight: 700; cursor: pointer; }
-
-.store-hero { text-align: center; padding: 5rem 2rem 4rem; max-width: 900px; margin: 0 auto; }
-.season-badge { background: rgba(244, 63, 94, 0.15); color: #F43F5E; border: 1px solid rgba(244, 63, 94, 0.3); padding: 0.4rem 1rem; border-radius: 99px; font-size: 0.82rem; font-weight: 700; display: inline-block; margin-bottom: 1.5rem; }
-
-.store-hero h1 { font-size: 3.2rem; font-weight: 800; line-height: 1.15; margin-bottom: 1rem; background: linear-gradient(to right, #FFF, #94A3B8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-.store-hero p { color: #94A3B8; font-size: 1.1rem; }
-
-.shop-btn { background: linear-gradient(135deg, #38BDF8, #818CF8); color: white; border: none; padding: 0.8rem 2rem; border-radius: 99px; font-weight: 700; text-decoration: none; display: inline-block; box-shadow: 0 4px 20px rgba(56,189,248,0.4); }
-
-.featured-products { padding: 3rem 2rem 5rem; max-width: 1200px; margin: 0 auto; }
-.featured-products h2 { text-align: center; font-size: 2.2rem; margin-bottom: 3rem; }
-
-.product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 2rem; }
-
-.p-card { background: #0E131F; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; overflow: hidden; padding: 1.25rem; text-align: center; transition: transform 0.3s; }
-.p-card:hover { transform: translateY(-5px); border-color: #38BDF8; }
-.p-card img { width: 100%; height: 220px; object-fit: cover; border-radius: 12px; margin-bottom: 1rem; }
-.p-card h3 { font-size: 1.2rem; margin-bottom: 0.4rem; color: #FFF; }
-.p-card .price { font-size: 1.4rem; font-weight: 800; color: #10B981; margin-bottom: 1rem; }
-
-.add-cart-btn { background: rgba(255,255,255,0.05); color: #F1F5F9; border: 1px solid rgba(255,255,255,0.15); padding: 0.6rem 1.2rem; border-radius: 8px; font-weight: 600; cursor: pointer; width: 100%; }
-.add-cart-btn:hover { background: #38BDF8; color: #080B10; border-color: #38BDF8; }
-
-footer { text-align: center; padding: 3rem; color: #64748B; border-top: 1px solid rgba(255,255,255,0.05); }
-      `.trim(),
-
-      "js/cart.js": `
-let cartCount = 0;
-
-function addToCart(name, price) {
-  cartCount++;
-  const el = document.getElementById('cart-count');
-  if (el) el.textContent = cartCount;
-  alert(\`🎉 Đã thêm "\${name}" (\$\${price}) vào Giỏ hàng CyberStore!\`);
-}
-
-function toggleCartModal() {
-  alert(\`🛒 Giỏ hàng của bạn đang có \${cartCount} sản phẩm.\`);
-}
-      `.trim()
-    }
-  },
-  {
-    "id": "tpl-cyber-saas",
-    "title": "Aether AI - NextGen Multi-Page SaaS",
-    "tagline": "Trang web SaaS AI đa trang với hiệu ứng Glassmorphism & Cyber Glow",
-    "category": "SaaS",
-    "price": 59,
-    "rating": 4.9,
-    "sales": 242,
-    "badge": "Multi-Page",
-    "author": "WebCraft Studio",
-    "updatedAt": "2026-07-28",
-    "description": "Template giao diện SaaS đa trang (Home, Features, Pricing) dành cho công ty AI. Tích hợp đầy đủ Dashboard Mockup, Bảng Giá và Thực Đơn Tương Tác.",
-    "thumbnail": "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
-    "tags": ["Multi-page", "HTML5", "CSS3", "JavaScript", "JSON Data"],
-    "filesMap": {
-      "index.html": `<!DOCTYPE html><html><head><style>body { background:#090D16; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>⚡ Aether.ai Multi-Page SaaS</h1><p>Trang web mẫu SaaS AI cao cấp.</p><nav><a href="features.html">Xem Tính Năng</a> | <a href="pricing.html">Xem Bảng Giá</a></nav></body></html>`,
-      "features.html": `<!DOCTYPE html><html><head><style>body { background:#090D16; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>🚀 Tính Năng Siêu Tốc Độ</h1><p>Mô hình điện toán phân tán thế hệ mới.</p><a href="index.html"><- Quay lại Trang Chủ</a></body></html>`,
-      "pricing.html": `<!DOCTYPE html><html><head><style>body { background:#090D16; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>💎 Bảng Giá Gói Dịch Vụ</h1><p>Gói Enterprise Pro: $99/tháng</p><a href="index.html"><- Quay lại Trang Chủ</a></body></html>`
+      "index.html": `<!DOCTYPE html><html><head><style>body { background:#080B10; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>🛍️ CYBERSTORE E-Commerce</h1><p>Trang web mẫu bán sắm thời trang Cyberpunk.</p><nav><a href="products.html">Xem Sản Phẩm</a></nav></body></html>`,
+      "products.html": `<!DOCTYPE html><html><head><style>body { background:#080B10; color:#F1F5F9; font-family:sans-serif; padding:2rem; } a { color:#38BDF8; }</style></head><body><h1>Tất Cả Sản Phẩm</h1><p>Cyber Neon Jacket - $120</p><a href="index.html"><- Trang Chủ</a></body></html>`
     }
   }
 ]
