@@ -88,6 +88,7 @@ window.AdminManager = {
   activeFilePath: 'index.html',
   editingId: null,
   isPreviewing: false,
+  eventsBound: false,
 
   init: function() {
     this.bindEvents();
@@ -130,6 +131,9 @@ window.AdminManager = {
   },
 
   bindEvents: function() {
+    if (this.eventsBound) return;
+    this.eventsBound = true;
+
     // 1. ZIP File Upload (Supports text + images & videos)
     const zipInput = document.getElementById('admin-file-zip');
     if (zipInput) {
@@ -233,6 +237,7 @@ window.AdminManager = {
           this.renderFileTree();
           this.loadActiveFileToEditor();
           this.showNotification(`Đã tải lên ${files.length} file vào dự án!`, "success");
+          inputEl.value = '';
         });
       }
     });
@@ -428,6 +433,7 @@ window.AdminManager = {
       this.activeFilePath = 'index.html';
     }
 
+    this.bindEvents();
     this.renderFileTree();
     this.loadActiveFileToEditor();
     this.togglePreviewTab(false);
