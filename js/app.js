@@ -1,5 +1,5 @@
 /**
- * Main Application Logic - Multi-File, Auth & Backend API Edition
+ * Main Application Logic - Firebase & ZIP Download Edition
  */
 
 window.App = {
@@ -133,8 +133,8 @@ window.App = {
                     🗑️
                   </button>
                 ` : ''}
-                <button class="buy-btn" onclick="App.buyTemplate('${t.id}')">
-                  Mua Ngay
+                <button class="buy-btn" onclick="App.downloadTemplateZip('${t.id}')">
+                  📦 Tải Mã Nguồn (.ZIP)
                 </button>
               </div>
             </div>
@@ -228,7 +228,7 @@ window.App = {
       this.openLiveDemo(tpl.id);
     };
     document.getElementById('detail-buy-btn').onclick = () => {
-      this.buyTemplate(tpl.id);
+      this.downloadTemplateZip(tpl.id);
     };
 
     modal.classList.add('open');
@@ -242,7 +242,7 @@ window.App = {
   confirmDelete: async function(id) {
     if (!window.AdminManager.isLoggedIn()) {
       alert("Bạn cần đăng nhập Admin để thực hiện xóa!");
-      window.location.href = 'admin-login.html';
+      window.location.href = 'admin/index.html';
       return;
     }
 
@@ -253,13 +253,40 @@ window.App = {
     }
   },
 
-  buyTemplate: function(id) {
+  /**
+   * Generates and downloads the full source code as a .ZIP file for the buyer
+   */
+  downloadTemplateZip: async function(id) {
     const templates = getStoredTemplates();
     const tpl = templates.find(t => t.id === id);
-    if (tpl) {
-      const filesCount = tpl.filesMap ? Object.keys(tpl.filesMap).length : 1;
-      alert(`🎉 Cảm ơn bạn đã lựa chọn mua "${tpl.title}"!\nGiá: $${tpl.price}\n\nToàn bộ ${filesCount} file mã nguồn (HTML, CSS, JS, JSON...) sẽ được nén thành file ZIP và bàn giao ngay!`);
+    if (!tpl) return;
+
+    const files = tpl.filesMap || { 'index.html': tpl.files?.html || '' };
+    const filesCount = Object.keys(files).length;
+
+    if (!window.JSZip) {
+      alert("Đang nén file ZIP, vui lòng đợi...");
+      return;
     }
+
+    const zip = new JSZip();
+    for (const filepath in files) {
+      zip.file(filepath, files[filepath]);
+    }
+
+    const blob = await zip.generateAsync({ type: 'blob' });
+    const cleanName = tpl.title.toLowerCase().replace(/[^a-z0-9]/g, '-');
+    const filename = `${cleanName}-sourcecode.zip`;
+
+    // Trigger browser download
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    alert(`🎉 Đã tải về thành công dự án "${tpl.title}"!\nBao gồm đầy đủ ${filesCount} file mã nguồn (.ZIP).`);
   }
 };
 
