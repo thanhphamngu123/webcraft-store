@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WebCraft Store - Chợ Mua Bán & Trải Nghiệm Template Website Multi-File</title>
+  <meta name="description" content="Nền tảng mua bán giao diện trang web chất lượng cao. Hỗ trợ tải lên dự án nhiều file (ZIP / Folder) HTML, CSS, JS, JSON và chạy Live Demo đa trang trực tiếp.">
+  <link rel="stylesheet" href="styles.css">
+  <!-- JSZip library for unpacking multi-file ZIP archives in browser -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</head>
+<body>
+
+  <!-- Top Navbar -->
+  <header class="navbar">
+    <a href="#" class="brand-logo">
+      <div class="brand-icon">⚡</div>
+      <span class="brand-gradient">WebCraft Store</span>
+    </a>
+
+    <div class="nav-actions">
+      <button class="admin-btn" onclick="AdminManager.openModal()">
+        <span>➕ Thêm Web Bán (Admin)</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-bg-glow"></div>
+    <div class="hero-content">
+      <div class="hero-pill">✨ Support Multi-File & ZIP Archive Virtual File System</div>
+      <h1 class="hero-title">Sở Hữu Trang Web Đẳng Cấp Chỉ Với 1 Click</h1>
+      <p class="hero-subtitle">
+        Khám phá bộ sưu tập template website nhiều trang (Multi-Page Project). Admin có thể tải lên toàn bộ dự án qua file ZIP hoặc Thư mục chứa hàng chục file HTML, CSS, JS, JSON và hình ảnh.
+      </p>
+    </div>
+  </section>
+
+  <!-- Search & Filter Controls -->
+  <div class="controls-bar">
+    <div class="search-box-wrap">
+      <svg class="search-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm trang web theo tên, công nghệ (Multi-page, HTML, CSS, JS, SaaS, Portfolio...)...">
+    </div>
+
+    <div class="filter-row">
+      <div class="category-pills">
+        <button class="cat-pill active" data-cat="All">🔥 Tất cả</button>
+        <button class="cat-pill" data-cat="SaaS">🚀 SaaS & AI</button>
+        <button class="cat-pill" data-cat="Restaurant">🍽️ Nhà Hàng</button>
+        <button class="cat-pill" data-cat="Portfolio">👨‍💻 Portfolio</button>
+        <button class="cat-pill" data-cat="E-Commerce">🛒 Thương Mại</button>
+      </div>
+
+      <span class="catalog-counter" id="template-count">0 Giao Diện Mẫu</span>
+    </div>
+  </div>
+
+  <!-- Marketplace Product Grid -->
+  <main class="grid-container" id="marketplace-grid">
+    <!-- Rendered dynamically by app.js -->
+  </main>
+
+  <!-- Live Demo Fullscreen Viewer Modal -->
+  <div class="modal-overlay" id="live-demo-modal">
+    <div class="demo-modal-container">
+      <div class="demo-topbar">
+        <div class="demo-info">
+          <button class="close-demo-btn" onclick="App.closeLiveDemo()">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+            Thoát Demo
+          </button>
+          <span class="demo-title-text" id="demo-title">Template Name</span>
+          <span id="demo-page-indicator" class="page-indicator-badge">index.html</span>
+        </div>
+
+        <!-- Responsive Device Viewport Switcher -->
+        <div class="device-switcher">
+          <button class="device-btn active" data-device="desktop" title="Màn hình Máy tính">
+            💻 Desktop
+          </button>
+          <button class="device-btn" data-device="tablet" title="Màn hình Tablet">
+            📱 Tablet
+          </button>
+          <button class="device-btn" data-device="mobile" title="Màn hình Điện thoại">
+            📲 Mobile
+          </button>
+        </div>
+
+        <div class="demo-topbar-actions">
+          <button class="newtab-btn" onclick="App.openInNewTab()">
+            ↗️ Mở Tab Mới
+          </button>
+          <button class="buy-btn" onclick="App.buyTemplate(App.activeDemoTemplate?.id)">
+            Mua Mẫu Này (<span id="demo-price">$0</span>)
+          </button>
+        </div>
+      </div>
+
+      <!-- Stage hosting the dynamic iframe -->
+      <div class="sandbox-stage">
+        <div class="iframe-wrapper device-desktop" id="iframe-wrapper">
+          <iframe id="demo-iframe" class="sandbox-iframe" title="Live Preview Sandbox"></iframe>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Admin Upload & Multi-File Template Editor Modal -->
+  <div class="modal-overlay" id="admin-modal">
+    <div class="admin-modal-container">
+      <div class="admin-header">
+        <h2 id="admin-form-title">⚙️ Quản Lý & Thêm Dự Án Web Bán (Multi-File / ZIP / Folder)</h2>
+        <button class="close-btn" onclick="AdminManager.closeModal()">&times;</button>
+      </div>
+
+      <div class="admin-body">
+        <!-- Left: Template Metadata & Multi-File Upload Form -->
+        <div class="admin-form-panel">
+          <form id="admin-template-form">
+            <div class="form-group">
+              <label>Tên Trang Web</label>
+              <input type="text" id="tpl-input-title" class="form-input" placeholder="VD: Multi-Page Corporate Portal" required>
+            </div>
+
+            <div class="form-group">
+              <label>Khẩu hiệu / Subtitle</label>
+              <input type="text" id="tpl-input-tagline" class="form-input" placeholder="VD: Giao diện đa trang gồm Home, About, Contact...">
+            </div>
+
+            <div class="form-group">
+              <label>Danh mục</label>
+              <select id="tpl-input-category" class="form-select">
+                <option value="SaaS">SaaS & AI</option>
+                <option value="Restaurant">Nhà Hàng & F&B</option>
+                <option value="Portfolio">Portfolio & Cá nhân</option>
+                <option value="E-Commerce">Thương Mại Điện Tử</option>
+              </select>
+            </div>
+
+            <div class="form-group">
+              <label>Giá bán ($ USD)</label>
+              <input type="number" id="tpl-input-price" class="form-input" value="49" min="0" required>
+            </div>
+
+            <div class="form-group">
+              <label>Tác giả / Nguồn</label>
+              <input type="text" id="tpl-input-author" class="form-input" placeholder="VD: WebCraft Studio">
+            </div>
+
+            <div class="form-group">
+              <label>Link Ảnh Thumbnail (URL)</label>
+              <input type="url" id="tpl-input-thumb" class="form-input" placeholder="https://images.unsplash.com/...">
+            </div>
+
+            <div class="form-group">
+              <label>Thẻ Kỹ thuật (Tags)</label>
+              <input type="text" id="tpl-input-tags" class="form-input" placeholder="Multi-page, HTML5, CSS3, JS, JSON">
+            </div>
+
+            <div class="form-group">
+              <label>Mô tả chi tiết</label>
+              <textarea id="tpl-input-desc" class="form-textarea" rows="3" placeholder="Mô tả danh sách trang và cấu trúc file trong dự án..."></textarea>
+            </div>
+
+            <!-- Multi-File & ZIP Upload Controls -->
+            <div class="form-group" style="margin-top:0.5rem;">
+              <label>Tải Lên Cả Dự Án (Nhiều File / ZIP / Folder)</label>
+              
+              <div class="upload-options-grid">
+                <div class="file-upload-box zip-upload-box">
+                  <label for="admin-file-zip" class="upload-label">📦 Tải Lên File .ZIP (Nhiều file)</label>
+                  <input type="file" id="admin-file-zip" accept=".zip">
+                </div>
+                
+                <div class="file-upload-box folder-upload-box">
+                  <label for="admin-folder-upload" class="upload-label">📁 Tải Lên Cả Thư Mục (Folder)</label>
+                  <input type="file" id="admin-folder-upload" webkitdirectory directory multiple>
+                </div>
+              </div>
+
+              <!-- Single File Upload Fallback -->
+              <div class="single-files-grid">
+                <div class="file-upload-box">
+                  <label for="admin-file-html" class="upload-label">📄 + File HTML</label>
+                  <input type="file" id="admin-file-html" accept=".html,.htm" multiple>
+                </div>
+                <div class="file-upload-box">
+                  <label for="admin-file-css" class="upload-label">🎨 + File CSS</label>
+                  <input type="file" id="admin-file-css" accept=".css" multiple>
+                </div>
+                <div class="file-upload-box">
+                  <label for="admin-file-js" class="upload-label">⚡ + File JS</label>
+                  <input type="file" id="admin-file-js" accept=".js" multiple>
+                </div>
+                <div class="file-upload-box">
+                  <label for="admin-file-json" class="upload-label">📊 + File JSON</label>
+                  <input type="file" id="admin-file-json" accept=".json" multiple>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+
+        <!-- Right: Multi-File Code Workspace & File Tree Explorer -->
+        <div class="admin-editor-panel">
+          <div class="admin-workspace-split">
+            <!-- File Tree Explorer Sidebar -->
+            <div class="file-tree-sidebar">
+              <div class="file-tree-header">
+                <span>📁 Cấu Trúc Dự Án</span>
+                <button class="add-file-btn" onclick="AdminManager.promptNewFile()" title="Thêm file mới trong dự án">+ File</button>
+              </div>
+              <ul class="file-tree-list" id="admin-file-tree">
+                <!-- Rendered dynamically by admin.js -->
+              </ul>
+            </div>
+
+            <!-- Editor & Test Stage -->
+            <div class="code-editor-stage">
+              <div class="admin-tabs">
+                <div class="active-filename-indicator" id="active-file-title">
+                  📄 index.html
+                </div>
+                <button class="admin-tab-btn" id="btn-test-preview" onclick="AdminManager.togglePreviewTab(true)">
+                  <span>👁️ Test Live Sandbox</span>
+                </button>
+              </div>
+
+              <!-- Textarea Code Editor -->
+              <div class="editor-area-wrapper" id="editor-wrapper">
+                <textarea id="active-code-editor" class="code-textarea" placeholder="Nội dung mã nguồn của file đang chọn..."></textarea>
+              </div>
+
+              <!-- Test Preview Sandbox iframe -->
+              <div class="editor-area-wrapper" id="preview-wrapper" style="display:none;">
+                <iframe id="admin-preview-iframe" class="sandbox-iframe" style="width:100%; height:100%;" title="Admin Multi-File Preview Sandbox"></iframe>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="admin-footer">
+        <button class="cancel-btn" onclick="AdminManager.closeModal()">Hủy Bỏ</button>
+        <button class="save-tpl-btn" onclick="AdminManager.saveTemplateFromForm()">✨ Lưu & Xuất Bản Dự Án Web</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Detail Info Drawer Modal -->
+  <div class="modal-overlay" id="detail-modal">
+    <div class="admin-modal-container" style="max-width: 750px; height: auto; max-height: 85vh;">
+      <div class="admin-header">
+        <h2 id="detail-title">Detail Title</h2>
+        <button class="close-btn" onclick="App.closeDetailModal()">&times;</button>
+      </div>
+      <div style="padding: 2rem; overflow-y: auto;">
+        <img id="detail-img" src="" alt="Preview" style="width:100%; height:280px; object-fit:cover; border-radius:12px; margin-bottom:1.5rem;">
+        <p id="detail-author" style="color:var(--accent-cyan); font-weight:600; margin-bottom:0.5rem;"></p>
+        <p id="detail-desc" style="color:var(--text-secondary); line-height:1.6; margin-bottom:1.5rem;"></p>
+        <div id="detail-tags" class="tech-tags" style="margin-bottom:2rem;"></div>
+        
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+          <span id="detail-price" style="font-size:2rem; font-weight:800; color:var(--text-primary);"></span>
+          <div style="display:flex; gap:1rem;">
+            <button class="demo-btn-primary" id="detail-demo-btn">👁️ Xem Live Demo</button>
+            <button class="buy-btn" id="detail-buy-btn" style="padding:0.75rem 1.8rem;">Mua Ngay</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- App Scripts -->
+  <script src="js/templates.js"></script>
+  <script src="js/sandbox.js"></script>
+  <script src="js/admin.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
