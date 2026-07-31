@@ -1,13 +1,13 @@
 /**
- * Templates & Categories Data Manager - Direct Firebase Sync & Clean Slug ID Edition
+ * Templates & Categories Data Manager - Newest First Sorting Edition
  */
 
 window.API_BASE_URL = window.location.origin.includes('localhost') || window.location.origin.includes('127.0.0.1')
   ? 'http://localhost:5000/api'
   : 'https://webcraft-store-backend.onrender.com/api';
 
-const STORAGE_KEY = "WEB_STORE_TEMPLATES_V14";
-const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V14";
+const STORAGE_KEY = "WEB_STORE_TEMPLATES_V15";
+const CATEGORIES_KEY = "WEB_STORE_CATEGORIES_V15";
 
 const DEFAULT_CATEGORIES = [
   { id: "All", name: "Tất cả" },
@@ -22,6 +22,7 @@ const DEFAULT_TEMPLATES = [
     id: "tpl-quantum-ai-agency",
     title: "Quantum AI Agency - Futuristic Design Studio",
     category: "SaaS & AI",
+    createdAt: 1785490000000,
     updatedAt: "2026-07-31",
     description: "Template dành cho Agency thiết kế, công ty công nghệ AI và Studio sáng tạo. Tích hợp cấu trúc đa trang (Home, About Us, Services), hiệu ứng đếm số động.",
     thumbnail: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=800&q=80",
@@ -153,6 +154,7 @@ function openContactModal() {
     id: "tpl-cyberstore-ecommerce",
     title: "CyberStore - Future Fashion E-Commerce",
     category: "Thương Mại",
+    createdAt: 1785480000000,
     updatedAt: "2026-07-31",
     description: "Template thương mại điện tử phong cách Cyberpunk hiện đại dành cho thương hiệu thời trang, phụ kiện công nghệ.",
     thumbnail: "https://images.unsplash.com/photo-1558769132-cb1aea458c5e?auto=format&fit=crop&w=800&q=80",
@@ -219,6 +221,30 @@ body { background: #080B10; color: #F1F5F9; line-height: 1.6; }
   }
 ];
 
+/**
+ * Sorts array of templates so NEWEST created items always appear FIRST at the top
+ */
+function sortTemplatesNewestFirst(templatesList) {
+  if (!Array.isArray(templatesList)) return [];
+  return templatesList.sort((a, b) => {
+    let timeA = a.createdAt;
+    if (!timeA && a.id && a.id.startsWith('tpl-')) {
+      const num = parseInt(a.id.replace('tpl-', ''), 10);
+      timeA = isNaN(num) ? 0 : num;
+    }
+    timeA = timeA || 0;
+
+    let timeB = b.createdAt;
+    if (!timeB && b.id && b.id.startsWith('tpl-')) {
+      const num = parseInt(b.id.replace('tpl-', ''), 10);
+      timeB = isNaN(num) ? 0 : num;
+    }
+    timeB = timeB || 0;
+
+    return timeB - timeA;
+  });
+}
+
 function sanitizeForFirestore(obj) {
   const clean = {};
   for (const key in obj) {
@@ -264,10 +290,6 @@ function saveCategories(cats) {
 
 window.cachedCategories = getCategories();
 
-/**
- * Converts category name to human-readable clean slug string ID
- * Example: "Bất Động Sản" -> "Bat-Dong-San"
- */
 function generateCleanSlugId(text) {
   return text
     .normalize('NFD')
@@ -283,7 +305,6 @@ async function apiAddCategory(name) {
   const cleanName = name.trim();
   let slugId = generateCleanSlugId(cleanName) || ('cat-' + Date.now());
 
-  // Ensure unique ID if category with same slug exists
   let uniqueId = slugId;
   let counter = 1;
   while (cats.some(c => c.id === uniqueId)) {
@@ -319,24 +340,25 @@ function getLocalTemplates() {
   const data = localStorage.getItem(STORAGE_KEY);
   if (!data) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_TEMPLATES));
-    return DEFAULT_TEMPLATES;
+    return sortTemplatesNewestFirst(DEFAULT_TEMPLATES);
   }
   try {
     const parsed = JSON.parse(data);
     if (!Array.isArray(parsed) || parsed.length === 0) {
       localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_TEMPLATES));
-      return DEFAULT_TEMPLATES;
+      return sortTemplatesNewestFirst(DEFAULT_TEMPLATES);
     }
-    return parsed;
+    return sortTemplatesNewestFirst(parsed);
   } catch (e) {
     localStorage.setItem(STORAGE_KEY, JSON.stringify(DEFAULT_TEMPLATES));
-    return DEFAULT_TEMPLATES;
+    return sortTemplatesNewestFirst(DEFAULT_TEMPLATES);
   }
 }
 
 function saveLocalTemplates(templates) {
   if (Array.isArray(templates) && templates.length > 0) {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(templates));
+    const sorted = sortTemplatesNewestFirst(templates);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(sorted));
   }
 }
 
@@ -344,12 +366,11 @@ window.cachedTemplates = getLocalTemplates();
 
 /**
  * Direct Live Firebase Firestore Fetch Engine
- * Fetches all templates in web_templates collection directly from Firebase Cloud.
+ * Fetches all templates in web_templates collection directly from Firebase Cloud and sorts NEWEST FIRST.
  */
 async function fetchTemplatesFromAPI() {
   const db = window.getDb ? window.getDb() : null;
   if (db) {
-    // 1. Try fetching categories independently
     try {
       const catDoc = await db.collection('web_config').doc('categories').get();
       if (catDoc.exists && catDoc.data().items) {
@@ -360,7 +381,6 @@ async function fetchTemplatesFromAPI() {
       console.warn("Categories fetch notice:", e.message);
     }
 
-    // 2. Fetch web_templates collection directly from Firebase Cloud
     try {
       const snapshot = await db.collection('web_templates').get();
       if (!snapshot.empty) {
@@ -369,10 +389,11 @@ async function fetchTemplatesFromAPI() {
           fbTemplates.push({ id: doc.id, ...doc.data() });
         });
         if (fbTemplates.length > 0) {
-          window.cachedTemplates = fbTemplates;
-          saveLocalTemplates(fbTemplates);
-          console.log(`🔥 Synchronized ${fbTemplates.length} live products directly from Firebase Cloud Database!`);
-          return fbTemplates;
+          const sortedFB = sortTemplatesNewestFirst(fbTemplates);
+          window.cachedTemplates = sortedFB;
+          saveLocalTemplates(sortedFB);
+          console.log(`🔥 Synchronized ${sortedFB.length} live products (Newest First) directly from Firebase Cloud Database!`);
+          return sortedFB;
         }
       }
     } catch (err) {
@@ -385,8 +406,10 @@ async function fetchTemplatesFromAPI() {
 }
 
 async function apiAddTemplate(templateData) {
-  const id = templateData.id || ('tpl-' + Date.now());
+  const now = Date.now();
+  const id = templateData.id || ('tpl-' + now);
   templateData.id = id;
+  templateData.createdAt = templateData.createdAt || now;
 
   const sanitized = sanitizeForFirestore(templateData);
   const db = window.getDb ? window.getDb() : null;
@@ -406,12 +429,18 @@ async function apiAddTemplate(templateData) {
   }
 
   window.cachedTemplates.unshift(sanitized);
+  window.cachedTemplates = sortTemplatesNewestFirst(window.cachedTemplates);
   saveLocalTemplates(window.cachedTemplates);
   return sanitized;
 }
 
 async function apiUpdateTemplate(id, templateData) {
   templateData.id = id;
+  if (!templateData.createdAt) {
+    const existing = window.cachedTemplates.find(t => t.id === id);
+    templateData.createdAt = existing ? existing.createdAt : Date.now();
+  }
+
   const sanitized = sanitizeForFirestore(templateData);
   const db = window.getDb ? window.getDb() : null;
 
@@ -428,6 +457,7 @@ async function apiUpdateTemplate(id, templateData) {
 
   const idx = window.cachedTemplates.findIndex(t => t.id === id);
   if (idx !== -1) window.cachedTemplates[idx] = sanitized;
+  window.cachedTemplates = sortTemplatesNewestFirst(window.cachedTemplates);
   saveLocalTemplates(window.cachedTemplates);
   return sanitized;
 }
@@ -443,12 +473,13 @@ async function apiDeleteTemplate(id) {
   }
 
   window.cachedTemplates = window.cachedTemplates.filter(t => t.id !== id);
+  window.cachedTemplates = sortTemplatesNewestFirst(window.cachedTemplates);
   saveLocalTemplates(window.cachedTemplates);
   return window.cachedTemplates;
 }
 
 function getStoredTemplates() {
   const t = window.cachedTemplates;
-  if (Array.isArray(t) && t.length > 0) return t;
+  if (Array.isArray(t) && t.length > 0) return sortTemplatesNewestFirst(t);
   return getLocalTemplates();
 }
