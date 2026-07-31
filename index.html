@@ -4,9 +4,16 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>WebCraft Store - Chợ Mua Bán & Trải Nghiệm Template Website Multi-File</title>
-  <meta name="description" content="Nền tảng mua bán giao diện trang web chất lượng cao. Trải nghiệm Live Demo mượt mà các dự án website HTML, CSS, JS, JSON.">
+  <meta name="description" content="Nền tảng mua bán giao diện trang web chất lượng cao. Trải nghiệm Live Demo mượt mà các dự án website HTML, CSS, JS, JSON tích hợp Firebase Cloud Storage.">
   <link rel="stylesheet" href="styles.css">
+  
+  <!-- JSZip Library -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+
+  <!-- Firebase SDK Libraries -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js"></script>
 </head>
 <body>
 
@@ -29,7 +36,7 @@
   <section class="hero-section">
     <div class="hero-bg-glow"></div>
     <div class="hero-content">
-      <div class="hero-pill">✨ Live Demo Interactive Sandbox Engine</div>
+      <div class="hero-pill">✨ Powered by Firebase Cloud Database</div>
       <h1 class="hero-title">Sở Hữu Trang Web Đẳng Cấp Chỉ Với 1 Click</h1>
       <p class="hero-subtitle">
         Khám phá bộ sưu tập template website đa dạng (SaaS, Nhà Hàng, Portfolio, Thương Mại...). Trải nghiệm Live Demo trực tiếp các dự án website đa trang trước khi đưa ra quyết định mua hàng.
@@ -91,8 +98,8 @@
           <button class="newtab-btn" onclick="App.openInNewTab()">
             ↗️ Mở Tab Mới
           </button>
-          <button class="buy-btn" onclick="App.buyTemplate(App.activeDemoTemplate?.id)">
-            Mua Mẫu Này (<span id="demo-price">$0</span>)
+          <button class="buy-btn" onclick="App.downloadTemplateZip(App.activeDemoTemplate?.id)">
+            Tải Mã Nguồn (.ZIP) (<span id="demo-price">$0</span>)
           </button>
         </div>
       </div>
@@ -122,13 +129,15 @@
           <span id="detail-price" style="font-size:2rem; font-weight:800; color:var(--text-primary);"></span>
           <div style="display:flex; gap:1rem;">
             <button class="demo-btn-primary" id="detail-demo-btn">👁️ Xem Live Demo</button>
-            <button class="buy-btn" id="detail-buy-btn" style="padding:0.75rem 1.8rem;">Mua Ngay</button>
+            <button class="buy-btn" id="detail-buy-btn" style="padding:0.75rem 1.8rem;">Tải Mã Nguồn (.ZIP)</button>
           </div>
         </div>
       </div>
     </div>
   </div>
 
+  <!-- Scripts -->
+  <script src="js/firebase-config.js"></script>
   <script src="js/templates.js"></script>
   <script src="js/sandbox.js"></script>
   <script src="js/app.js"></script>
