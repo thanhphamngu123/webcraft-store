@@ -297,6 +297,8 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       checkAdminPortalState();
+      updateFirebaseConnectionMonitor();
+      setInterval(updateFirebaseConnectionMonitor, 3000);
 
       fetchTemplatesFromAPI().then(() => {
         if (typeof renderAdminTable === 'function') renderAdminTable();
