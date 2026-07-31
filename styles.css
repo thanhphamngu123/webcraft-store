@@ -1,6 +1,6 @@
 /* ==========================================================================
    WEB CRAFT STORE - Anti-Slop Frontend Design System & Firebase Console UI
-   Design Read: Dark-Tech Linear-Style Marketplace for Web Templates
+   Full Width Responsive Layout Edition (No max-width restriction)
    ========================================================================== */
 
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
@@ -35,13 +35,15 @@ body {
   font-family: var(--font-family);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
+  width: 100%;
 }
 
 /* ==========================================================================
-   FROLAX PREMIUM SHOWCASE HERO SECTION STYLES (100% MATCHED DESIGN)
+   FROLAX PREMIUM SHOWCASE HERO SECTION STYLES (100% FULL WIDTH)
    ========================================================================== */
 .frolax-hero-wrapper {
-  max-width: 1400px;
+  width: calc(100% - 3rem);
+  max-width: 100%;
   margin: 1.5rem auto 3rem;
   background: linear-gradient(135deg, #E25624 0%, #D24716 100%);
   border-radius: 32px;
@@ -330,6 +332,7 @@ body {
   display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 3rem;
   background: rgba(14, 19, 31, 0.85); backdrop-filter: blur(16px);
   border-bottom: 1px solid var(--border-card); position: sticky; top: 0; z-index: 100;
+  width: 100%;
 }
 .brand-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
 .brand-gradient {
@@ -338,8 +341,13 @@ body {
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 
-/* Filter & Controls */
-.controls-bar { max-width: 1400px; margin: 0 auto 2.5rem; padding: 0 2rem; }
+/* Filter & Controls (Full Width) */
+.controls-bar {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto 2.5rem;
+  padding: 0 2.5rem;
+}
 .search-box-wrap { position: relative; margin-bottom: 1.25rem; }
 .search-input {
   width: 100%; background: var(--bg-card); border: 1px solid var(--border-card);
@@ -358,10 +366,15 @@ body {
 .cat-pill.active, .cat-pill:hover { background: rgba(56, 189, 248, 0.12); color: var(--accent-cyan); border-color: var(--accent-cyan); }
 .catalog-counter { color: var(--text-muted); font-size: 0.9rem; font-weight: 600; }
 
-/* Grid Layout */
+/* Grid Layout (Full Width Unconstrained) */
 .grid-container {
-  max-width: 1400px; margin: 0 auto 5rem; padding: 0 2rem;
-  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2.2rem;
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto 5rem;
+  padding: 0 2.5rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 2.2rem;
 }
 
 /* ==========================================================================
@@ -604,7 +617,7 @@ body {
 }
 
 .status-widget-header { display: flex; align-items: center; gap: 0.5rem; }
-.status-dot-pulse { width: 10px; height: 10px; border-radius: 99px; display: inline-block; }
+.status-dot-pulse { width: 10px; height: 10px; border-radius: 999px; display: inline-block; }
 .pulse-green { background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); animation: pulseDot 2s infinite; }
 .pulse-red { background: var(--accent-rose); box-shadow: 0 0 10px var(--accent-rose); animation: pulseDot 2s infinite; }
 
