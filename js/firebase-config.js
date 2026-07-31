@@ -1,5 +1,5 @@
 /**
- * Firebase Config & Automatic Cloud Sync Engine with Diagnostic Error Handler
+ * Firebase Config & Automatic Cloud Sync Engine for WebCraft Store
  * Connected to Firebase Project: webstore-a19ea
  */
 
@@ -9,8 +9,8 @@ window.firebaseConfig = {
   projectId: "webstore-a19ea",
   storageBucket: "webstore-a19ea.firebasestorage.app",
   messagingSenderId: "315684270789",
-  appId: "1:315684270789:web:d9062a2b1875356dc5b6ac",
-  measurementId: "G-HCBR076R0J"
+  appId: "1:315684270789:web:a344bcd61ce638d7c5b6ac",
+  measurementId: "G-EZNSTYWGFG"
 };
 
 // Initialize Firebase & Auto-Sync with Firestore Cloud Database
@@ -19,7 +19,7 @@ window.initFirebaseStore = async function() {
     try {
       window.firebase.initializeApp(window.firebaseConfig);
       window.db = window.firebase.firestore();
-      console.log("⚡ Firebase Cloud Database (webstore-a19ea) connected!");
+      console.log("⚡ Firebase Cloud Database (webstore-a19ea) connected & active!");
       
       await syncInitialTemplatesToFirebase();
     } catch (e) {
@@ -52,7 +52,7 @@ async function syncInitialTemplatesToFirebase() {
 function handleFirebaseError(err) {
   if (!err) return;
   if (err.code === 'permission-denied' || (err.message && err.message.includes('permission'))) {
-    console.warn("⚠️ Firebase Rules is locked. Need to set test mode in Firebase Console.");
+    console.warn("⚠️ Firebase Rules is locked. Set permanent rules in Firebase Console.");
   } else if (err.message && (err.message.includes('not found') || err.message.includes('NOT_FOUND'))) {
     console.warn("⚠️ Firestore Database has not been created yet in Firebase Console.");
   }
