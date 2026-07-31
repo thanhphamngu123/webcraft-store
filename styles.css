@@ -3,7 +3,7 @@
    Design Read: Dark-Tech Linear-Style Marketplace for Web Templates
    ========================================================================== */
 
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 
 :root {
   --bg-dark: #07090E;
@@ -37,6 +37,294 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* ==========================================================================
+   FROLAX PREMIUM SHOWCASE HERO SECTION STYLES (100% MATCHED DESIGN)
+   ========================================================================== */
+.frolax-hero-wrapper {
+  max-width: 1400px;
+  margin: 1.5rem auto 3rem;
+  background: linear-gradient(135deg, #E25624 0%, #D24716 100%);
+  border-radius: 32px;
+  overflow: hidden;
+  position: relative;
+  box-shadow: 0 25px 60px -15px rgba(210, 71, 22, 0.4);
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  color: #FFFFFF;
+}
+
+.frolax-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.75rem 3rem;
+}
+
+.frolax-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+.frolax-logo-emblem {
+  width: 16px;
+  height: 24px;
+  background: #FFF;
+  clip-path: polygon(0 0, 100% 25%, 100% 75%, 0 100%, 40% 50%);
+}
+.frolax-brand-name {
+  font-size: 1.6rem;
+  font-weight: 800;
+  color: #FFFFFF;
+  letter-spacing: -0.02em;
+}
+
+.frolax-nav-pill {
+  background: #FFFFFF;
+  border-radius: 999px;
+  padding: 5px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.frolax-nav-link {
+  color: #1E293B;
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 8px 22px;
+  border-radius: 999px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.frolax-nav-link.active {
+  background: #E85D26;
+  color: #FFFFFF;
+  box-shadow: 0 4px 15px rgba(232, 93, 38, 0.3);
+}
+
+.frolax-actions-group {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.frolax-circle-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.frolax-lang-pill {
+  background: #FFFFFF;
+  color: #1E293B;
+  font-weight: 700;
+  font-size: 0.88rem;
+  padding: 8px 18px;
+  border-radius: 999px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+}
+
+.frolax-cart-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: #FFFFFF;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #E85D26;
+  color: #FFF;
+  font-size: 0.7rem;
+  font-weight: 800;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #FFF;
+}
+
+/* Hero Body Grid */
+.frolax-hero-body {
+  display: grid;
+  grid-template-columns: 1.1fr 1.2fr 1fr;
+  align-items: center;
+  padding: 1rem 3rem 4rem;
+  position: relative;
+}
+
+.frolax-left-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+}
+
+.frolax-headline {
+  font-family: 'Playfair Display', serif;
+  font-size: 4.8rem;
+  font-weight: 700;
+  line-height: 1.05;
+  color: #FFFFFF;
+  letter-spacing: 2px;
+  margin-top: 1rem;
+  margin-bottom: 3rem;
+  text-transform: uppercase;
+}
+
+.frolax-video-card {
+  position: relative;
+  width: 250px;
+  height: 155px;
+  border-radius: 24px;
+  overflow: hidden;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.25);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+}
+
+.frolax-video-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.frolax-play-btn {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.35);
+  backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+
+.frolax-center-col {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  position: relative;
+  height: 100%;
+}
+
+.frolax-model-img {
+  max-width: 480px;
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  filter: drop-shadow(0 20px 40px rgba(0, 0, 0, 0.3));
+}
+
+.frolax-right-col {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-left: 2rem;
+  margin-bottom: 2rem;
+}
+
+.frolax-avatar-row {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  margin-bottom: 1.25rem;
+}
+
+.frolax-avatar-stack {
+  display: flex;
+}
+
+.frolax-avatar {
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  border: 2px solid #FFFFFF;
+  margin-left: -12px;
+  object-fit: cover;
+}
+.frolax-avatar:first-child {
+  margin-left: 0;
+}
+
+.frolax-count-badge {
+  background: rgba(255, 255, 255, 0.25);
+  backdrop-filter: blur(8px);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: #FFF;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.frolax-rating-text {
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: #FFFFFF;
+  margin-bottom: 1rem;
+}
+.rating-link {
+  text-decoration: underline;
+  font-weight: 600;
+  opacity: 0.9;
+}
+
+.frolax-subtext {
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, 0.9);
+  max-width: 320px;
+  margin-bottom: 2rem;
+}
+
+.frolax-cta-btn {
+  background: linear-gradient(135deg, #FFA033, #FF7700);
+  color: #FFFFFF;
+  font-family: 'Playfair Display', serif;
+  font-size: 1.15rem;
+  font-weight: 700;
+  padding: 1rem 2.8rem;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+.frolax-cta-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.35);
+}
+
 /* Base Topbar Navbar */
 .navbar {
   display: flex; justify-content: space-between; align-items: center; padding: 1.25rem 3rem;
@@ -44,39 +332,18 @@ body {
   border-bottom: 1px solid var(--border-card); position: sticky; top: 0; z-index: 100;
 }
 .brand-logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; }
-.brand-icon {
-  width: 36px; height: 36px; border-radius: 10px;
-  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-purple));
-  display: flex; align-items: center; justify-content: center; font-weight: 800; color: #FFF;
-}
 .brand-gradient {
   font-size: 1.35rem; font-weight: 800;
   background: linear-gradient(to right, #FFF, var(--accent-cyan));
   -webkit-background-clip: text; -webkit-text-fill-color: transparent;
 }
 
-/* Marketplace Hero */
-.hero-section { text-align: center; padding: 4.5rem 2rem 3rem; position: relative; max-width: 900px; margin: 0 auto; }
-.hero-bg-glow {
-  position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
-  width: 600px; height: 300px; background: radial-gradient(circle, rgba(56, 189, 248, 0.15) 0%, transparent 70%);
-  pointer-events: none;
-}
-.hero-pill {
-  display: inline-block; background: rgba(56, 189, 248, 0.1); color: var(--accent-cyan);
-  border: 1px solid var(--border-highlight); padding: 0.4rem 1.2rem; border-radius: 99px;
-  font-size: 0.85rem; font-weight: 700; margin-bottom: 1.25rem;
-}
-.hero-title { font-size: 3rem; font-weight: 800; line-height: 1.15; margin-bottom: 1rem; }
-.hero-subtitle { color: var(--text-secondary); font-size: 1.1rem; }
-
 /* Filter & Controls */
-.controls-bar { max-width: 1300px; margin: 0 auto 2.5rem; padding: 0 2rem; }
+.controls-bar { max-width: 1400px; margin: 0 auto 2.5rem; padding: 0 2rem; }
 .search-box-wrap { position: relative; margin-bottom: 1.25rem; }
-.search-icon { position: absolute; left: 1.25rem; top: 50%; transform: translateY(-50%); color: var(--text-muted); }
 .search-input {
   width: 100%; background: var(--bg-card); border: 1px solid var(--border-card);
-  padding: 1rem 1rem 1rem 3.25rem; border-radius: var(--radius-md); color: var(--text-primary);
+  padding: 1rem; border-radius: var(--radius-md); color: var(--text-primary);
   font-size: 1rem; outline: none; transition: border-color 0.2s;
 }
 .search-input:focus { border-color: var(--accent-cyan); box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.15); }
@@ -93,7 +360,7 @@ body {
 
 /* Grid Layout */
 .grid-container {
-  max-width: 1300px; margin: 0 auto 5rem; padding: 0 2rem;
+  max-width: 1400px; margin: 0 auto 5rem; padding: 0 2rem;
   display: grid; grid-template-columns: repeat(auto-fill, minmax(340px, 1fr)); gap: 2rem;
 }
 
@@ -167,7 +434,7 @@ body {
 .iframe-wrapper.device-mobile { width: 375px; height: 90%; border-radius: 20px; box-shadow: 0 0 40px rgba(0,0,0,0.8); }
 .sandbox-iframe { width: 100%; height: 100%; border: none; }
 
-/* Custom Modal Dialog Box Overlays (Prompt & Confirm) */
+/* Custom Modal Dialog Box Overlays */
 .dialog-modal-box {
   width: 450px; max-width: 92vw; background: rgba(14, 19, 31, 0.95);
   border: 1px solid rgba(255, 255, 255, 0.12); border-radius: 20px; padding: 1.75rem;
@@ -177,15 +444,11 @@ body {
 .modal-overlay.open .dialog-modal-box { transform: scale(1); }
 
 .dialog-header { display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1.25rem; }
-.dialog-icon { font-size: 1.5rem; }
 .dialog-header h3 { font-size: 1.25rem; font-weight: 800; color: #FFF; }
-
 .dialog-body { margin-bottom: 1.5rem; }
 .dialog-body label { display: block; font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 0.5rem; }
-
 .dialog-footer { display: flex; justify-content: flex-end; gap: 0.75rem; }
 
-/* Action Icon Buttons */
 .action-icon-btn {
   background: rgba(255, 255, 255, 0.06); border: 1px solid var(--border-card);
   color: var(--text-primary); padding: 0.35rem 0.65rem; border-radius: 6px;
@@ -206,12 +469,6 @@ body {
 .sidebar-brand {
   display: flex; align-items: center; gap: 0.75rem; padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--border-card); margin-bottom: 1.25rem;
-}
-.sidebar-logo-icon {
-  width: 40px; height: 40px; border-radius: 12px;
-  background: linear-gradient(135deg, #FF6B00, #FF9E00);
-  display: flex; align-items: center; justify-content: center; font-size: 1.4rem;
-  box-shadow: 0 4px 15px rgba(255, 107, 0, 0.4);
 }
 .sidebar-brand-info { display: flex; flex-direction: column; }
 .sidebar-title { font-size: 1.15rem; font-weight: 800; color: #FFF; letter-spacing: -0.01em; }
@@ -235,7 +492,6 @@ body {
   background: rgba(56, 189, 248, 0.12); color: var(--accent-cyan);
   border-color: rgba(56, 189, 248, 0.25); font-weight: 700;
 }
-.nav-icon { font-size: 1.1rem; }
 
 .firebase-status-widget {
   margin-top: auto; background: rgba(14, 19, 31, 0.9);

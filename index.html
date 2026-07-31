@@ -3,8 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>WebCraft Store - Chợ Mua Bán & Trải Nghiệm Template Website Multi-File</title>
+  <title>WebCraft Store - Frolax Premium Web Experience</title>
   <meta name="description" content="Nền tảng trải nghiệm và xem trước các trang web chất lượng cao.">
+  
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;0,800;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="styles.css">
   
   <!-- JSZip Library -->
@@ -31,22 +33,90 @@
     </div>
   </header>
 
-  <!-- Hero Section -->
-  <section class="hero-section">
-    <div class="hero-bg-glow"></div>
-    <div class="hero-content">
-      <div class="hero-pill">Powered by Firebase Cloud Database</div>
-      <h1 class="hero-title">Khám Phá Các Mẫu Website Đẳng Cấp</h1>
-      <p class="hero-subtitle">
-        Trải nghiệm Live Demo trực tiếp các dự án website đa trang đa dạng (SaaS, Nhà Hàng, Portfolio, Thương Mại...).
-      </p>
+  <!-- Frolax Style 100% Identical Premium Hero Section -->
+  <section class="frolax-hero-wrapper">
+    <!-- Top Navigation Header inside Hero Container -->
+    <header class="frolax-topbar">
+      <div class="frolax-brand">
+        <div class="frolax-logo-emblem"></div>
+        <span class="frolax-brand-name">Frolax</span>
+      </div>
+
+      <nav class="frolax-nav-pill">
+        <span class="frolax-nav-link active">About</span>
+        <span class="frolax-nav-link">Shop</span>
+        <span class="frolax-nav-link">Collection</span>
+        <span class="frolax-nav-link">Blog</span>
+        <span class="frolax-nav-link">Reviews</span>
+        <span class="frolax-nav-link">Contact</span>
+      </nav>
+
+      <div class="frolax-actions-group">
+        <button class="frolax-circle-btn" title="Search">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+        <div class="frolax-lang-pill">
+          <span>🌐</span>
+          <span>Eng</span>
+          <span style="font-size:0.7rem; font-weight:bold; opacity:0.7;">v</span>
+        </div>
+        <button class="frolax-cart-btn" title="Cart">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#1E293B" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+          <span class="cart-badge">5</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Hero Banner Body -->
+    <div class="frolax-hero-body">
+      <!-- Left Column: Headline & Video Card -->
+      <div class="frolax-left-col">
+        <h1 class="frolax-headline">ELEVATE<br>YOUR SELF</h1>
+
+        <div class="frolax-video-card">
+          <img src="https://images.unsplash.com/photo-1573855619003-97b4799dcd8b?auto=format&fit=crop&w=500&q=80" alt="Video Preview" class="frolax-video-thumb">
+          <button class="frolax-play-btn">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="#FFF"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Center Column: Model Holding Bags -->
+      <div class="frolax-center-col">
+        <img src="https://images.unsplash.com/photo-1588117305388-c2631a279f82?auto=format&fit=crop&w=900&q=80" alt="Model" class="frolax-model-img">
+      </div>
+
+      <!-- Right Column: Avatar Stack, Rating, Subtext, CTA -->
+      <div class="frolax-right-col">
+        <div class="frolax-avatar-row">
+          <div class="frolax-avatar-stack">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="frolax-avatar">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=120&q=80" class="frolax-avatar">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80" class="frolax-avatar">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=120&q=80" class="frolax-avatar">
+          </div>
+          <span class="frolax-count-badge">+27K</span>
+        </div>
+
+        <div class="frolax-rating-text">
+          4.8 <span class="rating-link">( 15K rating )</span>
+        </div>
+
+        <p class="frolax-subtext">
+          Assurance in every layer, with trusted comfort. Our quality ensures satisfaction and peace.
+        </p>
+
+        <button class="frolax-cta-btn">
+          Shop Now
+        </button>
+      </div>
     </div>
   </section>
 
   <!-- Search & Filter Controls -->
   <div class="controls-bar">
     <div class="search-box-wrap">
-      <input type="text" id="search-input" class="search-input" style="padding-left:1.25rem;" placeholder="Tìm kiếm trang web theo tên hoặc danh mục...">
+      <input type="text" id="search-input" class="search-input" placeholder="Tìm kiếm trang web theo tên hoặc danh mục...">
     </div>
 
     <div class="filter-row">
